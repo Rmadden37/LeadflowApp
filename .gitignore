@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+.next/
+out/
+.env
+firestore-debug.log
+tsconfig.tsbuildinfo
+leadflow-4lvrr-c0ece655e181.json
+.DS_Store
+*.log

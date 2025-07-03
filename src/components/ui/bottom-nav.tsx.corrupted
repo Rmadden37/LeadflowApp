@@ -1,0 +1,345 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Slot } from "@radix-ui/react-slot";
+import { VariantProps, cva } from "class-variance-authority";
+import { cn } fr](({ unread](({ unreadCount = 0, onClick, className, ...props }, ref) => {
+  const haptic = useHapticFeedback();
+
+  // Debug logging for badge visibility
+  React.useEffect(() => {
+    console.log('🔴 FloatingChatButton received unreadCount:', unreadCount);
+    if (unreadCount > 0) {
+      console.log('🔴 RED BADGE SHOULD BE VISIBLE with count:', unreadCount);
+    }
+  }, [unreadCount]);
+
+  const handleClick = () => {
+    haptic.medium(); // Stronger feedback for important action
+    onClick?.();
+  }; 0, onClick, className, ...props }, ref) => {
+  const haptic = useHapticFeedback();
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('🔴 FloatingChatButton received unreadCount:', unreadCount);
+  }, [unreadCount]);
+
+  const handleClick = () => {
+    haptic.medium(); // Stronger feedback for important action
+    onClick?.();
+  };ib/utils";
+import { useHapticFeedback } from "@/lib/haptic-feedback";
+import { useAuth } from "@/hooks/use-auth";
+
+const BOTTOM_NAV_HEIGHT = "5rem"; // 80px for iOS comfort
+
+type BottomNavContextType = {
+  currentTab: string;
+  setCurrentTab: (tab: string) => void;
+};
+
+const BottomNavContext = React.createContext<BottomNavContextType | null>(null);
+
+function useBottomNav() {
+  const context = React.useContext(BottomNavContext);
+  if (!context) {
+    throw new Error("useBottomNav must be used within a BottomNavProvider.");
+  }
+  return context;
+}
+
+const BottomNavProvider = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div"> & {
+    defaultTab?: string;
+  }
+>(({ defaultTab = "dashboard", className, style, children, ...props }, ref) => {
+  const pathname = usePathname();
+  
+  // Derive current tab from pathname
+  const getCurrentTab = () => {
+    if (pathname.includes('/leaderboard')) return 'leaderboard';
+    if (pathname.includes('/manager') || pathname.includes('/lead-history') || 
+        pathname.includes('/manage-teams') || pathname.includes('/analytics')) return 'manager';
+    if (pathname.includes('/profile') || pathname.includes('/admin-tools')) return 'profile';
+    return 'dashboard';
+  };
+
+  const [currentTab, setCurrentTab] = React.useState(() => getCurrentTab());
+
+  // Update tab when pathname changes
+  React.useEffect(() => {
+    const newTab = (() => {
+      if (pathname.includes('/leaderboard')) return 'leaderboard';
+      if (pathname.includes('/manager') || pathname.includes('/lead-history') || 
+          pathname.includes('/manage-teams') || pathname.includes('/analytics')) return 'manager';
+      if (pathname.includes('/profile') || pathname.includes('/admin-tools')) return 'profile';
+      return 'dashboard';
+    })();
+    setCurrentTab(newTab);
+  }, [pathname]);
+
+  const contextValue = React.useMemo<BottomNavContextType>(
+    () => ({ currentTab, setCurrentTab }),
+    [currentTab, setCurrentTab]
+  );
+
+  return (
+    <BottomNavContext.Provider value={contextValue}>
+      <div
+        style={{
+          "--bottom-nav-height": BOTTOM_NAV_HEIGHT,
+          ...style,
+        } as React.CSSProperties}
+        className={cn("relative w-full", className)}
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </div>
+    </BottomNavContext.Provider>
+  );
+});
+BottomNavProvider.displayName = "BottomNavProvider";
+
+const BottomNav = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"nav">
+>(({ className, children, ...props }, ref) => {
+  return (
+    <nav
+      ref={ref}
+      className={cn(
+        // Fixed positioning with iOS-style backdrop blur
+        "fixed bottom-0 left-0 right-0 z-40 h-[--bottom-nav-height]",
+        // Glass morphism styling
+        "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md",
+        "border-t border-gray-200/50 dark:border-slate-800/50",
+        // Safe area support for devices with home indicator
+        "pb-safe-bottom",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </nav>
+  );
+});
+BottomNav.displayName = "BottomNav";
+
+const BottomNavContent = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div">
+>(({ className, children, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "pb-[--bottom-nav-height] min-h-screen", // Prevent content being hidden behind nav
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+});
+BottomNavContent.displayName = "BottomNavContent";
+
+const bottomNavItemVariants = cva(
+  "flex flex-col items-center justify-center gap-1 p-2 min-h-[56px] min-w-[64px] rounded-xl transition-all duration-200 outline-none ring-2 ring-transparent focus-visible:ring-blue-500 disabled:pointer-events-none disabled:opacity-50 touch-manipulation",
+  {
+    variants: {
+      variant: {
+        default: "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300",
+        active: "text-[#007AFF] dark:text-[#0A84FF] bg-[#007AFF]/10 dark:bg-[#0A84FF]/20 font-medium",
+      },
+      size: {
+        default: "gap-1",
+        compact: "gap-0.5",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
+const BottomNavItem = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<"button"> & {
+    asChild?: boolean;
+    isActive?: boolean;
+    icon?: React.ReactNode;
+    label?: string;
+    href?: string;
+    badge?: number;
+  } & VariantProps<typeof bottomNavItemVariants>
+>(
+  (
+    {
+      asChild = false,
+      isActive = false,
+      variant = "default",
+      size = "default",
+      icon,
+      label,
+      href,
+      badge,
+      className,
+      onClick,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const haptic = useHapticFeedback();
+    const activeVariant = isActive ? "active" : variant;
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      // iOS-style haptic feedback
+      haptic.selection();
+      onClick?.(e);
+    };
+
+    const content = (
+      <>
+        {icon && (
+          <div className="relative flex items-center justify-center">
+            <div className="[&>svg]:size-6 [&>svg]:shrink-0">
+              {icon}
+            </div>
+            {/* Badge for notifications */}
+            {badge && badge > 0 && (
+              <div className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold leading-none">
+                  {badge > 99 ? '99+' : badge}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+        {label && (
+          <span className="text-xs leading-none truncate max-w-[64px] font-medium">
+            {label}
+          </span>
+        )}
+        {children}
+      </>
+    );
+
+    if (href && !asChild) {
+      return (
+        <Link href={href} className="contents">
+          <button
+            ref={ref}
+            className={cn(bottomNavItemVariants({ variant: activeVariant, size }), className)}
+            onClick={handleClick}
+            {...props}
+          >
+            {content}
+          </button>
+        </Link>
+      );
+    }
+
+    const Comp = asChild ? Slot : "button";
+
+    return (
+      <Comp
+        ref={ref}
+        className={cn(bottomNavItemVariants({ variant: activeVariant, size }), className)}
+        onClick={handleClick}
+        {...props}
+      >
+        {content}
+      </Comp>
+    );
+  }
+);
+BottomNavItem.displayName = "BottomNavItem";
+
+// Floating Chat Button Component
+const FloatingChatButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<"button"> & {
+    unreadCount?: number;
+    onClick?: () => void;
+  }
+>(({ unreadCount = 0, onClick, className, ...props }, ref) => {
+  const haptic = useHapticFeedback();
+
+  const handleClick = () => {
+    haptic.medium(); // Stronger feedback for important action
+    onClick?.();
+  };
+
+  return (
+    <div className="fixed bottom-24 right-4 z-50">
+      <div className="relative">
+        <button
+          ref={ref}
+          onClick={handleClick}
+          className={cn(
+            // iOS-style FAB design with proper spacing for badge
+            "relative w-14 h-14 bg-green-600 hover:bg-green-700 rounded-full shadow-lg",
+            "flex items-center justify-center transition-all duration-200",
+            "transform hover:scale-105 active:scale-95",
+            // Glass morphism effect
+            "backdrop-blur-sm border border-white/20",
+            className
+          )}
+          aria-label={`Team chat${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+          {...props}
+        >
+          {/* Chat Icon */}
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </button>
+        
+        {/* Unread Badge - positioned outside button with enhanced visibility */}
+        {unreadCount > 0 && (
+          <div 
+            className="absolute bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg"
+            style={{
+              position: 'absolute',
+              top: '-8px',
+              right: '-8px',
+              minWidth: '20px',
+              height: '20px',
+              backgroundColor: '#dc2626',
+              zIndex: 1000,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+            }}
+          >
+            <span 
+              style={{ 
+                color: 'white', 
+                fontSize: '10px', 
+                fontWeight: 'bold', 
+                lineHeight: 1 
+              }}
+            >
+              {unreadCount > 99 ? '99' : unreadCount}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+FloatingChatButton.displayName = "FloatingChatButton";
+
+export {
+  BottomNav,
+  BottomNavProvider,
+  BottomNavContent,
+  BottomNavItem,
+  FloatingChatButton,
+  useBottomNav,
+};
