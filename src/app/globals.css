@@ -2433,3 +2433,130 @@ nav.sticky > div {
   z-index: 30 !important;
   position: absolute !important;
 }
+
+/* ===================================================================
+   iOS KEYBOARD & INPUT FIXES
+   =================================================================== */
+
+/* iOS Input Styling to Prevent Zoom and Keyboard Issues */
+.ios-input {
+  /* Prevent zoom on focus */
+  font-size: 16px !important;
+  /* Remove iOS default styling */
+  -webkit-appearance: none !important;
+  -webkit-border-radius: 0 !important;
+  border-radius: 6px !important;
+  /* Prevent auto-zoom */
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  /* Better touch targets */
+  min-height: 44px !important;
+  /* Prevent autocomplete styling */
+  background-color: transparent !important;
+  /* Better focus handling */
+  outline: none !important;
+  transition: all 0.2s ease !important;
+}
+
+/* iOS-specific input focus states */
+.ios-input:focus {
+  /* Hardware acceleration for smooth transitions */
+  transform: translateZ(0) scale(1) !important;
+  backface-visibility: hidden !important;
+  /* Enhanced focus ring */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+  border-color: #3b82f6 !important;
+}
+
+/* Prevent iOS Safari zoom on input focus */
+@supports (-webkit-touch-callout: none) {
+  .ios-input, 
+  input[type="text"],
+  input[type="email"], 
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  select,
+  textarea {
+    font-size: 16px !important;
+    -webkit-appearance: none !important;
+    border-radius: 6px !important;
+  }
+}
+
+/* Create Lead Form iOS Fixes */
+.create-lead-form {
+  /* Prevent layout shifts during keyboard appearance */
+  position: relative !important;
+  z-index: 1 !important;
+  /* Hardware acceleration */
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+}
+
+/* iOS Chrome Keyboard Fix - Prevent keyboard dismissal */
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .create-lead-form input {
+    /* More specific iOS Chrome fixes */
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    /* Prevent touch manipulation that can cause keyboard dismissal */
+    touch-action: manipulation !important;
+  }
+  
+  .create-lead-form input:focus {
+    /* Ensure focus is maintained */
+    pointer-events: auto !important;
+    /* Prevent any transform that might trigger keyboard dismissal */
+    transform: none !important;
+  }
+}
+
+/* Form Container iOS Positioning */
+.create-lead-form input,
+.create-lead-form select,
+.create-lead-form textarea {
+  /* Better positioning context */
+  position: relative !important;
+  z-index: 2 !important;
+  /* Prevent iOS rendering issues */
+  -webkit-transform: translateZ(0) !important;
+  transform: translateZ(0) !important;
+  /* Smooth transitions */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* iOS Viewport Stability */
+@media screen and (max-width: 768px) {
+  /* Prevent viewport bouncing on iOS */
+  html {
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  body {
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Form container should be scrollable */
+  .create-lead-form {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+
+/* iOS Safari Address Bar Compensation */
+@supports (-webkit-touch-callout: none) {
+  .mobile-safe-height {
+    height: -webkit-fill-available !important;
+    min-height: 100vh !important;
+  }
+}

@@ -16,6 +16,7 @@ import { Trophy, TrendingUp, Users, Target, RefreshCw, Award, Medal, ChevronDown
 import { useAuth } from '@/hooks/use-auth'
 import { db } from '@/lib/firebase'
 import { collection, getDocs } from 'firebase/firestore'
+import { photoService } from '@/lib/photo-service'
 
 interface CloserData {
   name: string
@@ -99,41 +100,54 @@ export default function LeaderboardPage() {
   const memoizedDateFilters = useMemo(() => dateFilters, [])
 
   // Simple name matching - find user photo by matching names
-  const findUserPhoto = useCallback((leaderboardName: string): { displayName: string; photoURL?: string } | undefined => {
-    if (!leaderboardName || !allUsers.length) return undefined
+  const findUserPhoto = useCallback(async (leaderboardName: string): Promise<{ displayName: string; photoURL?: string } | undefined> => {
+    if (!leaderboardName) return undefined
     
     const name = leaderboardName.trim()
     console.log(`🔍 Trying to match: "${name}"`)
-    console.log(`📋 Available users:`, allUsers.map(u => u.displayName))
     
-    // Try exact match first
-    let user = allUsers.find(u => u.displayName?.trim().toLowerCase() === name.toLowerCase())
-    if (user) {
-      console.log(`✅ Exact match found: "${name}" -> "${user.displayName}" with photo: ${user.photoURL}`)
-      return user
-    }
-    
-    // Try matching without middle names/initials
-    const nameParts = name.split(' ').filter((p: string) => p.length > 1) // ignore initials
-    if (nameParts.length >= 2) {
-      const firstName = nameParts[0]
-      const lastName = nameParts[nameParts.length - 1]
+    if (allUsers.length > 0) {
+      console.log(`📋 Available users:`, allUsers.map(u => u.displayName))
       
-      user = allUsers.find(u => {
-        if (!u.displayName) return false
-        const userParts = u.displayName.trim().split(' ').filter((p: string) => p.length > 1)
-        if (userParts.length < 2) return false
-        
-        return firstName.toLowerCase() === userParts[0].toLowerCase() && 
-               lastName.toLowerCase() === userParts[userParts.length - 1].toLowerCase()
-      })
-      if (user) {
-        console.log(`✅ Fuzzy match found: "${name}" -> "${user.displayName}" with photo: ${user.photoURL}`)
+      // Try exact match first
+      let user = allUsers.find(u => u.displayName?.trim().toLowerCase() === name.toLowerCase())
+      if (user && user.photoURL) {
+        console.log(`✅ Exact match found: "${name}" -> "${user.displayName}" with photo: ${user.photoURL}`)
         return user
+      }
+      
+      // Try matching without middle names/initials
+      const nameParts = name.split(' ').filter((p: string) => p.length > 1) // ignore initials
+      if (nameParts.length >= 2) {
+        const firstName = nameParts[0]
+        const lastName = nameParts[nameParts.length - 1]
+        
+        user = allUsers.find(u => {
+          if (!u.displayName) return false
+          const userParts = u.displayName.trim().split(' ').filter((p: string) => p.length > 1)
+          if (userParts.length < 2) return false
+          
+          return firstName.toLowerCase() === userParts[0].toLowerCase() && 
+                 lastName.toLowerCase() === userParts[userParts.length - 1].toLowerCase()
+        })
+        if (user && user.photoURL) {
+          console.log(`✅ Fuzzy match found: "${name}" -> "${user.displayName}" with photo: ${user.photoURL}`)
+          return user
+        }
       }
     }
     
-    console.log(`❌ No match found for: "${name}"`)
+    // If no user found or user has no photo, try the photo CSV service
+    const photoUrl = await photoService.findPhotoUrl(name)
+    if (photoUrl) {
+      console.log(`✅ Photo found in CSV for: "${name}" -> ${photoUrl}`)
+      return {
+        displayName: name,
+        photoURL: photoUrl
+      }
+    }
+    
+    console.log(`❌ No match or photo found for: "${name}"`)
     return undefined
   }, [allUsers])
 

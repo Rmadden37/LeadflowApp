@@ -144,7 +144,7 @@ export function MobileNavigation({ children }: MobileNavigationLayoutProps) {
 
   return (
     <BottomNavProvider>
-      <div className="main-content-with-bottom-nav">
+      <div className="main-content-with-bottom-nav min-h-screen">
         {children}
         <BottomNav>
           <BottomNavContent>
@@ -304,7 +304,7 @@ export default function MobileNavigationLayout({ children }: MobileNavigationLay
 
   return (
     <BottomNavProvider>
-      <div className="main-content-with-bottom-nav">
+      <div className="main-content-with-bottom-nav min-h-screen">
         {showManagerSubNav ? <ManagerSubNav /> : children}
       </div>
       

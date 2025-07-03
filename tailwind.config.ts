@@ -175,16 +175,22 @@ const config: Config = {
     function({ addUtilities }: any) {
       addUtilities({
         '.pb-safe-bottom': {
-          insetBlockEnd: 'env(safe-area-inset-bottom, 0)',
+          paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0))',
         },
         '.pt-safe-top': {
-          paddingTop: 'env(safe-area-inset-top, 0)',
+          paddingTop: 'max(1rem, env(safe-area-inset-top, 0))',
         },
         '.pl-safe-left': {
           paddingLeft: 'env(safe-area-inset-left, 0)',
         },
         '.pr-safe-right': {
           paddingRight: 'env(safe-area-inset-right, 0)',
+        },
+        '.h-bottom-nav': {
+          height: 'calc(5rem + env(safe-area-inset-bottom, 0))',
+        },
+        '.mb-bottom-nav': {
+          marginBottom: 'calc(5rem + env(safe-area-inset-bottom, 0))',
         },
       });
     },

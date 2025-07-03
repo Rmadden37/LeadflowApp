@@ -141,52 +141,103 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
     return undefined;
   }, []);
 
-  // Mobile keyboard fix - prevent keyboard retraction
+  // Comprehensive iOS keyboard fix - prevent keyboard retraction
   useEffect(() => {
     if (isOpen) {
-      // Prevent viewport zoom on iOS and fix keyboard issues
-      const viewport = document.querySelector('meta[name=viewport]');
-      if (viewport) {
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
-      }
-      
-      // Prevent body scroll but allow form scroll
+      // Only prevent body scroll, don't manipulate viewport or position
       document.body.style.overflow = 'hidden';
       
-      // Fix iOS keyboard issues
-      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.height = '100%';
+      // Add iOS-specific viewport handling
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        // Prevent viewport zoom on focus
+        const viewportMeta = document.querySelector('meta[name=viewport]');
+        if (viewportMeta) {
+          const originalContent = viewportMeta.getAttribute('content');
+          viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+          
+          return () => {
+            document.body.style.overflow = '';
+            if (originalContent) {
+              viewportMeta.setAttribute('content', originalContent);
+            }
+          };
+        }
       }
     }
     
     return () => {
-      const viewport = document.querySelector('meta[name=viewport]');
-      if (viewport) {
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1');
-      }
       document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
     };
   }, [isOpen]);
 
-  // Add input focus handler to prevent keyboard retraction
+  // Enhanced input focus handler with iOS Chrome keyboard fix
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Prevent keyboard retraction on mobile
-    if (window.innerWidth <= 768) {
-      e.preventDefault();
+    try {
+      // Prevent keyboard dismissal on iOS Chrome
+      e.preventDefault = () => {}; // Override preventDefault to prevent issues
       
-      // Delay scroll to ensure keyboard is open
-      setTimeout(() => {
-        e.target.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center',
-          inline: 'nearest'
-        });
-      }, 300);
+      if (window.innerWidth <= 768) {
+        // iOS-specific handling
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isChrome = /Chrome/.test(navigator.userAgent);
+        
+        if (isIOS && isChrome) {
+          // Special handling for iOS Chrome
+          setTimeout(() => {
+            try {
+              e.target.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'nearest'
+              });
+              // Force focus retention
+              if (document.activeElement !== e.target) {
+                e.target.focus();
+              }
+            } catch (scrollError) {
+              console.warn('iOS Chrome scroll error:', scrollError);
+            }
+          }, 300); // Longer delay for iOS Chrome
+        } else {
+          // Standard mobile handling
+          requestAnimationFrame(() => {
+            try {
+              e.target.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest',
+                inline: 'nearest'
+              });
+            } catch (scrollError) {
+              console.warn('Scroll error:', scrollError);
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Focus error:', error);
+    }
+  };
+
+  // Prevent form submission on Enter key for better mobile UX
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    try {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        e.stopPropagation();
+        // Move to next input or submit if last input
+        const form = e.currentTarget.form;
+        if (form) {
+          const inputs = Array.from(form.querySelectorAll('input, select, textarea'));
+          const currentIndex = inputs.indexOf(e.currentTarget);
+          const nextInput = inputs[currentIndex + 1] as HTMLElement;
+          if (nextInput) {
+            nextInput.focus();
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error in handleKeyDown:', error);
     }
   };
 
@@ -430,7 +481,17 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
   // Form content component
   const FormContent = () => (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 relative isolate">{/* Customer Name */}
+      <form 
+        onSubmit={(e) => {
+          try {
+            form.handleSubmit(onSubmit)(e);
+          } catch (error) {
+            console.error('Form submission error:', error);
+            e.preventDefault();
+          }
+        }} 
+        className="create-lead-form space-y-4 sm:space-y-6 relative isolate"
+      >
             {/* Customer Name */}
             <FormField
               control={form.control}
@@ -442,8 +503,13 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
                     <Input 
                       {...field}
                       placeholder="Enter customer name" 
-                      className="text-sm sm:text-base"
+                      className="text-sm sm:text-base ios-input"
                       onFocus={handleInputFocus}
+                      onKeyDown={handleKeyDown}
+                      autoComplete="name"
+                      enterKeyHint="next"
+                      data-lpignore="true"
+                      spellCheck="false"
                     />
                   </FormControl>
                   <FormMessage />
@@ -463,11 +529,15 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
                       {...field}
                       type="tel"
                       inputMode="tel"
-                      pattern="[0-9]*"
+                      pattern="[0-9\s\(\)\-\+]*"
                       placeholder="(555) 123-4567" 
-                      className="text-sm sm:text-base"
+                      className="text-sm sm:text-base ios-input"
                       onFocus={handleInputFocus}
+                      onKeyDown={handleKeyDown}
                       autoComplete="tel"
+                      enterKeyHint="next"
+                      data-lpignore="true"
+                      spellCheck="false"
                     />
                   </FormControl>
                   <FormMessage />
@@ -504,10 +574,13 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
                               }
                             }, 100);
                           }}
+                          onKeyDown={handleKeyDown}
                           onBlur={() => {
                             // Delay hiding to allow click on predictions
                             setTimeout(() => setShowPredictions(false), 200);
                           }}
+                          autoComplete="address-line1"
+                          enterKeyHint="next"
                         />
                         {isLoadingPredictions && (
                           <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
@@ -520,15 +593,36 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
                           <div 
                             className="fixed z-[9999] bg-popover border rounded-md shadow-lg max-h-60 overflow-y-auto min-w-[300px]"
                             style={{
-                              top: addressInputRef.current 
-                                ? addressInputRef.current.getBoundingClientRect().bottom + window.scrollY + 4
-                                : 0,
-                              left: addressInputRef.current 
-                                ? addressInputRef.current.getBoundingClientRect().left + window.scrollX
-                                : 0,
-                              width: addressInputRef.current 
-                                ? addressInputRef.current.getBoundingClientRect().width
-                                : 300
+                              top: (() => {
+                                try {
+                                  return addressInputRef.current 
+                                    ? addressInputRef.current.getBoundingClientRect().bottom + window.scrollY + 4
+                                    : 0;
+                                } catch (e) {
+                                  console.warn('Address positioning error:', e);
+                                  return 100;
+                                }
+                              })(),
+                              left: (() => {
+                                try {
+                                  return addressInputRef.current 
+                                    ? addressInputRef.current.getBoundingClientRect().left + window.scrollX
+                                    : 0;
+                                } catch (e) {
+                                  console.warn('Address positioning error:', e);
+                                  return 20;
+                                }
+                              })(),
+                              width: (() => {
+                                try {
+                                  return addressInputRef.current 
+                                    ? addressInputRef.current.getBoundingClientRect().width
+                                    : 300;
+                                } catch (e) {
+                                  console.warn('Address positioning error:', e);
+                                  return 300;
+                                }
+                              })()
                             }}
                           >
                             {addressPredictions.map((prediction) => (

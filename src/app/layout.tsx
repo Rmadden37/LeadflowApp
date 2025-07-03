@@ -41,6 +41,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#2DD4BF' },
     { media: '(prefers-color-scheme: dark)', color: '#0F1419' },
@@ -72,6 +73,21 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} ${lora.variable} font-body antialiased bg-background text-foreground min-h-screen`}>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Global error handler to prevent keyboard dismissal
+            window.addEventListener('error', function(e) {
+              console.warn('Caught error:', e.error);
+              e.preventDefault();
+              return true;
+            });
+            window.addEventListener('unhandledrejection', function(e) {
+              console.warn('Caught unhandled rejection:', e.reason);
+              e.preventDefault();
+              return true;
+            });
+          `
+        }} />
         <Providers>{children}</Providers>
       </body>
     </html>
