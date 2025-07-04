@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {useAuth} from "@/hooks/use-auth";
 import {Button} from "@/components/ui/button";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -37,11 +38,14 @@ export default function DashboardHeader() {
         <div className="flex h-14 items-center px-6">
           <Link href="/dashboard" className="mr-8 flex items-center space-x-3 text-[#3574F2] dark:text-[#007AFF] group">
             <div className="p-2.5 bg-gradient-to-br from-[#3574F2]/15 to-[#5096F2]/8 dark:from-[#007AFF]/15 dark:to-[#0056CC]/8 rounded-xl group-hover:from-[#3574F2]/25 group-hover:to-[#5096F2]/15 dark:group-hover:from-[#007AFF]/25 dark:group-hover:to-[#0056CC]/15 transition-all duration-300">
-              {/* Updated Infinity Logo for all themes */}
-              <img 
+              {/* Optimized Infinity Logo for all themes */}
+              <Image 
                 src="/icon-192x192.png" 
                 alt="LeadFlow Logo" 
-                className="h-7 w-7 object-contain transition-all duration-300"
+                width={28}
+                height={28}
+                className="object-contain transition-all duration-300"
+                priority
               />
             </div>
             <div className="flex flex-col">

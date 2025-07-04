@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -201,17 +202,19 @@ export default function LeadPhotoGallery({
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
             )}
-            <img
-              src={getOptimizedImageUrl(photoUrls[currentPhotoIndex])}
-              alt={`Photo ${currentPhotoIndex + 1} for ${customerName}`}
-              className="max-w-full max-h-full object-contain rounded-lg"
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-              style={{ display: imageLoading ? 'none' : 'block' }}
-              loading="lazy"
-              decoding="async"
-              fetchPriority={currentPhotoIndex === 0 ? "high" : "low"}
-            />
+            <div className="relative flex items-center justify-center min-h-[400px] bg-muted/5">
+              <Image
+                src={getOptimizedImageUrl(photoUrls[currentPhotoIndex])}
+                alt={`Photo ${currentPhotoIndex + 1} for ${customerName}`}
+                fill
+                className="object-contain rounded-lg"
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+                style={{ display: imageLoading ? 'none' : 'block' }}
+                priority={currentPhotoIndex === 0}
+                sizes="(max-width: 768px) 100vw, 80vw"
+              />
+            </div>
           </div>
 
           {/* Navigation Arrows */}
@@ -250,20 +253,18 @@ export default function LeadPhotoGallery({
                     setCurrentPhotoIndex(index);
                     setImageLoading(true);
                   }}
-                  className={`flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${
+                  className={`relative flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${
                     index === currentPhotoIndex
                       ? 'border-primary ring-2 ring-primary/20'
                       : 'border-border hover:border-primary/50'
                   }`}
                 >
-                  <img
+                  <Image
                     src={getOptimizedImageUrl(url)}
                     alt={`Thumbnail ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                    width={64}
-                    height={64}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
                   />
                 </button>
               ))}

@@ -6,6 +6,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -717,13 +718,14 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                           {previewUrls.map((url, index) => (
                             <div key={index} className="relative group">
-                              <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                              <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
                                 {url ? (
-                                  /* eslint-disable-next-line @next/next/no-img-element */
-                                  <img
+                                  <Image
                                     src={url}
                                     alt={`Preview ${index + 1}`}
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 640px) 50vw, 33vw"
                                   />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center bg-muted">

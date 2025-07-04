@@ -1092,7 +1092,11 @@ export default function AdminToolsPage() {
                                   <div className="flex items-center gap-3">
                                     {team.logoUrl && (
                                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                                        <Image className="w-6 h-6 text-primary" />
+                                        <img 
+                                          src={team.logoUrl} 
+                                          alt={`${team.name} logo`}
+                                          className="w-6 h-6 object-cover rounded-full" 
+                                        />
                                       </div>
                                     )}
                                     <CardTitle className="text-base">{team.name}</CardTitle>

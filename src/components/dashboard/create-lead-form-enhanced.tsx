@@ -6,6 +6,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -693,12 +694,14 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
                   <div className="grid grid-cols-2 gap-3">
                     {previewUrls.map((url, index) => (
                       <div key={index} className="relative group">
-                        <div className="aspect-square rounded-lg overflow-hidden bg-white/5 border border-white/20">
+                        <div className="relative aspect-square rounded-lg overflow-hidden bg-white/5 border border-white/20">
                           {url ? (
-                            <img
+                            <Image
                               src={url}
                               alt={`Preview ${index + 1}`}
-                              className="w-full h-full object-cover"
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 768px) 50vw, 25vw"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
