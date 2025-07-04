@@ -6,6 +6,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 
+interface Tab {
+  icon: any;
+  label: string;
+  path: string;
+  hasNotification?: boolean;
+  onClick?: () => void;
+  requiredRoles?: string[];
+}
+
 export default function AetherTabBar() {
   const pathname = usePathname();
   const { user } = useAuth();
@@ -38,21 +47,27 @@ export default function AetherTabBar() {
     setHasUnreadChat(false);
   };
 
-  const tabs = [
+  const tabs: Tab[] = [
     { icon: Home, label: "Dashboard", path: "/dashboard" },
-    { icon: Users, label: "Teams", path: "/dashboard/manage-teams" },
+    { icon: Users, label: "Teams", path: "/dashboard/manage-teams", requiredRoles: ["manager", "admin"] },
     { icon: Award, label: "Leaderboard", path: "/dashboard/leaderboard" },
     { icon: MessageCircle, label: "Chat", path: "/dashboard/chat", hasNotification: hasUnreadChat, onClick: handleChatClick },
     { icon: User, label: "Profile", path: "/dashboard/profile" },
   ];
 
+  // Filter tabs based on user role
+  const visibleTabs = tabs.filter(tab => {
+    if (!tab.requiredRoles) return true;
+    return user?.role && tab.requiredRoles.includes(user.role);
+  });
+
   return (
     <footer className="fixed bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] backdrop-filter backdrop-blur-[20px] border-t border-white/10 pb-[env(safe-area-inset-bottom)] z-50">
       <div className="flex justify-around items-center h-16 max-w-screen-lg mx-auto">
-        {tabs.map((tab) => {
+        {visibleTabs.map((tab) => {
           // Improved active state detection for nested routes
           const isActive = tab.path === "/dashboard" 
-            ? pathname === "/dashboard" || (pathname.startsWith("/dashboard/") && !tabs.some(t => t !== tab && pathname.startsWith(t.path)))
+            ? pathname === "/dashboard" || (pathname.startsWith("/dashboard/") && !visibleTabs.some(t => t !== tab && pathname.startsWith(t.path)))
             : pathname.startsWith(tab.path);
             
           return (

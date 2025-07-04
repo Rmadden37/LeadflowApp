@@ -3,7 +3,8 @@
 
 import {useAuth} from "@/hooks/use-auth";
 import LoginForm from "@/components/auth/login-form";
-import {Loader2, Sun} from "lucide-react";
+import {Loader2} from "lucide-react";
+import InfinityLogo from "@/components/ui/infinity-logo";
 
 export default function LoginPage() {
   const {user, loading} = useAuth();
@@ -27,9 +28,9 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <div className="mb-8 flex items-center space-x-2 text-primary">
-        <Sun className="h-12 w-12" />
-        <h1 className="text-4xl font-bold font-headline">LeadFlow</h1>
+      <div className="mb-8 flex items-center space-x-4 text-primary">
+        <InfinityLogo size={56} className="drop-shadow-xl" />
+        <h1 className="text-4xl font-bold font-headline tracking-tight">LeadFlow</h1>
       </div>
       <LoginForm />
     </div>

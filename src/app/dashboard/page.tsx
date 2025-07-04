@@ -2,6 +2,7 @@
 
 import { Suspense, lazy } from 'react';
 import { useAuth } from "@/hooks/use-auth";
+import { useIsMobile } from "@/hooks/use-mobile";
 import dynamic from 'next/dynamic';
 
 // Always load immediately
@@ -24,6 +25,7 @@ const LeadQueue = dynamic(() => import("@/components/dashboard/lead-queue"), {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
 
   if (!user) return null; // Layout handles redirect
 
@@ -36,6 +38,7 @@ export default function DashboardPage() {
         <CloserLineup />
         <LeadQueue />
       </div>
+      {/* Always show the beautiful AetherTabBar - Aurelian's signature design */}
       <AetherTabBar />
     </div>
   );

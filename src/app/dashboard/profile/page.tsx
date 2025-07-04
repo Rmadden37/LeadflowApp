@@ -15,7 +15,7 @@ import {updateProfile, sendPasswordResetEmail} from "firebase/auth";
 import {doc, updateDoc, getDoc} from "firebase/firestore";
 import {ref as storageRef, uploadBytesResumable, getDownloadURL} from "firebase/storage";
 import {useToast} from "@/hooks/use-toast";
-import {Loader2, User, Mail, ShieldCheck, Edit3, KeyRound, Camera, Users, Bell, Settings, Shield, Database, UserCheck, Palette} from "lucide-react";
+import {Loader2, User, Mail, ShieldCheck, Edit3, KeyRound, Camera, Users, Bell, Settings, Shield, Database, UserCheck, Palette, LogOut} from "lucide-react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose} from "@/components/ui/dialog";
 import ReactCrop, {type Crop, PixelCrop, centerCrop, makeAspectCrop} from "react-image-crop";
@@ -449,6 +449,37 @@ export default function ProfilePage() {
           </div>
 
           {/* Other preferences can be added here */}
+        </CardContent>
+      </Card>
+
+      {/* Account Management Section */}
+      <Card className="shadow-xl border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold font-headline flex items-center justify-center text-red-700 dark:text-red-300">
+            <Shield className="mr-3 h-7 w-7" />
+            Account Management
+          </CardTitle>
+          <CardDescription className="text-center text-red-600 dark:text-red-400">
+            Manage your account security and session
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col items-center space-y-4 p-6 border border-red-200 dark:border-red-700 rounded-lg bg-red-50/50 dark:bg-red-950/10">
+            <div className="text-center space-y-2">
+              <h4 className="font-semibold text-red-800 dark:text-red-200">Sign Out</h4>
+              <p className="text-sm text-red-600 dark:text-red-400">
+                Sign out of your account and return to the login page
+              </p>
+            </div>
+            <Button 
+              variant="destructive" 
+              onClick={logout}
+              className="w-full max-w-xs"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

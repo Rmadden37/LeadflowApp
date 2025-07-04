@@ -14,16 +14,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const isMobile = useIsMobile();
   const { user } = useAuth();
   
-  // Create base content with sidebar
+  // Always use the sidebar layout with AetherTabBar - Aurelian's signature design
   const content = (
     <DashboardSidebar>{children}</DashboardSidebar>
   );
   
-  // For mobile, wrap with MobileNavigation component which includes the bottom nav
-  if (isMobile) {
-    return <MobileNavigation>{children}</MobileNavigation>;
-  }
-  
-  // For desktop, return the standard sidebar layout
+  // Return the beautiful sidebar layout for all devices
   return content;
 }

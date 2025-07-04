@@ -37,17 +37,11 @@ export default function DashboardHeader() {
         <div className="flex h-14 items-center px-6">
           <Link href="/dashboard" className="mr-8 flex items-center space-x-3 text-[#3574F2] dark:text-[#007AFF] group">
             <div className="p-2.5 bg-gradient-to-br from-[#3574F2]/15 to-[#5096F2]/8 dark:from-[#007AFF]/15 dark:to-[#0056CC]/8 rounded-xl group-hover:from-[#3574F2]/25 group-hover:to-[#5096F2]/15 dark:group-hover:from-[#007AFF]/25 dark:group-hover:to-[#0056CC]/15 transition-all duration-300">
-              {/* Light mode logo */}
+              {/* Updated Infinity Logo for all themes */}
               <img 
-                src="https://imgur.com/oujPvCe.png" 
+                src="/icon-192x192.png" 
                 alt="LeadFlow Logo" 
-                className="h-7 w-7 object-contain transition-all duration-300 dark:hidden"
-              />
-              {/* Dark mode logo */}
-              <img 
-                src="https://imgur.com/eYR7cr2.png" 
-                alt="LeadFlow Logo" 
-                className="h-7 w-7 object-contain transition-all duration-300 hidden dark:block"
+                className="h-7 w-7 object-contain transition-all duration-300"
               />
             </div>
             <div className="flex flex-col">

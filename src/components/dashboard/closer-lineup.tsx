@@ -199,14 +199,14 @@ export default function CloserLineup() {
     <>
       <h2 className="text-2xl font-lora text-[var(--text-primary)] mb-4">Up Next</h2>
       <div 
-        className="frosted-glass-card p-3 relative"
+        className="frosted-glass-card p-3 relative ios-slide-up"
         data-testid="closer-lineup-card"
       >
         {/* Gear Icon for Management */}
         {canManageClosers && (
           <button
             onClick={handleCardClick}
-            className="absolute top-3 right-3 z-20 p-1 hover:bg-white/10 transition-all duration-200 rounded-sm gear-icon-btn"
+            className="absolute top-3 right-3 z-20 p-1 hover:bg-white/10 transition-all duration-200 rounded-sm gear-icon-btn ios-button-press ios-focus"
             title="Manage Closers"
           >
             <Settings className="w-4 h-4 text-[var(--text-primary)] opacity-70 hover:opacity-100" />
