@@ -42,7 +42,7 @@ export default function CloserLineup() {
     const assignedLeadsQuery = query(
       leadsRef,
       where("teamId", "==", user.teamId),
-      where("status", "==", "in_process")
+      where("status", "in", ["waiting_assignment", "scheduled", "accepted", "in_process"])
     );
 
     const unsubscribeLeads = onSnapshot(
@@ -195,9 +195,6 @@ export default function CloserLineup() {
   // Get display data
   const { closers } = getDisplayData();
   
-  // Get the next three closers in the lineup for the card
-  const nextThreeClosers = closers.slice(0, 3);
-  
   return (
     <>
       <h2 className="text-2xl font-lora text-[var(--text-primary)] mb-4">Up Next</h2>
@@ -205,37 +202,64 @@ export default function CloserLineup() {
         className="frosted-glass-card p-3 relative"
         data-testid="closer-lineup-card"
       >
+        {/* Gear Icon for Management */}
+        {canManageClosers && (
+          <button
+            onClick={handleCardClick}
+            className="absolute top-3 right-3 z-20 p-1 hover:bg-white/10 transition-all duration-200 rounded-sm gear-icon-btn"
+            title="Manage Closers"
+          >
+            <Settings className="w-4 h-4 text-[var(--text-primary)] opacity-70 hover:opacity-100" />
+          </button>
+        )}
+
         {isLoadingClosersForLineup || isLoadingAssignedCloserIds ? (
           <div className="flex justify-center items-center h-20">
             <Loader2 className="w-8 h-8 animate-spin text-[var(--text-secondary)]" />
           </div>
-        ) : nextThreeClosers.length > 0 ? (
-          <div className="flex justify-center items-center gap-6 py-1" style={{ margin: '4px' }}>
-            {nextThreeClosers.map((closer, index) => (
-              <div key={closer.uid} className="flex flex-col items-center">
-                <div className="relative mb-2" style={{ padding: '4px' }}>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.5, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ delay: index * 0.15 }}
-                    className="relative"
-                  >
-                    <Image
-                      src={closer.avatarUrl || `https://api.dicebear.com/8.x/initials/svg?seed=${closer.name}`}
-                      alt={closer.name}
-                      width={64}
-                      height={64}
-                      className="w-16 h-16 rounded-full shadow-md object-cover"
-                      title={closer.name}
-                    />
-                    <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg z-10">
-                      <span className="text-sm font-bold text-black">{index + 1}</span>
+        ) : closers.length > 0 ? (
+          <div className="relative">
+            <ScrollArea className="w-full">
+              <div className="flex gap-6 py-2 px-4 justify-center min-w-full">
+                {closers.map((closer, index) => (
+                  <div key={closer.uid} className="flex flex-col items-center flex-shrink-0">
+                    <div className="relative mb-2" style={{ padding: '4px' }}>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.5, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ delay: Math.min(index * 0.15, 1) }} // Cap delay for many closers
+                        className="relative"
+                      >
+                        <Image
+                          src={closer.avatarUrl || `https://api.dicebear.com/8.x/initials/svg?seed=${closer.name}`}
+                          alt={closer.name}
+                          width={64}
+                          height={64}
+                          className="w-16 h-16 rounded-full shadow-md object-cover"
+                          title={closer.name}
+                        />
+                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg z-10">
+                          <span className="text-sm font-bold text-black">{index + 1}</span>
+                        </div>
+                      </motion.div>
                     </div>
-                  </motion.div>
-                </div>
-                <p className="text-sm font-medium text-[var(--text-primary)] text-center">{closer.name}</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)] text-center whitespace-nowrap">
+                      {closer.name}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </ScrollArea>
+            
+            {/* Scroll Indicator - only show if there are more than 3 closers */}
+            {closers.length > 3 && (
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[var(--text-secondary)] opacity-50 pointer-events-none">
+                <div className="flex flex-col items-center text-xs">
+                  <span>→</span>
+                  <span className="text-[10px]">{closers.length}</span>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center text-[var(--text-secondary)] py-8">

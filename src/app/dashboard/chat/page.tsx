@@ -13,11 +13,13 @@ import {
   Users, 
   MapPin, 
   Building2,
-  Loader2
+  Loader2,
+  Clock
 } from "lucide-react";
 import { ChatService } from "@/lib/chat-service";
 import type { ChatChannel } from "@/types";
 import TeamChatInterface from "@/components/dashboard/team-chat-interface";
+import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
 
 export default function ChatPage() {
   const { user } = useAuth();
@@ -26,6 +28,28 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(true);
   const [selectedChannel, setSelectedChannel] = useState<ChatChannel | null>(null);
   const [unreadChannels, setUnreadChannels] = useState<Set<string>>(new Set());
+
+  // Helper function to format message timestamps
+  const formatMessageTime = (timestamp: any) => {
+    if (!timestamp || typeof timestamp.toDate !== 'function') return '';
+    
+    const date = timestamp.toDate();
+    const now = new Date();
+    
+    if (isToday(date)) {
+      return format(date, 'h:mm a');
+    } else if (isYesterday(date)) {
+      return 'Yesterday';
+    } else {
+      return formatDistanceToNow(date, { addSuffix: true });
+    }
+  };
+
+  // Helper function to truncate message content
+  const truncateMessage = (content: string, maxLength: number = 50) => {
+    if (!content) return '';
+    return content.length > maxLength ? content.substring(0, maxLength) + '...' : content;
+  };
 
   useEffect(() => {
     if (!user?.teamId) {
@@ -179,6 +203,42 @@ export default function ChatPage() {
                       : "Team-specific discussions and updates"
                     }
                   </p>
+                  
+                  {/* Message Preview */}
+                  {channel.lastMessageContent && (
+                    <div className="mb-4 p-3 bg-muted/50 rounded-lg border">
+                      <div className="flex items-start gap-2 text-left">
+                        <MessageCircle className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-medium text-muted-foreground truncate">
+                              {channel.lastMessageSender || 'Unknown'}
+                            </span>
+                            {channel.lastMessageTimestamp && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {formatMessageTime(channel.lastMessageTimestamp)}
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-sm text-foreground/80 line-clamp-2">
+                            {truncateMessage(channel.lastMessageContent)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* No messages state */}
+                  {!channel.lastMessageContent && (
+                    <div className="mb-4 p-3 bg-muted/30 rounded-lg border border-dashed">
+                      <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                        <MessageCircle className="h-4 w-4" />
+                        <span className="text-sm">No messages yet</span>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="flex justify-center gap-2">
                     <Badge variant="outline" className="text-xs">
                       <Users className="h-3 w-3 mr-1" />

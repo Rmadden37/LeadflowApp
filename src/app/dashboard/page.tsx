@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 // Always load immediately
 import AetherHeader from "@/components/dashboard/aether-header";
 import AetherTabBar from "@/components/dashboard/aether-tab-bar";
-import DaylightArcCard from "@/components/dashboard/daylight-arc-card";
+import DaylightArcCard from "@/components/dashboard/daylight-arc-card-simple";
 
 // Lazily load components below the fold with dynamic imports
 const InProcessLeads = dynamic(() => import("@/components/dashboard/in-process-leads"), {

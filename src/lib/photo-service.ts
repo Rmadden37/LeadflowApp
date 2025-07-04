@@ -156,11 +156,11 @@ class PhotoService {
   /**
    * Fuzzy matching for names
    */
-  private fuzzyMatch(searchName: string): string | null {
+  private fuzzyMatch(searchName: string): string | undefined {
     const normalizedSearch = this.normalizeName(searchName);
     const searchParts = normalizedSearch.split(' ').filter(part => part.length > 1);
     
-    if (searchParts.length < 2) return null;
+    if (searchParts.length < 2) return undefined;
 
     const firstName = searchParts[0];
     const lastName = searchParts[searchParts.length - 1];
@@ -179,7 +179,7 @@ class PhotoService {
       }
     }
 
-    return null;
+    return undefined;
   }
 
   /**

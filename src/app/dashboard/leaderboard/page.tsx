@@ -186,7 +186,8 @@ export default function LeaderboardPage() {
       const setterStats = new Map<string, SetterData>()
       const selfGenStats = new Map<string, CloserData>()
       
-      data.forEach((row: any) => {
+      // Use for...of with async/await to handle async findUserPhoto
+      for (const row of data) {
         const closer = row.closer_name?.trim()
         const setter = row.setter_name?.trim()
         const isRealized = row.realization === '1'
@@ -194,15 +195,15 @@ export default function LeaderboardPage() {
         const ppw = parseFloat(row.net_ppw || '0')
         const revenue = kw * ppw
         const date = row.date_submitted
-        
+
         // Apply date filter
-        if (date && !isInDateRange(date)) return
-        
+        if (date && !isInDateRange(date)) continue
+
         // Process closer data (only Net Deals where realization = 1)
         if (closer && isRealized) {
           if (!closerStats.has(closer)) {
-            const userMatch = findUserPhoto(closer)
-            
+            const userMatch = await findUserPhoto(closer)
+
             closerStats.set(closer, {
               name: closer,
               sales: 0,
@@ -220,12 +221,12 @@ export default function LeaderboardPage() {
           stats.sales += 1  // Count of Net Deals
           stats.totalKW += kw  // Sum of kW for Net Deals
         }
-        
+
         // Process setter data (all leads - gross deals and gross kW)
         if (setter) {
           if (!setterStats.has(setter)) {
-            const userMatch = findUserPhoto(setter)
-            
+            const userMatch = await findUserPhoto(setter)
+
             setterStats.set(setter, {
               name: setter,
               totalLeads: 0,
@@ -241,12 +242,12 @@ export default function LeaderboardPage() {
           stats.totalLeads += 1
           stats.grossKW += kw  // Add all kW regardless of realization
         }
-        
+
         // Process self-gen data (setter === closer and net account)
         if (setter && closer && setter === closer && isRealized) {
           if (!selfGenStats.has(setter)) {
-            const userMatch = findUserPhoto(setter)
-            
+            const userMatch = await findUserPhoto(setter)
+
             selfGenStats.set(setter, {
               name: setter,
               sales: 0,
@@ -264,7 +265,7 @@ export default function LeaderboardPage() {
           stats.sales += 1
           stats.totalKW += kw
         }
-      })
+      }
       
       // Convert to arrays and sort
       const closersArray = Array.from(closerStats.values())

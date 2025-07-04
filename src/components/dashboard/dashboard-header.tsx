@@ -14,8 +14,6 @@ import {
 import AvailabilityToggle from "./availability-toggle";
 import {useState} from "react";
 import dynamic from "next/dynamic";
-import TeamChatButton from "./floating-team-chat-button";
-import GearIcon from "@/components/ui/gear-icon";
 
 // Dynamic import with Next.js dynamic to avoid circular dependency issues
 const CreateLeadForm = dynamic(() => import("./create-lead-form"), {
@@ -35,66 +33,39 @@ export default function DashboardHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-border/20 bg-white/95 dark:bg-black/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/95 dark:supports-[backdrop-filter]:bg-black/95 shadow-sm">
-        <div className="flex h-16 items-center px-4">
-          {/* Sidebar Toggle Button for mobile */}
-          <button
-            className="block lg:hidden p-2 mr-2"
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                const event = new CustomEvent('sidebar-toggle');
-                window.dispatchEvent(event);
-              }
-            }}
-            aria-label="Open sidebar"
-          >
-            <svg width="24" height="24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-
-          <Link href="/dashboard" className="mr-6 sm:mr-8 flex items-center space-x-3 text-[#3574F2] dark:text-[#007AFF] group">
-            <div className="p-3 bg-gradient-to-br from-[#3574F2]/20 to-[#5096F2]/10 dark:from-[#007AFF]/20 dark:to-[#0056CC]/10 rounded-xl group-hover:from-[#3574F2]/30 group-hover:to-[#5096F2]/20 dark:group-hover:from-[#007AFF]/30 dark:group-hover:to-[#0056CC]/20 transition-all duration-300 shadow-sm">
+      <header className="sticky top-0 z-40 w-full border-b border-border/10 bg-transparent dark:bg-transparent backdrop-blur-none shadow-none hidden lg:flex">
+        <div className="flex h-14 items-center px-6">
+          <Link href="/dashboard" className="mr-8 flex items-center space-x-3 text-[#3574F2] dark:text-[#007AFF] group">
+            <div className="p-2.5 bg-gradient-to-br from-[#3574F2]/15 to-[#5096F2]/8 dark:from-[#007AFF]/15 dark:to-[#0056CC]/8 rounded-xl group-hover:from-[#3574F2]/25 group-hover:to-[#5096F2]/15 dark:group-hover:from-[#007AFF]/25 dark:group-hover:to-[#0056CC]/15 transition-all duration-300">
               {/* Light mode logo */}
               <img 
                 src="https://imgur.com/oujPvCe.png" 
                 alt="LeadFlow Logo" 
-                className="h-8 w-8 object-contain transition-all duration-300 dark:hidden"
+                className="h-7 w-7 object-contain transition-all duration-300 dark:hidden"
               />
               {/* Dark mode logo */}
               <img 
                 src="https://imgur.com/eYR7cr2.png" 
                 alt="LeadFlow Logo" 
-                className="h-8 w-8 object-contain transition-all duration-300 hidden dark:block"
+                className="h-7 w-7 object-contain transition-all duration-300 hidden dark:block"
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl sm:text-2xl font-bold font-headline bg-gradient-to-r from-[#3574F2] to-[#5096F2] dark:from-[#007AFF] dark:to-[#0056CC] bg-clip-text text-transparent">LeadFlow</span>
-              <span className="text-xs text-muted-foreground hidden sm:block">Lead History System</span>
+              <span className="text-xl font-bold font-headline bg-gradient-to-r from-[#3574F2] to-[#5096F2] dark:from-[#007AFF] dark:to-[#0056CC] bg-clip-text text-transparent">LeadFlow</span>
+              <span className="text-xs text-muted-foreground/60">Lead History System</span>
             </div>
           </Link>
           
-          <div className="flex items-center justify-end space-x-2 sm:space-x-3 md:space-x-4 ml-auto">
+          <div className="flex items-center justify-end space-x-4 ml-auto">
             {(user?.role === "setter" || user?.role === "manager" || user?.role === "admin") && (
               <Button 
                 onClick={() => setIsCreateLeadModalOpen(true)} 
                 variant="primary-solid" 
                 size="sm" 
-                className="hidden sm:flex bg-gradient-to-r from-[#007AFF] to-[#0056CC] hover:from-[#007AFF]/90 hover:to-[#0056CC]/90 shadow-lg shadow-[#007AFF]/25 hover:shadow-xl hover:shadow-[#007AFF]/30 transition-all duration-300 border-0 text-white dark:glow-ios-blue"
+                className="bg-gradient-to-r from-[#007AFF] to-[#0056CC] hover:from-[#007AFF]/90 hover:to-[#0056CC]/90 shadow-lg shadow-[#007AFF]/20 hover:shadow-xl hover:shadow-[#007AFF]/25 transition-all duration-300 border-0 text-white"
               >
-                <PlusCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                <span className="hidden md:inline">Create New Lead</span>
-                <span className="md:hidden">Create</span>
-              </Button>
-            )}
-            {(user?.role === "setter" || user?.role === "manager" || user?.role === "admin") && (
-              <Button 
-                onClick={() => setIsCreateLeadModalOpen(true)} 
-                variant="primary-solid" 
-                size="sm" 
-                className="sm:hidden bg-gradient-to-r from-[#007AFF] to-[#0056CC] hover:from-[#007AFF]/90 hover:to-[#0056CC]/90 shadow-lg shadow-[#007AFF]/25 border-0 text-white dark:glow-ios-blue"
-              >
-                <PlusCircle className="h-4 w-4 transition-all duration-300" />
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Create New Lead
               </Button>
             )}
             
@@ -105,10 +76,10 @@ export default function DashboardHeader() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="hidden sm:flex items-center gap-2 bg-white/10 dark:bg-slate-800/50 border border-gray-200/50 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-slate-800/70 backdrop-blur-sm transition-all duration-200"
+                    className="items-center gap-2 bg-white/5 dark:bg-white/5 border border-white/10 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
                   >
                     <Users className="h-4 w-4" />
-                    <span className="hidden md:inline">Manage</span>
+                    Manage
                     <ChevronDown className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -141,23 +112,21 @@ export default function DashboardHeader() {
               </DropdownMenu>
             )}
             
-            <TeamChatButton />
-            
             {user?.role === "closer" && <AvailabilityToggle />}
             
             <Link 
               href="/dashboard/profile" 
-              className="flex items-center space-x-2 p-1.5 rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/50 backdrop-blur-sm transition-all duration-300 group"
+              className="flex items-center space-x-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 dark:hover:bg-white/5 backdrop-blur-sm transition-all duration-300 group"
             >
-              <Avatar className="h-8 w-8 sm:h-10 sm:w-10 border-2 border-border dark:border-white/20 shadow-sm">
+              <Avatar className="h-9 w-9 border-2 border-white/10 dark:border-white/20">
                 <AvatarImage src={user?.avatarUrl || undefined} alt={user?.displayName || user?.email || "User"} />
-                <AvatarFallback className="bg-gradient-to-br from-[#007AFF]/20 to-[#0056CC]/10 text-[#007AFF] font-semibold">
+                <AvatarFallback className="bg-gradient-to-br from-[#007AFF]/20 to-[#0056CC]/10 text-[#007AFF] font-semibold text-sm">
                   {getAvatarFallbackText()}
                 </AvatarFallback>
               </Avatar>
-              <div className="hidden sm:flex flex-col text-xs">
+              <div className="flex flex-col text-xs">
                 <span className="font-semibold text-foreground">{user?.displayName || user?.email}</span>
-                <span className="text-muted-foreground capitalize">{user?.role}</span>
+                <span className="text-muted-foreground/70 capitalize">{user?.role}</span>
               </div>
             </Link>
             
@@ -166,9 +135,9 @@ export default function DashboardHeader() {
               size="icon" 
               onClick={logout} 
               aria-label="Logout" 
-              className="h-8 w-8 sm:h-10 sm:w-10 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-300 group"
+              className="h-9 w-9 hover:bg-red-50/10 dark:hover:bg-red-950/20 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-300"
             >
-              <LogOut className="h-4 w-4 sm:h-5 sm:w-5 transition-all duration-300" />
+              <LogOut className="h-4 w-4 transition-all duration-300" />
             </Button>
           </div>
         </div>

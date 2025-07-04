@@ -23,6 +23,27 @@ import type { DispatchType, LeadStatus } from "@/types";
 import { LeadNotifications } from "@/lib/notification-service";
 import { createPortal } from "react-dom";
 
+// Debounce utility function - STABLE VERSION
+const useDebouncedCallback = (callback: Function, delay: number) => {
+  const callbackRef = useRef(callback);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Update callback ref when callback changes
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
+
+  // Create stable debounced function
+  return useCallback((...args: any[]) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      callbackRef.current(...args);
+    }, delay);
+  }, [delay]); // Only recreate if delay changes
+};
+
 interface PlacePrediction {
   description: string;
   place_id: string;
@@ -94,7 +115,7 @@ const formSchema = z.object({
 
 interface CreateLeadFormProps {
   isOpen: boolean;
-  onClose: () => void; // Must be a serializable function, only pass from client components
+  onClose?: () => void; // Make optional and properly typed for serialization
   onSuccess?: () => void; // Optional success callback
   embedded?: boolean; // For page embedding vs modal
 }
@@ -103,6 +124,7 @@ interface CreateLeadFormProps {
 // Do NOT import or use this component in server components. Only pass serializable props (no functions from server).
 export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = false }: CreateLeadFormProps) {
   const { user } = useAuth();
+  const handleClose = onClose || (() => {});
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [addressPredictions, setAddressPredictions] = useState<PlacePrediction[]>([]);
@@ -112,10 +134,11 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
-  const [isClient, setIsClient] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onSubmit", // Change from "onBlur" to prevent validation on every keystroke
+    reValidateMode: "onSubmit", // Only revalidate on submit
     defaultValues: {
       customerName: "",
       customerPhone: "",
@@ -135,35 +158,11 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
     }
   }, [dispatchType, form]);
 
-  // Set client-side flag to enable portal rendering
-  useEffect(() => {
-    setIsClient(true);
-    return undefined;
-  }, []);
-
-  // Comprehensive iOS keyboard fix - prevent keyboard retraction
+  // Simplified iOS keyboard fix - prevent viewport manipulation
   useEffect(() => {
     if (isOpen) {
-      // Only prevent body scroll, don't manipulate viewport or position
+      // Only prevent body scroll, don't manipulate viewport
       document.body.style.overflow = 'hidden';
-      
-      // Add iOS-specific viewport handling
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      if (isIOS) {
-        // Prevent viewport zoom on focus
-        const viewportMeta = document.querySelector('meta[name=viewport]');
-        if (viewportMeta) {
-          const originalContent = viewportMeta.getAttribute('content');
-          viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-          
-          return () => {
-            document.body.style.overflow = '';
-            if (originalContent) {
-              viewportMeta.setAttribute('content', originalContent);
-            }
-          };
-        }
-      }
     }
     
     return () => {
@@ -171,113 +170,46 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
     };
   }, [isOpen]);
 
-  // Enhanced input focus handler with iOS Chrome keyboard fix
+  // Simplified input focus handler - no forced scrolling or focus manipulation
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    try {
-      // Prevent keyboard dismissal on iOS Chrome
-      e.preventDefault = () => {}; // Override preventDefault to prevent issues
-      
-      if (window.innerWidth <= 768) {
-        // iOS-specific handling
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isChrome = /Chrome/.test(navigator.userAgent);
-        
-        if (isIOS && isChrome) {
-          // Special handling for iOS Chrome
-          setTimeout(() => {
-            try {
-              e.target.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center',
-                inline: 'nearest'
-              });
-              // Force focus retention
-              if (document.activeElement !== e.target) {
-                e.target.focus();
-              }
-            } catch (scrollError) {
-              console.warn('iOS Chrome scroll error:', scrollError);
-            }
-          }, 300); // Longer delay for iOS Chrome
-        } else {
-          // Standard mobile handling
-          requestAnimationFrame(() => {
-            try {
-              e.target.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'nearest',
-                inline: 'nearest'
-              });
-            } catch (scrollError) {
-              console.warn('Scroll error:', scrollError);
-            }
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Focus error:', error);
+    // Simply let the browser handle natural focus behavior
+    // Only add minimal scroll margin if needed
+    if (window.innerWidth <= 768) {
+      e.target.style.scrollMarginBottom = '8rem';
     }
   };
 
-  // Prevent form submission on Enter key for better mobile UX
+  // Simplified keydown handler - only prevent Enter submission
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    try {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        e.stopPropagation();
-        // Move to next input or submit if last input
-        const form = e.currentTarget.form;
-        if (form) {
-          const inputs = Array.from(form.querySelectorAll('input, select, textarea'));
-          const currentIndex = inputs.indexOf(e.currentTarget);
-          const nextInput = inputs[currentIndex + 1] as HTMLElement;
-          if (nextInput) {
-            nextInput.focus();
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error in handleKeyDown:', error);
+    if (e.key === 'Enter') {
+      e.preventDefault();
     }
   };
 
-  // Close address predictions when clicking outside
+  // Simple cleanup for address predictions
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (addressInputRef.current && !addressInputRef.current.contains(event.target as Node)) {
-        setShowPredictions(false);
-      }
+    return () => {
+      setShowPredictions(false);
+      setAddressPredictions([]);
     };
+  }, []);
 
-    if (showPredictions) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-    return undefined;
-  }, [showPredictions]);
-
-  // Address autocomplete functionality
-  const fetchAddressPredictions = useCallback(async (input: string) => {
+  // Stable address autocomplete function
+  const fetchAddressPredictionsCore = useCallback(async (input: string) => {
     if (input.length < 3) {
       setAddressPredictions([]);
       setShowPredictions(false);
       return;
     }
 
-    // Only run on client side
-    if (typeof window === 'undefined') {
-      return;
-    }
+    if (typeof window === 'undefined') return;
 
     setIsLoadingPredictions(true);
     try {
-      // Safely access environment variable
-      const apiKey = typeof window !== 'undefined' 
-        ? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY 
-        : null;
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
       
       if (!apiKey) {
-        console.warn('Google Maps API key not configured or not in browser environment');
+        console.warn('Google Maps API key not configured');
         setAddressPredictions([]);
         setShowPredictions(false);
         return;
@@ -288,10 +220,6 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
         const data = await response.json();
         setAddressPredictions(data.predictions || []);
         setShowPredictions(true);
-      } else {
-        console.error('Places API response not ok:', response.status);
-        setAddressPredictions([]);
-        setShowPredictions(false);
       }
     } catch (error) {
       console.error('Error fetching address predictions:', error);
@@ -301,6 +229,9 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
       setIsLoadingPredictions(false);
     }
   }, []);
+
+  // Create debounced version using our custom hook
+  const fetchAddressPredictions = useDebouncedCallback(fetchAddressPredictionsCore, 300);
 
   // Handle photo selection
   const handlePhotoSelect = useCallback((event: ChangeEvent<HTMLInputElement>) => {
@@ -455,8 +386,8 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
       if (onSuccess) {
         onSuccess();
       }
-      
-      onClose();
+      handleClose();
+      if (onClose) onClose();
     } catch (error) {
       console.error("Error creating lead:", error);
       toast({
@@ -478,8 +409,8 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
     };
   }, [previewUrls]);
 
-  // Form content component
-  const FormContent = () => (
+  // Memoized form content to prevent re-renders
+  const FormContent = useCallback(() => (
     <Form {...form}>
       <form 
         onSubmit={(e) => {
@@ -562,21 +493,14 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
                           placeholder="Enter address"
                           className="pl-10 text-sm sm:text-base"
                           onChange={(e) => {
-                            field.onChange(e);
-                            fetchAddressPredictions(e.target.value);
+                            const value = e.target.value;
+                            field.onChange(e); // Call field.onChange first
+                            fetchAddressPredictions(value); // Then debounced function
                           }}
-                          onFocus={(e) => {
-                            handleInputFocus(e);
-                            // Delay showing predictions to prevent keyboard issues
-                            setTimeout(() => {
-                              if (addressPredictions.length > 0) {
-                                setShowPredictions(true);
-                              }
-                            }, 100);
-                          }}
+                          onFocus={handleInputFocus}
                           onKeyDown={handleKeyDown}
                           onBlur={() => {
-                            // Delay hiding to allow click on predictions
+                            // Longer delay to allow dropdown clicks
                             setTimeout(() => setShowPredictions(false), 200);
                           }}
                           autoComplete="address-line1"
@@ -587,63 +511,38 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
                         )}
                       </div>
                       
-                      {/* Address Predictions Dropdown - Using Portal to prevent layout shifts */}
-                      {showPredictions && addressPredictions.length > 0 && isClient && (
-                        createPortal(
-                          <div 
-                            className="fixed z-[9999] bg-popover border rounded-md shadow-lg max-h-60 overflow-y-auto min-w-[300px]"
-                            style={{
-                              top: (() => {
-                                try {
-                                  return addressInputRef.current 
-                                    ? addressInputRef.current.getBoundingClientRect().bottom + window.scrollY + 4
-                                    : 0;
-                                } catch (e) {
-                                  console.warn('Address positioning error:', e);
-                                  return 100;
-                                }
-                              })(),
-                              left: (() => {
-                                try {
-                                  return addressInputRef.current 
-                                    ? addressInputRef.current.getBoundingClientRect().left + window.scrollX
-                                    : 0;
-                                } catch (e) {
-                                  console.warn('Address positioning error:', e);
-                                  return 20;
-                                }
-                              })(),
-                              width: (() => {
-                                try {
-                                  return addressInputRef.current 
-                                    ? addressInputRef.current.getBoundingClientRect().width
-                                    : 300;
-                                } catch (e) {
-                                  console.warn('Address positioning error:', e);
-                                  return 300;
-                                }
-                              })()
-                            }}
-                          >
-                            {addressPredictions.map((prediction) => (
-                              <div
-                                key={prediction.place_id}
-                                className="px-3 py-2 cursor-pointer hover:bg-muted text-sm"
-                                onClick={() => {
-                                  field.onChange(prediction.description);
-                                  setShowPredictions(false);
-                                  setAddressPredictions([]);
-                                }}
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <MapPin className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                                  <span className="truncate">{prediction.description}</span>
-                                </div>
+                      {/* Enhanced Address Predictions Dropdown */}
+                      {showPredictions && addressPredictions.length > 0 && (
+                        <div 
+                          className="absolute top-full left-0 right-0 z-50 address-dropdown max-h-60 overflow-y-auto mt-1"
+                        >
+                          {addressPredictions.map((prediction) => (
+                            <div
+                              key={prediction.place_id}
+                              className="px-4 py-3 cursor-pointer hover:bg-white/10 text-sm transition-colors duration-150"
+                              onMouseDown={(e) => {
+                                // Prevent blur event that would lose focus
+                                e.preventDefault();
+                              }}
+                              onClick={() => {
+                                field.onChange(prediction.description);
+                                setShowPredictions(false);
+                                setAddressPredictions([]);
+                                // Keep focus on the input after selection
+                                setTimeout(() => {
+                                  if (addressInputRef.current) {
+                                    addressInputRef.current.focus();
+                                  }
+                                }, 0);
+                              }}
+                            >
+                              <div className="flex items-center space-x-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                <span className="truncate">{prediction.description}</span>
                               </div>
-                            ))}
-                          </div>,
-                          document.body
-                        )
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </FormControl>
@@ -777,9 +676,9 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
               name="photos"
               render={({ field: _field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm sm:text-base">Photos</FormLabel>
+                  <FormLabel className="text-sm sm:text-base">Photos <span className="text-muted-foreground">(Optional)</span></FormLabel>
                   <FormDescription className="text-xs sm:text-sm">
-                    Upload up to 5 photos. Maximum 5MB per photo.
+                    Upload up to 5 photos to help with the lead. Photos are optional and not required for submission.
                   </FormDescription>
                   <FormControl>
                     <div className="space-y-4">
@@ -860,8 +759,7 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
             <div className={`flex ${embedded ? 'justify-end' : 'flex-col sm:flex-row'} gap-2 sm:gap-4 pt-4 border-t dark:border-turquoise/20`}>
               <Button 
                 type="button" 
-                variant="outline"
-                onClick={onClose}
+                onClick={handleClose}
                 className="text-sm sm:text-base dark:card-glass dark:glow-ios-blue dark:border-[#007AFF]/30 dark:hover:glow-ios-blue"
               >
                 {embedded ? 'Back' : 'Cancel'}
@@ -883,7 +781,7 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
             </div>
           </form>
         </Form>
-  );
+  ), [form, onSubmit, dispatchType, photos, isSubmitting, uploadingPhotos, previewUrls, user, embedded, handleClose, fetchAddressPredictions, showPredictions, addressPredictions, isLoadingPredictions, addressInputRef]);
 
   // Render based on mode
   if (embedded) {

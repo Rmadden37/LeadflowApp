@@ -148,42 +148,96 @@ export default function ManageClosersModal({isOpen, onClose}: ManageClosersModal
     <Dialog open={isOpen} onOpenChange={(open) => {
       if (!open) onClose();
     }}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="font-headline flex items-center justify-center">
-            <Users className="mr-2 h-6 w-6 text-primary" />
-            Manage Closer Status & Lineup
+      <DialogContent 
+        className="sm:max-w-lg max-h-[85vh] flex flex-col manage-closers-modal"
+        data-testid="manage-closers-modal"
+      >
+        <DialogHeader className="border-b border-border/50 pb-4">
+          <DialogTitle className="font-headline text-xl flex items-center justify-center gap-3">
+            <div className="p-2 rounded-full bg-primary/10">
+              <Users className="h-5 w-5 text-primary" />
+            </div>
+            Team Lineup Management
           </DialogTitle>
-          <DialogDescription className="text-center">
-            View all team closers, manage their duty status, and reorder the lineup.
+          <DialogDescription className="text-center text-sm text-muted-foreground mt-2">
+            View all team members, toggle their status, and manage lineup order
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
+        <div className="py-2">
           {loading ? (
-            <div className="flex justify-center items-center h-40">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="flex justify-center items-center h-40 manage-closers-loading">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground">Loading team...</p>
+              </div>
             </div>
           ) : closers.length === 0 ? (
-            <div className="flex h-40 items-center justify-center">
-              <p className="text-muted-foreground">No closers found for this team.</p>
+            <div className="manage-closers-empty">
+              <div className="text-center">
+                <Users className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3 icon" />
+                <p className="text-muted-foreground font-medium">No team members found</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">Add closers to get started</p>
+              </div>
             </div>
           ) : (
-            <ScrollArea className="h-[calc(60vh)] max-h-[400px] pr-3">
-              <div className="space-y-3">
-                {closers.map((closer, index) => (
-                  <CloserCard
-                    key={closer.uid}
-                    closer={closer}
-                    allowInteractiveToggle={true}
-                    showMoveControls={user?.role === "manager" || user?.role === "admin"}
-                    canMoveUp={index > 0}
-                    canMoveDown={index < closers.length - 1}
-                    onMove={(direction) => handleMoveCloser(closer.uid, direction)}
-                    isUpdatingOrder={isUpdatingOrder}
-                  />
-                ))}
+            <div>
+              {/* Header with team stats */}
+              <div className="team-stats-header mb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-foreground">Team Lineup</h3>
+                    <span className="text-xs text-muted-foreground">({closers.length} total)</span>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full status-indicator-online"></div>
+                      <span className="text-muted-foreground">
+                        {closers.filter(c => c.status === "On Duty").length} on duty
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full status-indicator-offline"></div>
+                      <span className="text-muted-foreground">
+                        {closers.filter(c => c.status === "Off Duty").length} off duty
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </ScrollArea>
+
+              {/* All closers in lineup order */}
+              <ScrollArea className="max-h-[400px] scroll-area">
+                <div className="space-y-2 pb-2">
+                  {closers.map((closer, index) => (
+                    <div 
+                      key={closer.uid} 
+                      className="manage-closers-card" 
+                      data-status={closer.status}
+                    >
+                      <CloserCard
+                        closer={closer}
+                        allowInteractiveToggle={true}
+                        showMoveControls={user?.role === "manager" || user?.role === "admin"}
+                        canMoveUp={index > 0}
+                        canMoveDown={index < closers.length - 1}
+                        onMove={(direction) => handleMoveCloser(closer.uid, direction)}
+                        isUpdatingOrder={isUpdatingOrder}
+                        position={index + 1}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+
+              {/* Instructions */}
+              <div className="mt-4 lineup-instructions">
+                <div className="p-3">
+                  <p className="text-xs text-muted-foreground text-center">
+                    <span className="font-medium">Toggle switches</span> to change status • <span className="font-medium">Use arrows</span> to reorder lineup position
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </DialogContent>

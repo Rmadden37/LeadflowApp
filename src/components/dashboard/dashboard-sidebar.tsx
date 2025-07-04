@@ -14,7 +14,8 @@ import {
   Users,
   Trophy,
   Brain,
-  Monitor
+  Monitor,
+  MessageCircle
 } from "lucide-react";
 import AvailabilityToggle from "./availability-toggle";
 import { ThemeToggleButton } from "@/components/theme-toggle-button";
@@ -36,7 +37,7 @@ import { Separator } from "@/components/ui/separator";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
 
 // Dynamic import with Next.js dynamic to avoid circular dependency issues
-const CreateLeadForm = dynamic(() => import("./create-lead-form"), {
+const CreateLeadFormEnhanced = dynamic(() => import("./create-lead-form-enhanced"), {
   ssr: false,
   loading: () => <div>Loading...</div>
 });
@@ -182,6 +183,20 @@ function DashboardSidebarContent() {
               <Link href="/dashboard/leaderboard">
                 <Trophy className="h-6 w-6 text-yellow-500 dark:text-yellow-300 group-data-[collapsible=icon]:mx-auto group-data-[collapsible=expanded]:mr-3" />
                 <span className="font-semibold group-data-[collapsible=icon]:hidden">Leaderboard</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          {/* Chat */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className={`nav-item shadow-sm group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:mx-auto group-data-[collapsible=expanded]:justify-start group-data-[collapsible=expanded]:pl-4 group-data-[collapsible=expanded]:items-center${pathname === "/dashboard/chat" ? " active" : ""}`}
+              onClick={handleNav}
+            >
+              <Link href="/dashboard/chat">
+                <MessageCircle className="h-6 w-6 text-blue-500 dark:text-blue-300 group-data-[collapsible=icon]:mx-auto group-data-[collapsible=expanded]:mr-3" />
+                <span className="font-semibold group-data-[collapsible=icon]:hidden">Chat</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -340,7 +355,7 @@ function DashboardSidebarContent() {
             >
               ×
             </button>
-            <CreateLeadForm isOpen={isCreateLeadModalOpen} onClose={() => setIsCreateLeadModalOpen(false)} />
+            <CreateLeadFormEnhanced isOpen={isCreateLeadModalOpen} onClose={() => setIsCreateLeadModalOpen(false)} />
           </div>
         </div>
       )}

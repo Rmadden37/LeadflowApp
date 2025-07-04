@@ -4,7 +4,9 @@
  */
 
 export class HapticFeedback {
-  private static isSupported = 'vibrate' in navigator;
+  private static get isSupported() {
+    return typeof navigator !== 'undefined' && 'vibrate' in navigator;
+  }
 
   /**
    * Light haptic feedback - for subtle interactions

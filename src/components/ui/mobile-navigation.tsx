@@ -144,7 +144,7 @@ export function MobileNavigation({ children }: MobileNavigationLayoutProps) {
 
   return (
     <BottomNavProvider>
-      <div className="main-content-with-bottom-nav min-h-screen">
+      <div className="main-content-with-bottom-nav min-h-screen pb-safe-bottom">
         {children}
         <BottomNav>
           <BottomNavContent>
@@ -159,6 +159,12 @@ export function MobileNavigation({ children }: MobileNavigationLayoutProps) {
               label="Leaderboard" 
               href="/dashboard/leaderboard" 
               isActive={pathname.includes('/leaderboard')}
+            />
+            <BottomNavItem 
+              icon={<MessageCircle className="stroke-[1.5]" />} 
+              label="Chat" 
+              href="/dashboard/chat" 
+              isActive={pathname.includes('/chat')}
             />
             
             {(user?.role === "manager" || user?.role === "admin") && (
@@ -304,7 +310,7 @@ export default function MobileNavigationLayout({ children }: MobileNavigationLay
 
   return (
     <BottomNavProvider>
-      <div className="main-content-with-bottom-nav min-h-screen">
+      <div className="main-content-with-bottom-nav min-h-screen pb-safe-bottom">
         {showManagerSubNav ? <ManagerSubNav /> : children}
       </div>
       
@@ -321,6 +327,12 @@ export default function MobileNavigationLayout({ children }: MobileNavigationLay
             label="Leaderboard" 
             href="/dashboard/leaderboard" 
             isActive={pathname.includes('/leaderboard')}
+          />
+          <BottomNavItem 
+            icon={<MessageCircle className="stroke-[1.5]" />} 
+            label="Chat" 
+            href="/dashboard/chat" 
+            isActive={pathname.includes('/chat')}
           />
           
           {isManagerOrAdmin && (

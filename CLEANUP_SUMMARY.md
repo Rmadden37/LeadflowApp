@@ -48,6 +48,16 @@
 - `src/components/dashboard/manager-tools-modal.tsx` - unused manager tool
 - `src/components/dashboard/fix-teams-button.tsx` - unused utility component
 
+### **Form-Related Files (8 files)**
+*   **`src/components/LeadFormWithCalendar.tsx`**: This component is not imported or utilized anywhere in the project.
+*   **`src/components/dashboard/create-lead-form.tsx`**: This is the original lead creation form, which has been replaced by the new `create-lead-form-enhanced.tsx`.
+*   **`src/components/dashboard/dashboard-header-backup.tsx`**: A backup file that is no longer needed.
+*   **`test-enhanced-form.md`**: A temporary test plan for the enhanced form.
+*   **`FORM_TRANSFORMATION_SUMMARY.md`**: A summary of the form transformation, the details of which are now in the commit history.
+*   **`FORM_FIXES_SUMMARY.md`**: A summary of the bug fixes applied to the form.
+*   **`create-test-leads.js`**: A script for creating test leads, which is no longer needed.
+*   **`verify-badge-fix.js`**: A one-off script for a specific fix, which is no longer needed.
+
 ### **Unused Utilities (1 file)**
 - `src/utils/fix-teams-and-users.ts` - unused migration utility
 
