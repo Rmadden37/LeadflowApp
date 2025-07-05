@@ -15,11 +15,14 @@ import {
   MapPin, 
   Building2, 
   Loader2,
-  MessageCircle
+  MessageCircle,
+  BarChart3,
+  TrendingUp
 } from "lucide-react";
 import { ChatService } from "@/lib/chat-service";
 import type { ChatChannel, ChatMessage } from "@/types";
 import { format } from "date-fns";
+import DailySalesBoard from "./daily-sales-board";
 
 interface TeamChatInterfaceProps {
   channel: ChatChannel;
@@ -32,6 +35,7 @@ export default function TeamChatInterface({ channel, onBack }: TeamChatInterface
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [showSalesBoard, setShowSalesBoard] = useState(true);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Listen to messages in this channel
@@ -136,14 +140,48 @@ export default function TeamChatInterface({ channel, onBack }: TeamChatInterface
             </div>
           </div>
         </div>
+        
+        {/* Sales Board Toggle */}
+        <Button
+          variant={showSalesBoard ? "default" : "outline"}
+          size="sm"
+          onClick={() => setShowSalesBoard(!showSalesBoard)}
+          className="flex items-center gap-2"
+        >
+          <TrendingUp className="h-4 w-4" />
+          Sales Board
+        </Button>
       </div>
 
+      {/* Daily Sales Board */}
+      {showSalesBoard && (
+        <div className="mb-6">
+          <DailySalesBoard 
+            channelId={channel.id}
+            channelType={channel.type}
+            teamId={channel.teamId}
+            regionId={channel.regionId}
+          />
+        </div>
+      )}
+
       {/* Chat Interface */}
-      <Card className="h-[calc(100vh-16rem)] flex flex-col shadow-lg">
+      <Card className={`${showSalesBoard ? 'h-[calc(100vh-28rem)]' : 'h-[calc(100vh-16rem)]'} flex flex-col shadow-lg`}>
         <CardHeader className="flex-shrink-0 pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <MessageCircle className="h-5 w-5 text-primary" />
-            Chat Messages
+          <CardTitle className="flex items-center justify-between text-lg">
+            <div className="flex items-center gap-2">
+              <MessageCircle className="h-5 w-5 text-primary" />
+              Chat Messages
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowSalesBoard(!showSalesBoard)}
+              className="text-xs"
+            >
+              <BarChart3 className="h-4 w-4 mr-1" />
+              {showSalesBoard ? "Hide" : "Show"} Sales
+            </Button>
           </CardTitle>
         </CardHeader>
         

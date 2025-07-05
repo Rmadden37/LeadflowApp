@@ -62,27 +62,31 @@ export default function AetherTabBar() {
   });
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] backdrop-filter backdrop-blur-[20px] border-t border-white/10 pb-[env(safe-area-inset-bottom)] z-50">
+    <footer className="fixed bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.8)] backdrop-filter backdrop-blur-[20px] border-t border-white/10 pb-[env(safe-area-inset-bottom)] z-50">
       <div className="flex justify-around items-center h-16 max-w-screen-lg mx-auto">
         {visibleTabs.map((tab) => {
-          // Improved active state detection for nested routes
+          // Enhanced active state detection for better UX across all routes
           const isActive = tab.path === "/dashboard" 
-            ? pathname === "/dashboard" || (pathname.startsWith("/dashboard/") && !visibleTabs.some(t => t !== tab && pathname.startsWith(t.path)))
+            ? pathname === "/dashboard"
             : pathname.startsWith(tab.path);
             
           return (
             <Link 
               href={tab.path} 
               key={tab.path}
-              className="flex flex-col items-center justify-center w-full py-2 relative"
+              className="flex flex-col items-center justify-center w-full py-2 relative tap-highlight-transparent ios-touch-target"
               onClick={tab.onClick}
+              style={{
+                // Prevent interference with swipe navigation
+                touchAction: 'manipulation'
+              }}
             >
               <div className="relative">
                 <tab.icon 
-                  className={`w-6 h-6 mb-1 transition-all ${
+                  className={`w-6 h-6 mb-1 transition-all duration-200 ${
                     isActive 
-                      ? "text-white animate-icon-pulse" 
-                      : "text-[#A0A0A0]"
+                      ? "text-white scale-110" 
+                      : "text-[#A0A0A0] hover:text-white/80"
                   }`} 
                 />
                 {tab.hasNotification && (
@@ -90,10 +94,10 @@ export default function AetherTabBar() {
                 )}
               </div>
               <span 
-                className={`text-xs font-medium transition-all ${
+                className={`text-xs font-medium transition-all duration-200 ${
                   isActive 
-                    ? "text-white" 
-                    : "text-[#A0A0A0]"
+                    ? "text-white font-semibold" 
+                    : "text-[#A0A0A0] hover:text-white/80"
                 }`}
               >
                 {tab.label}

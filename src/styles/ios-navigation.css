@@ -1,0 +1,137 @@
+/* iOS-specific optimizations for gesture navigation and touch interactions */
+
+/* Safe area support for iOS devices */
+@supports (padding: max(0px)) {
+  .ios-safe-area {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Swipe navigation enhancements */
+.swipe-navigation-active {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile */
+}
+
+/* iOS-style momentum scrolling */
+.ios-momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Prevent text selection during swipe gestures */
+.swipe-navigation-wrapper {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* iOS-style haptic feedback visual indicator */
+.haptic-feedback-indicator {
+  position: fixed;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 48px;
+  background: linear-gradient(to bottom, #007AFF, #34C759);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease-out;
+  z-index: 9999;
+}
+
+.haptic-feedback-indicator.active {
+  opacity: 0.8;
+}
+
+/* iOS-style edge swipe hint */
+.edge-swipe-hint {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to right, rgba(0, 122, 255, 0.3), transparent);
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  animation: swipe-hint 3s ease-in-out infinite;
+}
+
+@keyframes swipe-hint {
+  0%, 90%, 100% { opacity: 0; }
+  5%, 15% { opacity: 1; }
+}
+
+/* Enhanced touch targets for iOS */
+.ios-touch-target {
+  min-height: 44px; /* iOS minimum touch target size */
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* iOS-style button hover states (for devices that support hover) */
+@media (hover: hover) {
+  .ios-button {
+    transition: all 0.2s ease-out;
+  }
+  
+  .ios-button:hover {
+    transform: scale(1.05);
+  }
+  
+  .ios-button:active {
+    transform: scale(0.95);
+  }
+}
+
+/* iOS-style blur backgrounds */
+.ios-blur-background {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.ios-blur-background-dark {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Smooth transitions for swipe animations */
+.swipe-slide-transition {
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* iOS-style spring animation for completed swipes */
+.swipe-complete-animation {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Disable pull-to-refresh on iOS during swipe navigation */
+.disable-pull-refresh {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: auto;
+}
+
+/* iOS-style status bar spacing */
+.ios-status-bar-spacing {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* iOS-style home indicator spacing */
+.ios-home-indicator-spacing {
+  padding-bottom: env(safe-area-inset-bottom);
+}

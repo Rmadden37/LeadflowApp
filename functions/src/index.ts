@@ -162,6 +162,85 @@ function getStatusEmoji(status: string): string {
   }
 }
 
+// Simplified Sales Board Notifications (only sales to team chat, appointments to individuals)
+const SalesBoardNotifications = {
+  /**
+   * Send sale notification to team chat (only for sold status)
+   */
+  sendSaleNotification: async (lead: Lead, teamId: string): Promise<void> => {
+    const saleEmoji = "💥";
+    const statusText = "SALE CLOSED";
+    
+    // Simple sale messages for team chat
+    const saleMessages = [
+      `${saleEmoji} **${statusText}** by ${lead.assignedCloserName || 'Unknown'}!\n` +
+      `🎯 Customer: ${lead.customerName}\n` +
+      `⏰ Time: ${new Date().toLocaleTimeString()}\n` +
+      `🔥 BOOM! Great work!`,
+      
+      `${saleEmoji} **ALERT:** ${statusText} just happened!\n` +
+      `🏆 Closer: ${lead.assignedCloserName || 'Unknown'}\n` +
+      `👤 Customer: ${lead.customerName}\n` +
+      `🎉 KA-CHING! That's how we do it!`,
+      
+      `${saleEmoji} **UPDATE:** ${lead.assignedCloserName || 'Unknown'} just CRUSHED IT!\n` +
+      `📊 Customer: ${lead.customerName}\n` +
+      `🕒 ${new Date().toLocaleTimeString()}\n` +
+      `💰 MONEY IN THE BANK! Let's keep this momentum!`
+    ];
+
+    const message = saleMessages[Math.floor(Math.random() * saleMessages.length)];
+
+    // Send to team chat only
+    try {
+      await db.collection("chatMessages").add({
+        content: message,
+        senderId: "sales_board",
+        senderName: "Daily Sales Board",
+        senderRole: "system",
+        chatId: `team_${teamId}`,
+        chatType: "team",
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        messageType: "text",
+        isDeleted: false,
+        edited: false,
+        reactions: {},
+        mentions: [],
+        attachments: []
+      });
+
+      functions.logger.info(`Sent sales notification for lead ${lead.id} to team ${teamId}`);
+    } catch (error) {
+      functions.logger.error(`Error sending sales notification:`, error);
+    }
+  },
+
+  /**
+   * Send appointment notification to setter and closer only (not team chat)
+   */
+  sendAppointmentNotification: async (
+    lead: Lead, 
+    teamId: string, 
+    setterId?: string, 
+    closerId?: string
+  ): Promise<void> => {
+    const appointmentTime = lead.scheduledAppointmentTime 
+      ? new Date(lead.scheduledAppointmentTime.toDate()).toLocaleString()
+      : "Time TBD";
+    
+    // Log appointment notifications for setter and closer (not sending to team chat)
+    if (setterId) {
+      functions.logger.info(`Appointment notification would be sent to setter ${setterId} for lead ${lead.id}`);
+    }
+
+    if (closerId && closerId !== setterId) {
+      functions.logger.info(`Appointment notification would be sent to closer ${closerId} for lead ${lead.id}`);
+    }
+
+    functions.logger.info(`Processed appointment notification for lead ${lead.id} - Time: ${appointmentTime}`);
+  }
+};
+
 // Types matching your frontend types
 interface Lead {
   id: string;
@@ -770,6 +849,42 @@ export const handleLeadDispositionUpdate = functions.firestore
         }, afterData.assignedCloserId, afterData.status);
       } catch (notificationError) {
         functions.logger.error(`Error sending lead update notification:`, notificationError);
+      }
+    }
+
+    // Send sales board notifications for sales only (to setter and closer)
+    if (beforeData.status !== afterData.status && afterData.teamId) {
+      try {
+        // Only send notifications for sales (sold status)
+        if (afterData.status === "sold") {
+          // Send sale notification to team chat
+          await SalesBoardNotifications.sendSaleNotification(
+            { 
+              ...afterData, 
+              id: leadId, 
+              assignedCloserName: afterData.assignedCloserName || 'Unknown',
+              scheduledAppointmentTime: afterData.scheduledAppointmentTime || null
+            },
+            afterData.teamId
+          );
+          functions.logger.info(`Sent sales board notification for ${afterData.status} lead ${leadId}`);
+        } else if (["scheduled", "rescheduled"].includes(afterData.status) && afterData.scheduledAppointmentTime) {
+          // Send appointment notification only to setter and closer
+          await SalesBoardNotifications.sendAppointmentNotification(
+            { 
+              ...afterData, 
+              id: leadId, 
+              assignedCloserName: afterData.assignedCloserName || 'Unknown',
+              scheduledAppointmentTime: afterData.scheduledAppointmentTime || null
+            },
+            afterData.teamId,
+            afterData.setterId, // Send to setter
+            afterData.assignedCloserId // Send to closer
+          );
+          functions.logger.info(`Sent appointment notification for ${afterData.status} lead ${leadId}`);
+        }
+      } catch (salesNotificationError) {
+        functions.logger.error(`Error sending sales board notification:`, salesNotificationError);
       }
     }
 
@@ -1793,249 +1908,3 @@ export const generateAnalyticsReport = functions.https.onCall(async (data, conte
     throw new functions.https.HttpsError("internal", "Internal server error");
   }
 });
-
-// Temporary function to update admin roles
-export const updateAdminRoles = functions.https.onCall(async (data, context) => {
-  console.log('🚀 Starting admin role updates...');
-  
-  try {
-    // Get all users
-    const usersSnapshot = await db.collection('users').get();
-    const users: any[] = [];
-    
-    usersSnapshot.forEach(doc => {
-      const userData = doc.data();
-      users.push({ id: doc.id, ...userData });
-    });
-    
-    console.log(`Found ${users.length} total users`);
-    
-    // Find Ryan Madden
-    const ryan = users.find(user => {
-      const name = (user.displayName || '').toLowerCase();
-      const email = (user.email || '').toLowerCase();
-      return name.includes('ryan') || email.includes('ryan') || name.includes('madden');
-    });
-    
-    // Find Rocky Niger
-    const rocky = users.find(user => {
-      const name = (user.displayName || '').toLowerCase();
-      const email = (user.email || '').toLowerCase();
-      return name.includes('rocky') || email.includes('niger');
-    });
-    
-    const updates = [];
-    const results = {
-      ryan: { found: false, updated: false, alreadyAdmin: false },
-      rocky: { found: false, updated: false, alreadyAdmin: false }
-    };
-    
-    if (ryan) {
-      results.ryan.found = true;
-      console.log(`Found Ryan: ${ryan.displayName || ryan.email} - Current role: ${ryan.role}`);
-      if (ryan.role !== 'admin') {
-        updates.push({ user: ryan, name: 'Ryan Madden', type: 'ryan' });
-      } else {
-        results.ryan.alreadyAdmin = true;
-        console.log('✅ Ryan is already admin');
-      }
-    } else {
-      console.log('❌ Could not find Ryan Madden');
-    }
-    
-    if (rocky) {
-      results.rocky.found = true;
-      console.log(`Found Rocky: ${rocky.displayName || rocky.email} - Current role: ${rocky.role}`);
-      if (rocky.role !== 'admin') {
-        updates.push({ user: rocky, name: 'Rocky Niger', type: 'rocky' });
-      } else {
-        results.rocky.alreadyAdmin = true;
-        console.log('✅ Rocky is already admin');
-      }
-    } else {
-      console.log('❌ Could not find Rocky Niger');
-    }
-    
-    if (updates.length === 0) {
-      console.log('✅ No updates needed - both users are already admins');
-      return { success: true, message: 'No updates needed', results };
-    }
-    
-    console.log(`🔧 Updating ${updates.length} users...`);
-    
-    for (const { user, name, type } of updates) {
-      try {
-        const batch = db.batch();
-        
-        // Update user role
-        const userRef = db.collection('users').doc(user.id);
-        batch.update(userRef, {
-          role: 'admin',
-          updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-        
-        // Update or create closer record
-        const closerRef = db.collection('closers').doc(user.id);
-        const closerDoc = await closerRef.get();
-        
-        if (closerDoc.exists) {
-          batch.update(closerRef, {
-            role: 'admin',
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-        } else {
-          batch.set(closerRef, {
-            uid: user.id,
-                       name: user.displayName || user.email || name,
-            status: 'Off Duty',
-            teamId: user.teamId,
-            role: 'admin',
-            avatarUrl: user.avatarUrl || null,
-            phone: user.phoneNumber || null,
-            lineupOrder: 999,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-        }
-        
-        await batch.commit();
-        console.log(`✅ Updated ${name} to admin role`);
-        
-        if (type === 'ryan') results.ryan.updated = true;
-        if (type === 'rocky') results.rocky.updated = true;
-        
-      } catch (error) {
-        console.error(`❌ Error updating ${name}:`, error);
-        throw error;
-      }
-    }
-    
-    console.log('🎉 Admin role updates complete!');
-    return { 
-      success: true, 
-      message: 'Admin roles updated successfully', 
-      results,
-      updatedCount: updates.length 
-    };
-     } catch (error) {
-    console.error('❌ Error in updateAdminRoles:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : String(error),
-      results: { ryan: { found: false, updated: false, alreadyAdmin: false }, rocky: { found: false, updated: false, alreadyAdmin: false } }
-    };
-  }
-});
-
-/**
- * Chat message cleanup function
- * Runs daily to delete messages older than 7 days
- * Updated for deployment
- */
-export const cleanupOldChatMessages = functions.pubsub
-  .schedule("0 2 * * *") // Run daily at 2 AM
-  .timeZone("America/Los_Angeles")
-  .onRun(async (context) => {
-    try {
-      functions.logger.info("Starting chat message cleanup...");
-      
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      
-      // Query old messages
-      const oldMessagesQuery = db.collection("chatMessages")
-        .where("timestamp", "<", admin.firestore.Timestamp.fromDate(sevenDaysAgo));
-      
-      const snapshot = await oldMessagesQuery.get();
-      
-      if (snapshot.empty) {
-        functions.logger.info("No old messages to delete");
-        return null;
-      }
-      
-      // Delete in batches of 500 (Firestore limit)
-      const batch = db.batch();
-      let deleteCount = 0;
-      
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-        deleteCount++;
-      });
-      
-      await batch.commit();
-      
-      functions.logger.info(`Successfully deleted ${deleteCount} old chat messages`);
-      return { success: true, deletedCount: deleteCount };
-      
-    } catch (error) {
-      functions.logger.error("Error cleaning up chat messages:", error);
-      throw error;
-    }
-  });
-
-/**
- * Initialize chat channels when teams are created
- */
-export const initializeChatChannelsOnTeamCreate = functions.firestore
-  .document("teams/{teamId}")
-  .onCreate(async (snap, context) => {
-    try {
-      const teamData = snap.data();
-      const teamId = context.params.teamId;
-      
-      if (!teamData.isActive) {
-        functions.logger.info(`Team ${teamId} is not active, skipping chat channel creation`);
-        return null;
-      }
-      
-      // Create chat channel for this team
-      const channelRef = db.collection("chatChannels").doc(teamId);
-      await channelRef.set({
-        id: teamId,
-        name: teamData.name,
-        type: "team",
-        teamId: teamId,
-        memberCount: 0,
-        isActive: true,
-        lastMessageTimestamp: admin.firestore.FieldValue.serverTimestamp(),
-      });
-      
-      functions.logger.info(`Created chat channel for team: ${teamData.name} (${teamId})`);
-      return null;
-      
-    } catch (error) {
-      functions.logger.error("Error creating chat channel for team:", error);
-      throw error;
-    }
-  });
-
-/**
- * Update chat channel when team is updated
- */
-export const updateChatChannelOnTeamUpdate = functions.firestore
-  .document("teams/{teamId}")
-  .onUpdate(async (change, context) => {
-    try {
-      const newData = change.after.data();
-      const oldData = change.before.data();
-      const teamId = context.params.teamId;
-      
-      // Check if name or active status changed
-      if (newData.name !== oldData.name || newData.isActive !== oldData.isActive) {
-        const channelRef = db.collection("chatChannels").doc(teamId);
-        
-        await channelRef.update({
-          name: newData.name,
-          isActive: newData.isActive,
-        });
-        
-        functions.logger.info(`Updated chat channel for team: ${newData.name} (${teamId})`);
-      }
-      
-      return null;
-      
-    } catch (error) {
-      functions.logger.error("Error updating chat channel:", error);
-      throw error;
-    }
-  });

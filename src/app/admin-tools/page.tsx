@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
+import { Settings, Shield, AlertTriangle } from "lucide-react";
+import Link from "next/link";
 
 export default function AdminTools() {
   const { user } = useAuth();
@@ -198,53 +200,81 @@ export default function AdminTools() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader>
-          <CardTitle>Tony Tiger Lead Status Fix</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-sm text-gray-600">
-            <p><strong>What this tool does:</strong></p>
-            <ul className="list-disc ml-5 mt-2 space-y-1">
-              <li>Finds Tony Tiger's lead in the database</li>
-              <li>Changes status from "scheduled" to "rescheduled"</li>
-              <li>This makes the lead show a <span className="text-purple-600 font-semibold">PURPLE</span> rescheduled icon instead of blue</li>
-              <li>Only works for Manager/Admin users</li>
-            </ul>
-          </div>
-          
-          {!firebaseReady && hasPermission && (
-            <div className="text-amber-600 text-sm">
-              ⚠️ Firebase is still loading...
+    <div className="container mx-auto p-6 space-y-6">
+      {/* Page Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] flex items-center justify-center gap-2">
+          <Settings className="w-8 h-8" />
+          Admin Tools
+        </h1>
+        <p className="text-[var(--text-secondary)]">System administration and maintenance tools</p>
+      </div>
+
+      {/* Permission Check */}
+      {!hasPermission && (
+        <Card className="frosted-glass-card border-red-200">
+          <CardContent className="p-6 text-center">
+            <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-red-700 mb-2">Access Denied</h2>
+            <p className="text-red-600 mb-4">You need Manager or Admin privileges to access these tools.</p>
+            <Link href="/dashboard">
+              <Button variant="outline">Return to Dashboard</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+
+      {hasPermission && (
+        <Card className="max-w-4xl mx-auto frosted-glass-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5" />
+              Tony Tiger Lead Status Fix
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-gray-600">
+              <p><strong>What this tool does:</strong></p>
+              <ul className="list-disc ml-5 mt-2 space-y-1">
+                <li>Finds Tony Tiger's lead in the database</li>
+                <li>Changes status from "scheduled" to "rescheduled"</li>
+                <li>This makes the lead show a <span className="text-purple-600 font-semibold">PURPLE</span> rescheduled icon instead of blue</li>
+                <li>Only works for Manager/Admin users</li>
+              </ul>
             </div>
-          )}
-          
-          <Button 
-            onClick={handleQuickFix}
-            disabled={isLoading || !firebaseReady}
-            className="w-full"
-          >
-            {isLoading ? "Working..." : "Find and Fix Tony Tiger Lead"}
-          </Button>
-          
-          {results && (
-            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border">
-              <h3 className="font-semibold mb-2">Results:</h3>
-              <pre className="text-sm whitespace-pre-wrap font-mono overflow-x-auto">{results}</pre>
+            
+            {!firebaseReady && hasPermission && (
+              <div className="text-amber-600 text-sm">
+                ⚠️ Firebase is still loading...
+              </div>
+            )}
+            
+            <Button 
+              onClick={handleQuickFix}
+              disabled={isLoading || !firebaseReady}
+              className="w-full"
+            >
+              {isLoading ? "Working..." : "Find and Fix Tony Tiger Lead"}
+            </Button>
+            
+            {results && (
+              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border">
+                <h3 className="font-semibold mb-2">Results:</h3>
+                <pre className="text-sm whitespace-pre-wrap font-mono overflow-x-auto">{results}</pre>
+              </div>
+            )}
+            
+            <div className="text-xs text-gray-500 border-t pt-4">
+              <p><strong>Alternative method:</strong> You can also run the browser console script:</p>
+              <ol className="list-decimal ml-5 mt-1 space-y-1">
+                <li>Go to the dashboard page</li>
+                <li>Open Developer Tools (F12) → Console tab</li>
+                <li>Copy and paste the script from <code>/scripts/browser-fix-tony-tiger.js</code></li>
+              </ol>
             </div>
-          )}
-          
-          <div className="text-xs text-gray-500 border-t pt-4">
-            <p><strong>Alternative method:</strong> You can also run the browser console script:</p>
-            <ol className="list-decimal ml-5 mt-1 space-y-1">
-              <li>Go to the dashboard page</li>
-              <li>Open Developer Tools (F12) → Console tab</li>
-              <li>Copy and paste the script from <code>/scripts/browser-fix-tony-tiger.js</code></li>
-            </ol>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

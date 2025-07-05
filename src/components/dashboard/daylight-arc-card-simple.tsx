@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import PrimetimeCountdownCard from "./primetime-countdown-card";
 
 interface SunTimes {
   sunrise: [number, number]; // [hours, minutes]
@@ -197,6 +198,8 @@ function useSunTimes(): SunTimes {
 export default function DaylightArcCard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const { sunrise, sunset, loading } = useSunTimes();
+  const [showPrimetime, setShowPrimetime] = useState(false);
+  const [primetimeCompleted, setPrimetimeCompleted] = useState(false);
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -216,30 +219,52 @@ export default function DaylightArcCard() {
   const minutes = currentTime.getMinutes();
   const totalMinutes = hours * 60 + minutes;
   
-  // TEST MODE: Simulate day complete (remove this line in production)
-  // const totalMinutes = sunsetMinutes + 40; // 40 minutes after sunset = day complete
-  
   // Calculate progress through daylight hours
   let progress = 0;
   let isGoldenHour = false;
   let goldenHourMinutesLeft = 0;
   let isDayComplete = false;
+  let daylightPercentage = 0;
+  let timeUntilSunset = '';
+  let hoursUntilSunset = 0;
+  let minutesUntilSunset = 0;
+  let shouldShowPrimetime = false;
   
   if (totalMinutes < sunriseMinutes) {
     progress = 0; // Before sunrise
+    const minutesUntilSunrise = sunriseMinutes - totalMinutes;
+    hoursUntilSunset = Math.floor(minutesUntilSunrise / 60);
+    minutesUntilSunset = minutesUntilSunrise % 60;
+    timeUntilSunset = `${hoursUntilSunset}h ${minutesUntilSunset}m until sunrise`;
+    daylightPercentage = 0;
   } else if (totalMinutes > sunsetMinutes) {
     // Check if we're in the golden hour window (5-35 minutes after sunset)
     const minutesAfterSunset = totalMinutes - sunsetMinutes;
-    if (minutesAfterSunset >= 5 && minutesAfterSunset <= 35) {
+    if (minutesAfterSunset >= 5 && minutesAfterSunset <= 35 && !primetimeCompleted) {
       isGoldenHour = true;
       goldenHourMinutesLeft = 35 - minutesAfterSunset; // 30-minute window
-    } else if (minutesAfterSunset > 35) {
+      shouldShowPrimetime = true; // PRIMETIME mode during golden hour
+    } else if (minutesAfterSunset > 35 || primetimeCompleted) {
       // Golden hour is over - day is complete
       isDayComplete = true;
     }
     progress = 1; // After sunset
+    daylightPercentage = 0;
+    timeUntilSunset = isDayComplete ? 'Day Complete' : 'Golden Hour';
   } else {
     progress = (totalMinutes - sunriseMinutes) / daylightDuration;
+    daylightPercentage = Math.round((1 - progress) * 100);
+    
+    // Calculate time until sunset
+    const minutesLeft = sunsetMinutes - totalMinutes;
+    hoursUntilSunset = Math.floor(minutesLeft / 60);
+    minutesUntilSunset = minutesLeft % 60;
+    
+    if (hoursUntilSunset > 0) {
+      timeUntilSunset = `${hoursUntilSunset}h ${minutesUntilSunset}m until sunset`;
+    } else {
+      timeUntilSunset = `${minutesUntilSunset}m until sunset`;
+    }
   }
   
   // Clamp progress between 0 and 1
@@ -294,19 +319,46 @@ export default function DaylightArcCard() {
     return formatTime(sunrise[0], sunrise[1]);
   };
 
+  // Update PRIMETIME state
+  useEffect(() => {
+    // Reset PRIMETIME completed state if we're before the golden hour window (new day)
+    const minutesAfterSunset = totalMinutes - sunsetMinutes;
+    if (minutesAfterSunset < 5) {
+      setPrimetimeCompleted(false);
+    }
+    
+    setShowPrimetime(shouldShowPrimetime && !primetimeCompleted);
+  }, [shouldShowPrimetime, primetimeCompleted, totalMinutes, sunsetMinutes]);
+
+  // Handle PRIMETIME completion
+  const handlePrimetimeComplete = () => {
+    setShowPrimetime(false);
+    setPrimetimeCompleted(true); // Mark PRIMETIME as completed for this session
+  };
+
+  // If PRIMETIME is active, show the countdown card instead
+  if (showPrimetime) {
+    return (
+      <PrimetimeCountdownCard 
+        isVisible={true} 
+        onComplete={handlePrimetimeComplete}
+        initialMinutesLeft={goldenHourMinutesLeft}
+      />
+    );
+  }
+
   return (
-    <div className="frosted-glass-card px-6 py-8 overflow-hidden relative h-[240px]">
-      {/* Debug indicators */}
-      {isGoldenHour && (
-        <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 text-xs rounded-full font-medium z-50">
-          Golden Hour ✨
-        </div>
-      )}
-      {isDayComplete && (
-        <div className="absolute top-2 right-2 bg-purple-500 text-white px-2 py-1 text-xs rounded-full font-medium z-50">
-          Day Complete 🌙
-        </div>
-      )}
+    <div 
+      className={`frosted-glass-card px-6 py-8 overflow-hidden relative h-[240px] transition-all duration-1000 ${
+        shouldShowPrimetime ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+      }`}
+      style={{
+        // iOS-optimized touch behavior
+        WebkitTouchCallout: 'none',
+        WebkitUserSelect: 'none',
+        touchAction: 'pan-y pinch-zoom' // Allow vertical scrolling but not horizontal
+      }}
+    >
       
       <div className="flex flex-col items-center justify-between h-full">
         
@@ -454,6 +506,86 @@ export default function DaylightArcCard() {
               }}
             />
           </svg>
+          
+          {/* Compact Info Display - follows sun position */}
+          {!isGoldenHour && !isDayComplete && totalMinutes >= sunriseMinutes && (
+            (() => {
+              // Sales work hours (2pm = 14:00 = 840 minutes)
+              const salesStartTime = 14 * 60; // 2 PM in minutes
+              const isWorkingHours = totalMinutes >= salesStartTime;
+              const isMorning = totalMinutes < salesStartTime;
+              
+              // Calculate selling time remaining
+              const effectiveStartTime = Math.max(totalMinutes, salesStartTime);
+              const sellingTimeLeft = sunsetMinutes - effectiveStartTime;
+              const sellingHours = Math.floor(sellingTimeLeft / 60);
+              const sellingMins = sellingTimeLeft % 60;
+              
+              // Get the same color as the sun
+              const sunColor = getSunColor(daylightRemaining);
+              
+              // Calculate sun position (same as sun marker)
+              const sunX = 100 - 75 * Math.cos(Math.PI * progress);
+              const sunY = 80 - 75 * Math.sin(Math.PI * progress);
+              
+              // Offset the info display from the sun position
+              const offsetX = 15; // pixels to the right of sun
+              const offsetY = -25; // pixels above sun
+              
+              let displayText = '';
+              let subText = '';
+              
+              if (isMorning) {
+                // Before 2pm: Show time until selling starts
+                const timeUntilSelling = salesStartTime - totalMinutes;
+                const hoursUntilSelling = Math.floor(timeUntilSelling / 60);
+                const minsUntilSelling = timeUntilSelling % 60;
+                
+                if (hoursUntilSelling > 0) {
+                  displayText = `${hoursUntilSelling}h ${minsUntilSelling}m`;
+                } else {
+                  displayText = `${minsUntilSelling}m`;
+                }
+                subText = 'until selling';
+              } else if (sellingTimeLeft > 0) {
+                // During selling hours: Show selling time remaining
+                if (sellingHours > 0) {
+                  displayText = `${sellingHours}h ${sellingMins}m`;
+                } else {
+                  displayText = `${sellingMins}m`;
+                }
+                subText = 'selling left';
+              }
+              
+              return (
+                <div 
+                  className="absolute z-20 pointer-events-none"
+                  style={{
+                    left: `${sunX + offsetX}px`,
+                    top: `${sunY + offsetY}px`,
+                    transform: 'translate(-50%, -50%)', // Center the element on the calculated position
+                    transition: 'left 0.5s ease-out, top 0.5s ease-out'
+                  }}
+                >
+                  <div 
+                    className="backdrop-blur-sm border border-white/10 rounded-md px-2 py-1 text-center transform transition-all duration-500"
+                    style={{ 
+                      backgroundColor: `${sunColor}15`, // 15% opacity of sun color
+                      color: sunColor,
+                      fontSize: '10px'
+                    }}
+                  >
+                    <div className="font-medium leading-tight whitespace-nowrap">
+                      {displayText}
+                    </div>
+                    <div className="opacity-80 leading-tight whitespace-nowrap" style={{ fontSize: '8px' }}>
+                      {subText}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()
+          )}
         </div>
 
         {/* Labels Section - Transforms for day complete */}

@@ -10,7 +10,6 @@ import CloserCard from "./closer-card";
 import { Users, Loader2, Settings } from "lucide-react";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import ManageClosersModal from "./off-duty-closers-modal";
-import { motion } from "framer-motion";
 import Image from "next/image";
 
 export default function CloserLineup() {
@@ -224,12 +223,7 @@ export default function CloserLineup() {
                 {closers.map((closer, index) => (
                   <div key={closer.uid} className="flex flex-col items-center flex-shrink-0">
                     <div className="relative mb-2" style={{ padding: '4px' }}>
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.5, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ delay: Math.min(index * 0.15, 1) }} // Cap delay for many closers
-                        className="relative"
-                      >
+                      <div className="relative">
                         <Image
                           src={closer.avatarUrl || `https://api.dicebear.com/8.x/initials/svg?seed=${closer.name}`}
                           alt={closer.name}
@@ -241,7 +235,7 @@ export default function CloserLineup() {
                         <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg z-10">
                           <span className="text-sm font-bold text-black">{index + 1}</span>
                         </div>
-                      </motion.div>
+                      </div>
                     </div>
                     <p className="text-sm font-medium text-[var(--text-primary)] text-center whitespace-nowrap">
                       {closer.name}

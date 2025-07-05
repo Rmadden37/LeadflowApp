@@ -2,7 +2,7 @@
 // Simple pattern-matching AI assistant (manual implementation)
 // This avoids external AI service dependencies and provides reliable responses
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.callLeadflowAssistant = callLeadflowAssistant;
+exports.callLeadflowAssistant = void 0;
 // Configuration - Update these URLs as needed
 const GOOGLE_SHEETS_CONFIG = {
     CSV_URL: process.env.GOOGLE_SHEETS_CSV_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1JbDgrzjZrpCmTLDtv44N3-NMvdc_bf15JvNErW3Qpxaj3DgCQlYfn5cDwZGH3RuD5yIWQm5SV0DN/pub?output=csv"
@@ -441,7 +441,7 @@ async function fetchCloserDataFromCSV() {
                 if (closer && closer.length > 0 && systemSize > 0) {
                     closerData.push({
                         closer: closer,
-                        totalKW: systemSize / 1000, // Convert watts to kilowatts
+                        totalKW: systemSize / 1000,
                         realizationValue: realization
                     });
                 }
@@ -542,7 +542,7 @@ async function getSetterInsightsFromCSV(userRole, teamId) {
                     setterData.push({
                         setter: setter,
                         closer: closer,
-                        totalKW: systemSize / 1000, // Convert watts to kilowatts
+                        totalKW: systemSize / 1000,
                         realizationValue: realization,
                         isSold: realization === 1 // Assuming realization value 1 means sold
                     });
@@ -659,4 +659,5 @@ async function callLeadflowAssistant(input) {
         return `☀️ The cosmic energies are momentarily disrupted, devoted ${input.context.userRole}! Please try your query again, and the solar wisdom shall illuminate your path.`;
     }
 }
+exports.callLeadflowAssistant = callLeadflowAssistant;
 //# sourceMappingURL=ai-assistant.js.map

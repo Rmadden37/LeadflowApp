@@ -16,7 +16,7 @@ export default function CreateLeadPage() {
   const [isFormOpen, setIsFormOpen] = useState(true);
 
   // Check user permissions
-  const canCreateLeads = user?.role === "setter" || user?.role === "manager" || user?.role === "admin";
+  const canCreateLeads = user?.role === "setter" || user?.role === "closer" || user?.role === "manager" || user?.role === "admin";
 
   if (!user) {
     return null; // Layout handles redirect
@@ -30,7 +30,7 @@ export default function CreateLeadPage() {
             <div className="text-center">
               <h2 className="text-xl font-semibold text-destructive mb-2">Access Denied</h2>
               <p className="text-muted-foreground mb-4">
-                You don't have permission to create leads. Only setters, managers, and admins can create new leads.
+                You don't have permission to create leads. Only setters, closers, managers, and admins can create new leads.
               </p>
               <Button onClick={() => router.back()} variant="outline">
                 <ArrowLeft className="h-4 w-4 mr-2" />

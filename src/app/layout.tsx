@@ -1,6 +1,7 @@
 import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import UniversalNavigationWrapper from "@/components/universal-navigation-wrapper";
 import type { Metadata, Viewport } from 'next';
 
 const inter = Inter({ subsets: ["latin"] });
@@ -88,7 +89,11 @@ export default function RootLayout({
             });
           `
         }} />
-        <Providers>{children}</Providers>
+        <Providers>
+          <UniversalNavigationWrapper>
+            {children}
+          </UniversalNavigationWrapper>
+        </Providers>
       </body>
     </html>
   );
