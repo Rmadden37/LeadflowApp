@@ -3,6 +3,7 @@
 // Enhanced Create Lead Form with Aurelian Salomon's iOS UX Excellence
 // Fixes: Visual hierarchy, mobile experience, progressive disclosure, micro-interactions
 
+import "@/styles/aurelian-ios-form-enhancements.css";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -44,7 +45,7 @@ const formSchema = z.object({
   appointmentDate: z.date().optional(),
   appointmentTime: z.string().optional(),
   assignedCloserId: z.string().optional(),
-  photos: z.array(z.instanceof(File)).max(5, { message: "Maximum 5 photos allowed." }).optional(),
+  photos: z.array(z.instanceof(File)).max(5, { message: "Maximum 5 photos allowed." }).default([]),
 }).superRefine((data, ctx) => {
   if (data.dispatchType === "scheduled") {
     if (!data.appointmentDate) {
@@ -98,6 +99,8 @@ const formSchema = z.object({
   }
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 interface CreateLeadFormProps {
   isOpen: boolean;
   onClose?: () => void;
@@ -126,7 +129,7 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     mode: "onSubmit", // Changed from "onBlur" to prevent constant validation
     reValidateMode: "onSubmit", // Only revalidate on submit
@@ -135,12 +138,12 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
       customerPhone: "",
       address: "",
       dispatchType: "immediate",
-      photos: [],
+      photos: [] as File[],
     },
   });
 
   // Don't watch any values - get them when needed to prevent re-renders
-  const getPhotos = useCallback(() => form.getValues("photos") || [], [form]);
+  const getPhotos = useCallback((): File[] => form.getValues("photos") || [], [form]);
   const getDispatchType = useCallback(() => form.getValues("dispatchType"), [form]);
 
   // Memoized step validation functions to prevent unnecessary re-renders
@@ -159,7 +162,6 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
     return true;
   }, [form]);
 
-  // Enhanced address autocomplete - separated for better hook dependencies
   const fetchAddressPredictionsCore = useCallback(async (input: string) => {
     if (input.length < 3) {
       setAddressPredictions([]);
@@ -182,8 +184,11 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
       const response = await fetch(`/api/places-autocomplete?input=${encodeURIComponent(input)}&key=${encodeURIComponent(apiKey)}`);
       if (response.ok) {
         const data = await response.json();
-        setAddressPredictions(data.predictions || []);
-        setShowPredictions(true);
+        // Only update if we still have the same input value (prevent race conditions)
+        if (addressInputRef.current && addressInputRef.current.value === input) {
+          setAddressPredictions(data.predictions || []);
+          setShowPredictions(true);
+        }
       }
     } catch (error) {
       console.error('Error fetching address predictions:', error);
@@ -194,20 +199,20 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
     }
   }, []);
 
-  const fetchAddressPredictions = useCallback((input: string) => {
-    fetchAddressPredictionsCore(input);
-  }, [fetchAddressPredictionsCore]);
-
   // Create debounced version using useMemo to avoid recreating the debounced function
-  const debouncedFetchAddressPredictions = useMemo(
-    () => debounce(fetchAddressPredictions, 300),
-    [fetchAddressPredictions]
-  );
+  const debouncedFetchAddressPredictions = useMemo(() => {
+    return debounce((input: string) => {
+      // Double-check that we should still fetch predictions
+      if (addressInputRef.current && addressInputRef.current.value === input && input.length >= 3) {
+        fetchAddressPredictionsCore(input);
+      }
+    }, 300);
+  }, [fetchAddressPredictionsCore]);
 
   // Photo handling
   const handlePhotoSelect = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    const currentPhotos = form.getValues("photos") || [];
+    const currentPhotos: File[] = form.getValues("photos") || [];
     
     if (currentPhotos.length + files.length > 5) {
       toast({
@@ -234,7 +239,7 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
   }, [form, toast]);
 
   const removePhoto = useCallback((index: number) => {
-    const currentPhotos = form.getValues("photos") || [];
+    const currentPhotos: File[] = form.getValues("photos") || [];
     const currentPreviews = previewUrls;
     
     if (currentPreviews[index] && typeof window !== 'undefined') {
@@ -267,7 +272,7 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
   }, []);
 
   // Form submission with better error handling
-  const onSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = useCallback(async (values: FormValues) => {
     console.log('Form submission started:', values);
     if (!user) {
       console.error('No user found');
@@ -376,43 +381,71 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
     }
   }, [currentStep]);
 
-  // Memoized progress indicator to prevent re-renders
+  // Memoized progress indicator with Aurelian's signature iOS design
   const ProgressIndicator = useCallback(() => (
-    <div className="flex items-center justify-center mb-8">
-      <div className="flex items-center space-x-4">
-        {[1, 2, 3].map((step) => (
-          <div key={step} className="flex items-center">
-            <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
-                currentStep >= step
-                  ? 'bg-[#007AFF] text-white shadow-lg shadow-[#007AFF]/30'
-                  : 'bg-white/10 text-white/50 border border-white/20'
-              }`}
-            >
-              {currentStep > step ? <Check className="w-4 h-4" /> : step}
-            </div>
-            {step < 3 && (
-              <div
-                className={`w-12 h-0.5 mx-2 transition-all duration-300 ${
-                  currentStep > step ? 'bg-[#007AFF]' : 'bg-white/20'
-                }`}
-              />
-            )}
-          </div>
-        ))}
+    <div className="mb-8">
+      {/* Context Header - Tell users what they're doing */}
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2">New Lead</h2>
+        <p className="text-white/70 text-base">Add a new lead to your team's pipeline</p>
+      </div>
+      
+      {/* iOS-Style Progress Indicator */}
+      <div className="flex items-center justify-center">
+        <div className="flex items-center space-x-3">
+          {[1, 2, 3].map((step) => {
+            const isActive = currentStep === step;
+            const isCompleted = currentStep > step;
+            return (
+              <div key={step} className="flex items-center">
+                <div
+                  className={`relative w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
+                    isActive
+                      ? 'bg-[#007AFF] text-white shadow-lg shadow-[#007AFF]/40 scale-110'
+                      : isCompleted
+                      ? 'bg-[#34C759] text-white shadow-lg shadow-[#34C759]/30'
+                      : 'bg-white/10 text-white/50 border border-white/20'
+                  }`}
+                >
+                  {isCompleted ? <Check className="w-5 h-5" /> : step}
+                  {isActive && (
+                    <div className="absolute inset-0 rounded-full bg-[#007AFF] animate-pulse opacity-40"></div>
+                  )}
+                </div>
+                {step < 3 && (
+                  <div
+                    className={`w-16 h-1 mx-2 rounded-full transition-all duration-500 ${
+                      isCompleted ? 'bg-[#34C759]' : 'bg-white/20'
+                    }`}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      
+      {/* Step Context - Show what's happening in each step */}
+      <div className="text-center mt-4">
+        <p className="text-white/60 text-sm">
+          {currentStep === 1 && "Customer Information"}
+          {currentStep === 2 && "Dispatch Preferences"}
+          {currentStep === 3 && "Photos & Review"}
+        </p>
       </div>
     </div>
   ), [currentStep]);
 
   // Memoized step content components to prevent re-creation and focus loss
   const Step1Content = useCallback(() => (
-    <div className="space-y-6">
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-[#007AFF]/20 rounded-full mb-4">
-          <User className="w-8 h-8 text-[#007AFF]" />
+    <div className="space-y-8">
+      {/* Enhanced Section Header with Aurelian's Design */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#007AFF]/20 to-[#0056CC]/20 rounded-3xl mb-6 shadow-lg shadow-[#007AFF]/10">
+          <User className="w-10 h-10 text-[#007AFF]" />
         </div>
-        <h3 className="text-xl font-semibold text-white mb-2">Customer Information</h3>
-        <p className="text-white/60 text-sm">Let's start with the basic customer details</p>
+        <h3 className="text-3xl font-bold text-white mb-3 tracking-tight">Customer Information</h3>
+        <p className="text-white/70 text-lg leading-relaxed">Let's start with the essential customer details</p>
       </div>
 
       <FormField
@@ -420,17 +453,17 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
         name="customerName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-white text-base font-medium">Customer Name</FormLabel>
+            <FormLabel className="text-white text-lg font-semibold mb-3 block">Customer Name</FormLabel>
             <FormControl>
               <Input 
                 {...field}
-                placeholder="Enter customer name" 
-                className="h-12 text-base bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-[#007AFF] focus:ring-[#007AFF]/20 transition-all duration-200"
+                placeholder="Enter customer's full name" 
+                className="h-16 text-lg bg-white/8 border-2 border-white/15 text-white placeholder:text-white/50 focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15 transition-all duration-300 rounded-2xl px-6 shadow-lg shadow-black/10"
                 autoComplete="name"
                 autoFocus
               />
             </FormControl>
-            <FormMessage />
+            <FormMessage className="text-[#FF3B30] text-base mt-2" />
           </FormItem>
         )}
       />
@@ -440,21 +473,21 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
         name="customerPhone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-white text-base font-medium">Phone Number</FormLabel>
+            <FormLabel className="text-white text-lg font-semibold mb-3 block">Phone Number</FormLabel>
             <FormControl>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/40" />
+                <Phone className="absolute left-5 top-1/2 transform -translate-y-1/2 h-6 w-6 text-[#007AFF]" />
                 <Input 
                   {...field}
                   type="tel"
                   inputMode="tel"
                   placeholder="(555) 123-4567"
-                  className="h-12 pl-11 text-base bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-[#007AFF] focus:ring-[#007AFF]/20 transition-all duration-200"
+                  className="h-16 pl-16 text-lg bg-white/8 border-2 border-white/15 text-white placeholder:text-white/50 focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15 transition-all duration-300 rounded-2xl px-6 shadow-lg shadow-black/10"
                   autoComplete="tel"
                 />
               </div>
             </FormControl>
-            <FormMessage />
+            <FormMessage className="text-[#FF3B30] text-base mt-2" />
           </FormItem>
         )}
       />
@@ -464,51 +497,92 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
         name="address"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-white text-base font-medium">Address</FormLabel>
+            <FormLabel className="text-white text-lg font-semibold mb-3 block">Address</FormLabel>
             <FormControl>
               <div className="relative">
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/40" />
+                  <MapPin className="absolute left-5 top-1/2 transform -translate-y-1/2 h-6 w-6 text-[#007AFF]" />
                   <Input
                     {...field}
                     ref={addressInputRef}
-                    placeholder="Enter address"
-                    className="h-12 pl-11 text-base bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-[#007AFF] focus:ring-[#007AFF]/20 transition-all duration-200"
+                    placeholder="Enter street address"
+                    className="h-16 pl-16 text-lg bg-white/8 border-2 border-white/15 text-white placeholder:text-white/50 focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15 transition-all duration-300 rounded-2xl px-6 shadow-lg shadow-black/10 enhanced-form-field"
+                    data-address-input
                     onChange={(e) => {
+                      // Prevent cursor jumping by batching updates
+                      const value = e.target.value;
                       field.onChange(e);
-                      debouncedFetchAddressPredictions(e.target.value);
+                      // Only trigger autocomplete if we have meaningful input
+                      if (value.length >= 3) {
+                        debouncedFetchAddressPredictions(value);
+                      } else {
+                        setShowPredictions(false);
+                        setAddressPredictions([]);
+                      }
                     }}
-                    onBlur={() => {
-                      // Delay hiding predictions to allow clicks
-                      setTimeout(() => setShowPredictions(false), 200);
+                    onFocus={() => {
+                      // Clear any pending predictions when focusing
+                      if (field.value && field.value.length >= 3) {
+                        debouncedFetchAddressPredictions(field.value);
+                      }
+                    }}
+                    onBlur={(e) => {
+                      // Only hide predictions if not clicking on a prediction
+                      const relatedTarget = e.relatedTarget as HTMLElement;
+                      if (!relatedTarget || !relatedTarget.closest('[data-address-prediction]')) {
+                        setTimeout(() => setShowPredictions(false), 150);
+                      }
                     }}
                     autoComplete="address-line1"
+                    inputMode="text"
+                    enterKeyHint="next"
                   />
                   {isLoadingPredictions && (
-                    <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 animate-spin text-white/40" />
+                    <Loader2 className="absolute right-5 top-1/2 transform -translate-y-1/2 h-6 w-6 animate-spin text-[#007AFF]" />
                   )}
                 </div>
                 
                 {showPredictions && addressPredictions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 z-50 bg-gray-800 border border-white/20 rounded-lg shadow-xl max-h-60 overflow-y-auto mt-1">
+                  <div 
+                    className="absolute top-full left-0 right-0 z-50 bg-black/95 backdrop-blur-xl border-2 border-white/20 rounded-2xl shadow-2xl overflow-hidden mt-2 address-predictions-dropdown"
+                    data-address-predictions
+                  >
                     {addressPredictions.map((prediction) => (
                       <div
                         key={prediction.place_id}
-                        className="px-4 py-3 cursor-pointer hover:bg-white/10 text-white transition-colors duration-150"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => {
+                        className="px-6 py-4 cursor-pointer hover:bg-white/10 text-white transition-all duration-200 border-b border-white/10 last:border-b-0 address-prediction-item"
+                        data-address-prediction
+                        onTouchStart={(e) => {
+                          // Prevent iOS focus issues on touch
+                          e.preventDefault();
+                        }}
+                        onMouseDown={(e) => {
+                          // Prevent input blur when clicking dropdown
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          
+                          // Update the field value
                           field.onChange(prediction.description);
+                          
+                          // Close dropdown immediately
                           setShowPredictions(false);
                           setAddressPredictions([]);
-                          // Keep focus on the input
-                          if (addressInputRef.current) {
-                            setTimeout(() => addressInputRef.current?.focus(), 0);
+                          
+                          // Maintain focus on input without refocusing (prevents cursor jump)
+                          if (addressInputRef.current && document.activeElement !== addressInputRef.current) {
+                            requestAnimationFrame(() => {
+                              addressInputRef.current?.focus();
+                            });
                           }
                         }}
                       >
-                        <div className="flex items-center space-x-3">
-                          <MapPin className="h-4 w-4 text-white/40 flex-shrink-0" />
-                          <span className="text-sm">{prediction.description}</span>
+                        <div className="flex items-center space-x-4">
+                          <MapPin className="h-5 w-5 text-[#007AFF] flex-shrink-0" />
+                          <span className="text-base">{prediction.description}</span>
                         </div>
                       </div>
                     ))}
@@ -516,7 +590,7 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
                 )}
               </div>
             </FormControl>
-            <FormMessage />
+            <FormMessage className="text-[#FF3B30] text-base mt-2" />
           </FormItem>
         )}
       />
@@ -649,7 +723,7 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
   ), [form, getDispatchType, user]);
 
   const Step3Content = useCallback(() => {
-    const currentPhotos = getPhotos();
+    const currentPhotos: File[] = getPhotos();
     
     return (
     <div className="space-y-6">
@@ -759,13 +833,13 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
         {currentStep === 2 && <Step2Content />}
         {currentStep === 3 && <Step3Content />}
         
-        <div className="flex justify-between pt-6 border-t border-white/20">
+        <div className="flex justify-between pt-8 border-t border-white/10">
           {currentStep > 1 ? (
             <Button
               type="button"
               variant="outline"
               onClick={prevStep}
-              className="h-12 px-6 bg-transparent border-white/20 text-white hover:bg-white/10"
+              className="h-14 px-8 bg-white/8 border-2 border-white/15 text-white hover:bg-white/12 hover:border-white/25 transition-all duration-300 rounded-2xl text-lg font-semibold shadow-lg shadow-black/10"
             >
               Previous
             </Button>
@@ -774,7 +848,7 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="h-12 px-6 bg-transparent border-white/20 text-white hover:bg-white/10"
+              className="h-14 px-8 bg-white/8 border-2 border-white/15 text-white hover:bg-white/12 hover:border-white/25 transition-all duration-300 rounded-2xl text-lg font-semibold shadow-lg shadow-black/10"
             >
               {embedded ? 'Back' : 'Cancel'}
             </Button>
@@ -785,7 +859,7 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
               type="button"
               onClick={nextStep}
               disabled={currentStep === 1 ? !isStep1Valid() : currentStep === 2 ? !isStep2Valid() : false}
-              className="h-12 px-8 bg-gradient-to-r from-[#007AFF] to-[#0056CC] hover:from-[#007AFF]/90 hover:to-[#0056CC]/90 text-white shadow-lg shadow-[#007AFF]/25 transition-all duration-200"
+              className="h-14 px-10 bg-gradient-to-r from-[#007AFF] to-[#0056CC] hover:from-[#007AFF]/90 hover:to-[#0056CC]/90 disabled:from-gray-600 disabled:to-gray-700 disabled:opacity-50 text-white shadow-xl shadow-[#007AFF]/30 hover:shadow-2xl hover:shadow-[#007AFF]/40 transition-all duration-300 rounded-2xl text-lg font-semibold transform hover:scale-105 active:scale-95"
             >
               Continue
             </Button>
@@ -793,12 +867,12 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
             <Button 
               type="submit" 
               disabled={isSubmitting || uploadingPhotos}
-              className="h-12 px-8 bg-gradient-to-r from-[#007AFF] to-[#0056CC] hover:from-[#007AFF]/90 hover:to-[#0056CC]/90 text-white shadow-lg shadow-[#007AFF]/25 transition-all duration-200"
+              className="h-14 px-10 bg-gradient-to-r from-[#34C759] to-[#28A745] hover:from-[#34C759]/90 hover:to-[#28A745]/90 disabled:from-gray-600 disabled:to-gray-700 disabled:opacity-50 text-white shadow-xl shadow-[#34C759]/30 hover:shadow-2xl hover:shadow-[#34C759]/40 transition-all duration-300 rounded-2xl text-lg font-semibold transform hover:scale-105 active:scale-95"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {uploadingPhotos ? "Uploading..." : "Creating..."}
+                  <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                  {uploadingPhotos ? "Uploading Photos..." : "Creating Lead..."}
                 </>
               ) : (
                 "Create Lead"
