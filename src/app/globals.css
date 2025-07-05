@@ -4,6 +4,16 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+/* PRIMETIME Countdown Card Animations */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 /* iOS Design System Utilities */
 @layer utilities {
   .tap-highlight-transparent {
@@ -42,6 +52,42 @@
   .iOS-blur {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+  }
+  
+  /* Swipe Navigation Utilities */
+  .swipe-navigation-active {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+  }
+  
+  .ios-momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  .swipe-navigation-wrapper {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  .ios-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .disable-pull-refresh {
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: auto;
   }
 }
 
@@ -332,16 +378,6 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     overflow-x: hidden !important;
     width: 100% !important;
     max-width: 100vw !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Main dashboard grid - FIXED container positioning */
-  .dashboard-page-grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 1rem !important;
-    padding: 1rem !important;
-    width: 100% !important;
     max-width: 100vw !important;
     box-sizing: border-box !important;
     margin: 0 !important;
@@ -2135,7 +2171,7 @@ padding-right: 2rem;
   
   .ios-button-tinted:hover {
     background: rgba(0, 122, 255, 0.25);
-    border-color: rgba(0, 122, 255, 0.3);
+    border-color: rgba(0,  122, 255, 0.3);
   }
 }
 
@@ -2593,4 +2629,221 @@ padding-right: 2rem;
 .create-lead-form .photo-upload-empty:hover {
   border-color: rgba(0, 122, 255, 0.4);
   background: rgba(0, 122, 255, 0.05);
+}
+
+/* iOS-style animations for team management */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Enhanced iOS touch interactions */
+.ios-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.ios-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.ios-card:active {
+  transform: translateY(0) scale(0.99);
+  transition: all 0.1s ease-out;
+}
+
+.ios-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ios-button:hover {
+  transform: scale(1.05);
+}
+
+.ios-button:active {
+  transform: scale(0.95);
+}
+
+/* ===================================================================
+   CRITICAL iPHONE INPUT FIXES - Aurelian Salomon
+   Resolves address input issues on iPhone Safari
+   =================================================================== */
+
+/* iPhone Safari Input Optimization */
+@supports (-webkit-touch-callout: none) {
+  /* Target only iOS Safari */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="search"],
+  textarea {
+    /* CRITICAL: Prevent iOS zoom on focus */
+    font-size: 16px !important;
+    
+    /* Disable iOS styling that interferes with custom designs */
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    
+    /* Improve touch interaction */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    
+    /* Prevent text selection issues during autocomplete */
+    -webkit-user-select: text;
+    user-select: text;
+    
+    /* Hardware acceleration for smooth performance */
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+  
+  /* Address input specific fixes */
+  input[data-address-input] {
+    /* Enhanced stability for autocomplete */
+    position: relative;
+    z-index: 1;
+    
+    /* Prevent cursor jumping */
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    
+    /* Smooth transitions */
+    transition: none !important; /* Disable transitions that cause cursor issues */
+  }
+  
+  /* Address autocomplete dropdown fixes */
+  [data-address-predictions] {
+    /* Ensure dropdown doesn't interfere with input */
+    pointer-events: auto;
+    isolation: isolate;
+    z-index: 9999;
+    
+    /* Prevent iOS momentum scrolling issues */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* Address prediction items */
+  [data-address-prediction] {
+    /* Prevent iOS double-tap zoom */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 122, 255, 0.1);
+    
+    /* Ensure proper touch targets */
+    min-height: 44px;
+    
+    /* Prevent text selection during tap */
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Mobile viewport fixes for input fields */
+@media screen and (max-width: 768px) {
+  /* Prevent viewport zoom on any input focus */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Enhanced create lead form mobile fixes */
+  .create-lead-form input {
+    /* Disable iOS zoom */
+    font-size: 16px !important;
+    
+    /* Improve responsiveness */
+    -webkit-appearance: none;
+    appearance: none;
+    
+    /* Better touch interaction */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Address field specific mobile fixes */
+  .create-lead-form input[data-address-input] {
+    /* Prevent input jumping */
+    transform: none !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    
+    /* Stable positioning */
+    position: relative !important;
+    z-index: 2 !important;
+  }
+  
+  /* Dropdown positioning on mobile */
+  .create-lead-form .address-predictions-dropdown {
+    /* Prevent layout shifts */
+    max-height: 40vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    
+    /* Better positioning */
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+  }
+}
+
+/* iPhone X and newer safe area support */
+@supports (padding: max(0px)) and (-webkit-touch-callout: none) {
+  .create-lead-form {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+  }
+  
+  /* Ensure dropdown doesn't go behind safe area */
+  .address-predictions-dropdown {
+    bottom: max(0px, env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* Fix for iOS keyboard appearance */
+@supports (-webkit-touch-callout: none) {
+  /* Prevent layout shifts when keyboard appears */
+  .create-lead-form .relative {
+    /* Stable container for address input */
+    contain: layout style !important;
+  }
+  
+  /* Input stability during keyboard animation */
+  .create-lead-form input:focus {
+    /* Prevent smooth scrolling interference */
+    scroll-behavior: auto !important;
+    
+    /* Maintain position during keyboard appearance */
+    position: relative !important;
+    z-index: 3 !important;
+  }
 }

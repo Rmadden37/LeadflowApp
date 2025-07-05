@@ -536,6 +536,9 @@ export default function CreateLeadFormEnhanced({ isOpen, onClose, onSuccess, emb
                     autoComplete="address-line1"
                     inputMode="text"
                     enterKeyHint="next"
+                    spellCheck={false}
+                    autoCorrect="off"
+                    autoCapitalize="off"
                   />
                   {isLoadingPredictions && (
                     <Loader2 className="absolute right-5 top-1/2 transform -translate-y-1/2 h-6 w-6 animate-spin text-[#007AFF]" />
