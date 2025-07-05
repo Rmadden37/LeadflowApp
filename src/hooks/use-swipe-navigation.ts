@@ -37,7 +37,7 @@ export function useSwipeNavigation(config: SwipeNavigationConfig = {}) {
   
   const touchStartTimeRef = useRef<number>(0);
   const lastTouchXRef = useRef<number>(0);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
