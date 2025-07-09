@@ -1,14 +1,13 @@
-
 "use client";
 
-import {useAuth} from "@/hooks/use-auth";
-import LoginForm from "@/components/auth/login-form";
-import {Loader2} from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import SignupForm from "@/components/auth/signup-form";
+import { Loader2 } from "lucide-react";
 import InfinityLogo from "@/components/ui/infinity-logo";
 import Link from "next/link";
 
-export default function LoginPage() {
-  const {user, loading} = useAuth();
+export default function SignupPage() {
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -33,11 +32,11 @@ export default function LoginPage() {
         <InfinityLogo size={56} className="drop-shadow-xl" />
         <h1 className="text-4xl font-bold font-headline tracking-tight">LeadFlow</h1>
       </div>
-      <LoginForm />
+      <SignupForm />
       <div className="mt-6 text-center text-sm text-muted-foreground">
-        Don't have an account?{" "}
-        <Link href="/signup" className="text-primary hover:underline">
-          Sign up here
+        Already have an account?{" "}
+        <Link href="/login" className="text-primary hover:underline">
+          Login here
         </Link>
       </div>
     </div>

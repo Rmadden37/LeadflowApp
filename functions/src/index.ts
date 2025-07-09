@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { approveUser } from "./user-approval";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -1908,3 +1909,6 @@ export const generateAnalyticsReport = functions.https.onCall(async (data, conte
     throw new functions.https.HttpsError("internal", "Internal server error");
   }
 });
+
+// Export the approveUser function
+export { approveUser };

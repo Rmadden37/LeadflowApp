@@ -118,10 +118,17 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     if (loading) return;
     
     // Only redirect if we're certain about the auth state
-    if (!user && pathname !== "/login") {
+    if (!user && pathname !== "/login" && pathname !== "/signup") {
       router.replace("/login");
-    } else if (user && pathname === "/login") {
-      router.replace("/dashboard");
+    } else if (user) {
+      // Check if user is pending approval
+      if (user.isPendingApproval && pathname !== "/pending-approval") {
+        router.replace("/pending-approval");
+      } else if (!user.isPendingApproval && pathname === "/pending-approval") {
+        router.replace("/dashboard");
+      } else if (!user.isPendingApproval && pathname === "/login") {
+        router.replace("/dashboard");
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading, pathname]);

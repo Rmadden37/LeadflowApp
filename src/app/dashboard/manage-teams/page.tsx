@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2, ShieldAlert, Users } from "lucide-react";
 import TeamUserManagementEnhanced from "@/components/dashboard/team-user-management-ios";
+import PendingUserApprovals from "@/components/dashboard/pending-user-approvals";
 
 export default function ManageTeamsPage() {
   const { user, loading } = useAuth();
@@ -62,6 +63,9 @@ export default function ManageTeamsPage() {
           </div>
         </div>
       </div>
+
+      {/* Pending User Approvals Section */}
+      <PendingUserApprovals />
 
       {/* Main Content - iOS Enhanced Interface */}
       <TeamUserManagementEnhanced />

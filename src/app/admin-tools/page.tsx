@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { Settings, Shield, AlertTriangle } from "lucide-react";
+import { Settings, Shield, AlertTriangle, UserCheck } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminTools() {
@@ -225,55 +225,87 @@ export default function AdminTools() {
       )}
 
       {hasPermission && (
-        <Card className="max-w-4xl mx-auto frosted-glass-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="w-5 h-5" />
-              Tony Tiger Lead Status Fix
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-sm text-gray-600">
-              <p><strong>What this tool does:</strong></p>
-              <ul className="list-disc ml-5 mt-2 space-y-1">
-                <li>Finds Tony Tiger's lead in the database</li>
-                <li>Changes status from "scheduled" to "rescheduled"</li>
-                <li>This makes the lead show a <span className="text-purple-600 font-semibold">PURPLE</span> rescheduled icon instead of blue</li>
-                <li>Only works for Manager/Admin users</li>
-              </ul>
-            </div>
-            
-            {!firebaseReady && hasPermission && (
-              <div className="text-amber-600 text-sm">
-                ⚠️ Firebase is still loading...
-              </div>
+        <>
+          {/* Admin Tool Cards */}
+          <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3 mb-6">
+            {/* Pending User Approval Card */}
+            <Card className="frosted-glass-card hover:shadow-lg transition-all duration-300">
+              <Link href="/admin-tools/pending-users">
+                <CardContent className="p-6 flex flex-col items-center space-y-4 h-full">
+                  <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
+                    <UserCheck className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-center">Pending Users</h3>
+                  <p className="text-sm text-center text-muted-foreground">
+                    Review and approve new user signup requests
+                  </p>
+                </CardContent>
+              </Link>
+            </Card>
+
+            {/* Team Initialization Card - Only for admins */}
+            {user?.role === "admin" && (
+              <Card className="frosted-glass-card hover:shadow-lg transition-all duration-300">
+                <Link href="/dashboard/initialize-teams">
+                  <CardContent className="p-6 flex flex-col items-center space-y-4 h-full">
+                    <div className="p-3 rounded-full bg-green-100 dark:bg-green-900">
+                      <Settings className="h-8 w-8 text-green-600 dark:text-green-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-center">Team Setup</h3>
+                    <p className="text-sm text-center text-muted-foreground">
+                      Initialize required teams for the Empire region
+                    </p>
+                  </CardContent>
+                </Link>
+              </Card>
             )}
-            
-            <Button 
-              onClick={handleQuickFix}
-              disabled={isLoading || !firebaseReady}
-              className="w-full"
-            >
-              {isLoading ? "Working..." : "Find and Fix Tony Tiger Lead"}
-            </Button>
-            
-            {results && (
-              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border">
-                <h3 className="font-semibold mb-2">Results:</h3>
-                <pre className="text-sm whitespace-pre-wrap font-mono overflow-x-auto">{results}</pre>
-              </div>
-            )}
-            
-            <div className="text-xs text-gray-500 border-t pt-4">
-              <p><strong>Alternative method:</strong> You can also run the browser console script:</p>
-              <ol className="list-decimal ml-5 mt-1 space-y-1">
-                <li>Go to the dashboard page</li>
-                <li>Open Developer Tools (F12) → Console tab</li>
-                <li>Copy and paste the script from <code>/scripts/browser-fix-tony-tiger.js</code></li>
-              </ol>
-            </div>
-          </CardContent>
-        </Card>
+
+            {/* Tony Tiger Fix Card */}
+            <Card className="frosted-glass-card hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-6 flex flex-col items-center space-y-4 h-full">
+                <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900">
+                  <Shield className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-center">Tony Tiger Fix</h3>
+                <p className="text-sm text-center text-muted-foreground">
+                  Fix the Tony Tiger lead status in the database
+                </p>
+                <Button 
+                  onClick={handleQuickFix}
+                  disabled={isLoading || !firebaseReady}
+                  className="w-full mt-auto"
+                >
+                  {isLoading ? "Working..." : "Run Fix"}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Tony Tiger Fix Results */}
+          {results && (
+            <Card className="max-w-4xl mx-auto frosted-glass-card mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="w-5 h-5" />
+                  Tony Tiger Fix Results
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border">
+                  <pre className="text-sm whitespace-pre-wrap font-mono overflow-x-auto">{results}</pre>
+                </div>
+                <div className="text-xs text-gray-500 border-t pt-4 mt-4">
+                  <p><strong>Alternative method:</strong> You can also run the browser console script:</p>
+                  <ol className="list-decimal ml-5 mt-1 space-y-1">
+                    <li>Go to the dashboard page</li>
+                    <li>Open Developer Tools (F12) → Console tab</li>
+                    <li>Copy and paste the script from <code>/scripts/browser-fix-tony-tiger.js</code></li>
+                  </ol>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </>
       )}
     </div>
   );

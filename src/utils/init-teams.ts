@@ -29,8 +29,8 @@ const DEFAULT_TEAMS: Omit<Team, "createdAt" | "updatedAt">[] = [
   {
     id: "empire",
     name: "Empire",
-    description: "Elite sales team for enterprise-level opportunities",
-    regionId: "default",
+    description: "Managed by Rocky Niger, Joseph Niger, Richard Niger, Sam Hernandez",
+    regionId: "empire",
     isActive: true,
     settings: {
       autoAssignment: true,
@@ -38,6 +38,38 @@ const DEFAULT_TEAMS: Omit<Team, "createdAt" | "updatedAt">[] = [
       workingHours: {
         start: "07:00",
         end: "22:00",
+        timezone: "America/Los_Angeles"
+      }
+    }
+  },
+  {
+    id: "takeoverpros",
+    name: "TakeoverPros",
+    description: "Managed by Andrea Rovayo and Sebastian Vizcarrondo",
+    regionId: "empire",
+    isActive: true,
+    settings: {
+      autoAssignment: true,
+      maxLeadsPerCloser: 10,
+      workingHours: {
+        start: "08:00",
+        end: "21:00",
+        timezone: "America/Los_Angeles"
+      }
+    }
+  },
+  {
+    id: "revolution",
+    name: "Revolution",
+    description: "Managed by Joshua Long",
+    regionId: "empire",
+    isActive: true,
+    settings: {
+      autoAssignment: true,
+      maxLeadsPerCloser: 10,
+      workingHours: {
+        start: "08:00",
+        end: "21:00",
         timezone: "America/Los_Angeles"
       }
     }

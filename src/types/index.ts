@@ -13,6 +13,7 @@ export interface AppUser {
   photoUrl?: string;
   phoneNumber?: string | null;
   status?: "On Duty" | "Off Duty" | string;
+  isPendingApproval?: boolean;
 }
 
 export type LeadStatus =
