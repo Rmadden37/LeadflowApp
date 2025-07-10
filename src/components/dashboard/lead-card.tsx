@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import {useAuth} from "@/hooks/use-auth";
 import {useState} from "react";
-import LeadDispositionModal from "./lead-disposition-modal";
+import { LeadDispositionModal } from "./lead-disposition-modal";
 import dynamic from 'next/dynamic';
 
 // Use dynamic import for the photo gallery to reduce initial bundle size
