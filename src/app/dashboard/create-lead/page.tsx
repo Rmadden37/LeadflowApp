@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
-import CreateLeadFormEnhanced from "@/components/dashboard/create-lead-form-enhanced";
+import CreateLeadForm from "@/components/dashboard/create-lead-form";
 import { useToast } from "@/hooks/use-toast";
 
 export default function CreateLeadPage() {
@@ -90,7 +90,7 @@ export default function CreateLeadPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <CreateLeadFormEnhanced 
+          <CreateLeadForm 
             isOpen={true} 
             onClose={handleFormClose}
             onSuccess={handleFormSuccess}

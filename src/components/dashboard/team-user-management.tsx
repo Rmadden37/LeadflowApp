@@ -32,8 +32,11 @@ import {useToast} from "@/hooks/use-toast";
 import ChangeUserRoleModal from "./change-user-role-modal";
 import ConfirmUserDeleteModal from "./confirm-user-delete-modal";
 import UploadAvatarModal from "./upload-avatar-modal";
+import UpdateUserProfileModal from "./update-user-profile-modal";
+import TeamAvailabilityToggle from "./team-availability-toggle";
 import TeamSelector from "./team-selector";
 import InviteNewUserButton from "./invite-new-user-button";
+import PendingApprovals from "./pending-approvals";
 import {initializeTeams} from "@/utils/init-teams";
 
 interface Team {
@@ -55,6 +58,8 @@ export default function TeamUserManagement() {
   const [selectedUserForRoleChange, setSelectedUserForRoleChange] = useState<AppUser | null>(null);
   const [selectedUserForDelete, setSelectedUserForDelete] = useState<AppUser | null>(null);
   const [selectedUserForAvatar, setSelectedUserForAvatar] = useState<AppUser | null>(null);
+  const [selectedUserForProfile, setSelectedUserForProfile] = useState<AppUser | null>(null);
+  const [closerStatuses, setCloserStatuses] = useState<{ [uid: string]: "On Duty" | "Off Duty" }>({});
 
   // Load all teams and initialize missing ones
   useEffect(() => {
@@ -122,6 +127,28 @@ export default function TeamUserManagement() {
     }
     return undefined;
   }, [managerUser, toast]);
+
+  // Load closer statuses for team members who are closers/managers/admins
+  useEffect(() => {
+    if (managerUser?.role === "manager" || managerUser?.role === "admin") {
+      const closersQuery = query(collection(db, "closers"));
+      
+      const unsubscribe = onSnapshot(closersQuery, (snapshot) => {
+        const statuses: { [uid: string]: "On Duty" | "Off Duty" } = {};
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          statuses[doc.id] = data.status || "Off Duty";
+        });
+        setCloserStatuses(statuses);
+      }, (error) => {
+        console.error("Error loading closer statuses:", error);
+      });
+
+      return () => unsubscribe();
+    }
+    
+    return undefined;
+  }, [managerUser]);
 
   const handleDeleteUser = async (userToDelete: AppUser) => {
     if (!managerUser || (managerUser.role !== "manager" && managerUser.role !== "admin")) {
@@ -270,6 +297,9 @@ export default function TeamUserManagement() {
 
   return (
     <>
+      {/* Pending User Approvals */}
+      <PendingApprovals />
+
       {/* Enhanced Team Selection and Invite Controls */}
       <div className="frosted-glass-card p-4 lg:p-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -395,9 +425,9 @@ export default function TeamUserManagement() {
                             className={`h-12 w-12 lg:h-14 lg:w-14 border-2 cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-[var(--accent-primary)] hover:ring-offset-2 ${
                               isCurrentUser ? 'ring-2 ring-[var(--accent-primary)] ring-offset-2 border-[var(--accent-primary)]' : 'border-[var(--glass-border)]'
                             }`}
-                            onClick={() => setSelectedUserForAvatar(teamMember)}
+                            onClick={() => setSelectedUserForProfile(teamMember)}
                             tabIndex={0}
-                            aria-label={`Edit avatar for ${teamMember.displayName || teamMember.email}`}
+                            aria-label={`Edit profile for ${teamMember.displayName || teamMember.email}`}
                           >
                             <AvatarImage src={teamMember.avatarUrl || undefined} alt={teamMember.displayName || teamMember.email || "User"} />
                             <AvatarFallback className="text-base font-bold">
@@ -410,8 +440,8 @@ export default function TeamUserManagement() {
                           
                           {/* Camera overlay on hover */}
                           <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
-                               onClick={() => setSelectedUserForAvatar(teamMember)}>
-                            <Camera className="h-4 w-4 text-white" />
+                               onClick={() => setSelectedUserForProfile(teamMember)}>
+                            <UserCog className="h-4 w-4 text-white" />
                           </div>
                         </div>
                         
@@ -444,6 +474,16 @@ export default function TeamUserManagement() {
                               {teams.find(t => t.id === teamMember.teamId)?.name || 'Unknown'}
                             </span>
                           </div>
+                          
+                          {/* Availability Toggle for closers, managers, and admins */}
+                          {(teamMember.role === "closer" || teamMember.role === "manager" || teamMember.role === "admin") && (
+                            <div className="mt-3">
+                              <TeamAvailabilityToggle 
+                                targetUser={teamMember}
+                                currentStatus={closerStatuses[teamMember.uid]}
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                       
@@ -464,8 +504,11 @@ export default function TeamUserManagement() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-48 bg-[var(--background)]/95 backdrop-blur-lg border border-[var(--glass-border)] shadow-2xl">
+                            <DropdownMenuItem onClick={() => setSelectedUserForProfile(teamMember)} aria-label="Edit full profile" className="text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/10 focus:bg-[var(--accent-primary)]/10">
+                              <UserCog className="mr-2 h-4 w-4" /> Edit Full Profile
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => setSelectedUserForRoleChange(teamMember)} aria-label="Change role" className="text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/10 focus:bg-[var(--accent-primary)]/10">
-                              <UserCog className="mr-2 h-4 w-4" /> Change Role
+                              <ShieldAlert className="mr-2 h-4 w-4" /> Change Role
                             </DropdownMenuItem>
                             <DropdownMenuItem 
                               onClick={() => setSelectedUserForDelete(teamMember)} 
@@ -510,6 +553,14 @@ export default function TeamUserManagement() {
           user={selectedUserForAvatar}
           isOpen={!!selectedUserForAvatar}
           onClose={() => setSelectedUserForAvatar(null)}
+        />
+      )}
+
+      {selectedUserForProfile && (
+        <UpdateUserProfileModal
+          user={selectedUserForProfile}
+          isOpen={!!selectedUserForProfile}
+          onClose={() => setSelectedUserForProfile(null)}
         />
       )}
     </>

@@ -1,10 +1,18 @@
 import { Inter, Lora } from "next/font/google";
 import "./globals.css";
+import "../styles/performance-optimizations.css";
 import { Providers } from "./providers";
 import type { Metadata, Viewport } from 'next';
 
-const inter = Inter({ subsets: ["latin"] });
-const lora = Lora({ subsets: ["latin"], variable: '--font-lora' });
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap',
+});
+const lora = Lora({ 
+  subsets: ["latin"], 
+  variable: '--font-lora',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'LeadFlow',
@@ -57,20 +65,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Preload critical fonts to prevent layout shifts and flashes of unstyled text */}
-        <link
-          rel="preload"
-          href={`https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZJhiI2B.woff2`}
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href={`https://fonts.gstatic.com/s/lora/v35/0QI6MX1D_JOuGQbT0gvTJPa787weuxJBkq18m9KZ0Mv.woff2`}
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
       </head>
       <body className={`${inter.className} ${lora.variable} font-body antialiased bg-background text-foreground min-h-screen`}>
         <script dangerouslySetInnerHTML={{

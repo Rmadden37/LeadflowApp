@@ -7,8 +7,7 @@ import {useToast} from "@/hooks/use-toast";
 import {db, acceptJobFunction} from "@/lib/firebase";
 import {collection, query, where, onSnapshot, orderBy, limit, doc, updateDoc, serverTimestamp, getDoc} from "firebase/firestore";
 import LeadCard from "./lead-card";
-import CloserCard from "./closer-card";
-import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import LeadDetailsDialog from "./lead-details-dialog";
 import { Loader2, Ghost } from "lucide-react";
 import Image from "next/image";
 
@@ -63,7 +62,6 @@ export default function InProcessLeads() {
   const [allTeamClosers, setAllTeamClosers] = useState<Closer[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [_isDispositionModalOpen, setIsDispositionModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user || !user.teamId) {
@@ -263,76 +261,20 @@ export default function InProcessLeads() {
   const hasSpecialPermissions = user?.role === "closer" && checkSpecialLeadVisibilityPermissions(user.uid);
   const _allowedCloserIds = hasSpecialPermissions ? getAllowedCloserIds(user.uid) : [];
 
-  // Function to handle lead click with access control and job acceptance
-  const handleLeadClick = async (lead: Lead) => {
+  // Function to handle lead click - simplified to match lead queue pattern
+  const handleLeadClick = (lead: Lead) => {
     console.log('🔥 InProcessLeads - Lead clicked:', { 
       leadId: lead.id, 
       customerName: lead.customerName,
-      leadStatus: lead.status,
-      assignedCloserId: lead.assignedCloserId,
-      userRole: user?.role,
-      userUid: user?.uid 
+      userRole: user?.role 
     });
-
-    // Access control: managers can see all leads, closers can see their own assigned leads or leads they have special permissions for
-    const hasSpecialPermissions = user?.role === "closer" && checkSpecialLeadVisibilityPermissions(user.uid);
-    const canAccessLead = user?.role === "manager" || user?.role === "admin" || 
-                         (user?.role === "closer" && user.uid === lead.assignedCloserId) ||
-                         (hasSpecialPermissions && getAllowedCloserIds(user.uid).includes(lead.assignedCloserId || ""));
-    
-    if (canAccessLead) {
-      
-      // If the closer is clicking on their own lead that hasn't been accepted yet, trigger acceptance
-      if (user?.role === "closer" && 
-          user.uid === lead.assignedCloserId && 
-          (lead.status === "waiting_assignment" || lead.status === "scheduled") && 
-          !lead.acceptedAt) {
-        
-        try {
-          const result = await acceptJobFunction({ leadId: lead.id });
-          const data = result.data as { success: boolean; alreadyAccepted?: boolean };
-          
-          if (data.success && !data.alreadyAccepted) {
-            toast({
-              title: "Job Accepted",
-              description: `You have accepted the job for ${lead.customerName}. The setter has been notified.`,
-            });
-          }
-        } catch (error) {
-          console.error("Error accepting job:", error);
-          toast({
-            title: "Acceptance Failed",
-            description: "Failed to accept the job. Please try again.",
-            variant: "destructive",
-          });
-          return; // Don't open the modal if acceptance failed
-        }
-      }
-      
-      // Open the lead details modal
-      setSelectedLead(lead);
-      setIsModalOpen(true);
-    } else {
-      toast({
-        title: "Access Denied",
-        description: "You can only view details for leads assigned to you.",
-        variant: "destructive",
-      });
-    }
+    setSelectedLead(lead);
+    setIsModalOpen(true);
   };
 
-  const _handleDispositionClick = (lead: Lead) => {
-    // Allow closers to disposition leads that are accepted or in process
-    if (user?.role === "closer" && (lead.status === "in_process" || lead.status === "accepted")) {
-      setSelectedLead(lead);
-      setIsDispositionModalOpen(true);
-    } else {
-      toast({
-        title: "Access Denied",
-        description: "You can only disposition leads that are accepted or in process.",
-        variant: "destructive",
-      });
-    }
+  const handleCloseDialog = () => {
+    setSelectedLead(null);
+    setIsModalOpen(false);
   };
 
   const handleDispositionChange = async (leadId: string, newStatus: LeadStatus) => {
@@ -481,19 +423,12 @@ export default function InProcessLeads() {
           );
       })}
       
-      {/* Modal for lead details - keep this for functionality */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[var(--bg-color)] border-[var(--glass-border)] text-[var(--text-primary)]">
-          <DialogHeader>
-            <DialogTitle>Lead Details</DialogTitle>
-          </DialogHeader>
-          {selectedLead && (
-            <div className="mt-4">
-              <LeadCard lead={selectedLead} context="in-process" />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <LeadDetailsDialog 
+        lead={selectedLead} 
+        isOpen={isModalOpen} 
+        onClose={handleCloseDialog} 
+        context="in-process"
+      />
     </div>
     </>
   );

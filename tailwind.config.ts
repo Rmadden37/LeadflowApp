@@ -123,6 +123,10 @@ const config: Config = {
             'block-size': '0',
           },
         },
+        'spin': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
         'icon-pulse': {
           '0%, 100%': {
             filter: 'drop-shadow(0 0 5px rgba(255, 255, 255, 0.5))',
@@ -149,6 +153,7 @@ const config: Config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'spin': 'spin 1s linear infinite',
         'icon-pulse': 'icon-pulse 2s ease-in-out infinite',
         'pulse-subtle': 'pulse-subtle 2.5s ease-in-out infinite',
       },

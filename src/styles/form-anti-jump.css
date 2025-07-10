@@ -1,0 +1,442 @@
+/* BULLETPROOF FORM ANTI-JUMP CSS */
+/* Prevents all forms of layout shifting and jumping */
+
+/* === 1. RESERVED SPACE FOR VALIDATION MESSAGES === */
+.form-field-container {
+  position: relative;
+  margin-bottom: 1.5rem; /* 24px - always reserve space */
+}
+
+.form-message-container {
+  min-height: 1.25rem; /* 20px - always reserve space for error messages */
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0.25rem;
+}
+
+.form-message {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* === 2. STABLE LAYOUT CONTAINERS === */
+.stable-form-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.stable-form-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important for flex behavior */
+}
+
+/* === 3. PREVENT FONT LOADING SHIFTS === */
+.form-text {
+  font-display: swap;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === 4. STABLE INPUT CONTAINERS === */
+.stable-input-wrapper {
+  position: relative;
+  width: 100%;
+  height: 3.5rem; /* 56px - consistent height */
+  display: flex;
+  align-items: center;
+}
+
+.stable-input {
+  width: 100%;
+  height: 100%;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.75rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0 1rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* Prevent iOS zoom and maintain stability */
+@media screen and (max-width: 768px) {
+  .stable-input {
+    font-size: 16px !important; /* Prevents iOS zoom */
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
+
+/* === 5. STABLE DROPDOWN POSITIONING === */
+.stable-dropdown-container {
+  position: relative;
+  isolation: isolate;
+}
+
+.stable-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  max-height: 12rem; /* 192px - fixed max height */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 0.5rem;
+  
+  /* Prevent layout shifts */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.stable-dropdown-item {
+  min-height: 2.75rem; /* 44px - iOS touch target */
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.stable-dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* === 6. STABLE STEP NAVIGATION === */
+.stable-step-container {
+  min-height: 2rem; /* Reserve space for step indicator */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.stable-step-content {
+  min-height: 20rem; /* Reserve minimum content height */
+  display: flex;
+  flex-direction: column;
+}
+
+/* === 7. STABLE BUTTON CONTAINER === */
+.stable-button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 4rem; /* 64px - consistent height for button area */
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stable-button {
+  min-height: 3.5rem; /* 56px - consistent button height */
+  min-width: 7rem; /* 112px - minimum button width */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.stable-button-wrapper {
+  display: flex;
+  align-items: center;
+  min-width: 120px; /* Reserve minimum space for buttons */
+  height: 3.5rem; /* 56px - match button height */
+}
+
+.stable-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.5rem; /* Reserve space for button content */
+  transition: none; /* Prevent layout shifts during state changes */
+}
+
+/* === 8. STABLE PHOTO UPLOAD AREA === */
+.stable-photo-container {
+  min-height: 8rem; /* Reserve space even when empty */
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  transition: border-color 0.2s ease;
+}
+
+.stable-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+  gap: 1rem;
+  width: 100%;
+  min-height: 6rem; /* Reserve space for photos */
+}
+
+.stable-photo-item {
+  aspect-ratio: 1;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* === 9. LOADING STATE STABILITY === */
+.stable-loading-container {
+  position: relative;
+  min-height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stable-loading-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top: 2px solid #007AFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.stable-loading-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* === 10. PREVENT TRANSFORM-BASED JUMPING === */
+.no-jump {
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+/* === 11. STABLE RADIO/CHECKBOX GROUPS === */
+.stable-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stable-radio-item {
+  min-height: 3rem; /* Consistent height for all radio items */
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+/* === 12. PREVENT CONTENT LAYOUT SHIFT === */
+.prevent-cls {
+  contain: layout;
+  content-visibility: auto;
+}
+
+/* === 13. MOBILE SPECIFIC ANTI-JUMP === */
+@media screen and (max-width: 768px) {
+  /* Prevent keyboard-induced jumping */
+  .mobile-stable-form {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height */
+  }
+  
+  /* Stable input focus without jumping */
+  .mobile-stable-input:focus {
+    scroll-margin-bottom: 8rem;
+    transform: none;
+  }
+  
+  /* Prevent viewport jumping on focus */
+  .mobile-input-container {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* === 14. ENHANCED STABLE BUTTON LAYOUTS === */
+.stable-button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 4rem; /* 64px - consistent height for button area */
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stable-button-wrapper {
+  display: flex;
+  align-items: center;
+  min-width: 120px; /* Reserve minimum space for buttons */
+  height: 3.5rem; /* 56px - match button height */
+}
+
+.stable-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.5rem; /* Reserve space for button content */
+  transition: none; /* Prevent layout shifts during state changes */
+}
+
+/* === 15. CONDITIONAL CONTENT CONTAINERS === */
+.conditional-content-container {
+  min-height: 2rem; /* Reserve minimum space for conditional content */
+  transition: all 0.3s ease-in-out;
+}
+
+.conditional-content-container:empty {
+  min-height: 0; /* Allow collapse when empty */
+}
+
+/* === 16. STEP TRANSITION PREVENTION === */
+.form-step-container {
+  min-height: 400px; /* Reserve minimum height for any step */
+  display: flex;
+  flex-direction: column;
+}
+
+.form-step-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === 17. LOADING STATE STABILIZATION === */
+.stable-loading-container {
+  position: relative;
+  min-height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === 18. ADDRESS FIELD SPECIFIC ANTI-JUMP === */
+.address-input-container-stable {
+  position: relative;
+  isolation: isolate;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.address-input-stable {
+  position: relative;
+  padding-left: 2.5rem; /* 40px - space for icon */
+  padding-right: 2.5rem; /* 40px - space for loading indicator */
+  transition: none !important; /* Prevent any transition-based jumping */
+  -webkit-transform: translateZ(0); /* Hardware acceleration for iOS */
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.address-icon-stable {
+  position: absolute;
+  left: 0.75rem; /* 12px */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.input-loading-stable {
+  position: absolute;
+  right: 0.75rem; /* 12px */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.autocomplete-dropdown-stable {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  max-height: 12rem; /* 192px - fixed max height */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 0.5rem;
+  
+  /* Prevent layout shifts and ensure stable positioning */
+  transform: translateZ(0);
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  
+  /* Prevent iOS viewport jumping */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent focus-induced cursor jumping on mobile */
+@media screen and (max-width: 768px) {
+  .address-input-stable:focus {
+    /* Prevent iOS zoom */
+    font-size: 16px !important;
+    
+    /* Maintain stable positioning */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    
+    /* Prevent viewport manipulation */
+    scroll-behavior: auto;
+    scroll-margin-bottom: 0;
+    
+    /* Stable focus without jumping */
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Ensure dropdown doesn't cause jumping */
+  .autocomplete-dropdown-stable {
+    position: fixed;
+    top: auto;
+    bottom: auto;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+}
+
+/* === 19. HARDWARE ACCELERATION FOR ALL INTERACTIVE ELEMENTS === */
+.stable-input:focus,
+.stable-dropdown-item:hover,
+.stable-button:hover {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}

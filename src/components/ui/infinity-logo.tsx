@@ -8,14 +8,15 @@ interface InfinityLogoProps {
 
 export const InfinityLogo: React.FC<InfinityLogoProps> = ({ size = 48, className = '', animated = true }) => {
   return (
-    <div className={`inline-flex items-center justify-center ${className}`}>
+    <div className={`inline-flex items-center justify-center ${className}`} style={{ overflow: 'hidden' }}>
       <svg
-        width={size * 1.5}
+        width={size * 1.2}
         height={size}
-        viewBox="0 0 120 80"
+        viewBox="0 0 75 80"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="drop-shadow-lg"
+        style={{ overflow: 'hidden' }}
       >
         <defs>
           {/* Gradient for the infinity symbol */}
@@ -67,48 +68,6 @@ export const InfinityLogo: React.FC<InfinityLogoProps> = ({ size = 48, className
           filter="url(#innerShadow)"
           className="drop-shadow-md"
         />
-        
-        {/* Glowing Orb */}
-        <circle
-          cx="85"
-          cy="40"
-          r="8"
-          fill="url(#orbGradient)"
-          filter="url(#orbGlow)"
-          className="animate-pulse"
-        >
-          {animated && (
-            <animateTransform
-              attributeName="transform"
-              attributeType="XML"
-              type="translate"
-              values="85,40; 35,40; 85,40"
-              dur="4s"
-              repeatCount="indefinite"
-            />
-          )}
-        </circle>
-        
-        {/* Highlight on orb for 3D effect */}
-        <ellipse
-          cx="83"
-          cy="37"
-          rx="3"
-          ry="2"
-          fill="#fef3c7"
-          opacity="0.8"
-        >
-          {animated && (
-            <animateTransform
-              attributeName="transform"
-              attributeType="XML"
-              type="translate"
-              values="83,37; 33,37; 83,37"
-              dur="4s"
-              repeatCount="indefinite"
-            />
-          )}
-        </ellipse>
       </svg>
     </div>
   );

@@ -15,7 +15,7 @@ import {updateProfile, sendPasswordResetEmail} from "firebase/auth";
 import {doc, updateDoc, getDoc} from "firebase/firestore";
 import {ref as storageRef, uploadBytesResumable, getDownloadURL} from "firebase/storage";
 import {useToast} from "@/hooks/use-toast";
-import {Loader2, User, Mail, ShieldCheck, Edit3, KeyRound, Camera, Users, Bell, Settings, Shield, Database, UserCheck, Palette, LogOut} from "lucide-react";
+import {Loader2, User, Mail, ShieldCheck, Edit3, KeyRound, Camera, Users, Bell, Settings, Shield, Database, Palette, LogOut, UserCheck} from "lucide-react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose} from "@/components/ui/dialog";
 import ReactCrop, {type Crop, PixelCrop, centerCrop, makeAspectCrop} from "react-image-crop";

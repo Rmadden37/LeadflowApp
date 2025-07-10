@@ -10,7 +10,6 @@ import CloserCard from "./closer-card";
 import { Users, Loader2, Settings } from "lucide-react";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import ManageClosersModal from "./off-duty-closers-modal";
-import { motion } from "framer-motion";
 import Image from "next/image";
 
 export default function CloserLineup() {
@@ -218,17 +217,25 @@ export default function CloserLineup() {
             <Loader2 className="w-8 h-8 animate-spin text-[var(--text-secondary)]" />
           </div>
         ) : closers.length > 0 ? (
-          <div className="relative">
-            <ScrollArea className="w-full">
-              <div className="flex gap-6 py-2 px-4 justify-center min-w-full">
+          <div className="relative overflow-hidden">
+            <ScrollArea className="w-full h-32 closer-lineup-scroll">
+              <div className="flex gap-6 py-6 px-8 w-max min-w-full items-center"
+                   style={{ 
+                     blockSize: 'fit-content',
+                     maxBlockSize: '100px' 
+                   }}>
                 {closers.map((closer, index) => (
                   <div key={closer.uid} className="flex flex-col items-center flex-shrink-0">
-                    <div className="relative mb-2" style={{ padding: '4px' }}>
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.5, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ delay: Math.min(index * 0.15, 1) }} // Cap delay for many closers
-                        className="relative"
+                    <div className="relative mb-2 closer-lineup-avatar-container">
+                      {/* Hardware-accelerated animation using CSS transforms */}
+                      <div
+                        className="relative animate-fadeInUp"
+                        style={{ 
+                          animationDelay: `${Math.min(index * 0.1, 0.8)}s`,
+                          animationFillMode: 'both',
+                          transform: 'translateZ(0)', // Hardware acceleration
+                          willChange: 'transform, opacity'
+                        }}
                       >
                         <Image
                           src={closer.avatarUrl || `https://api.dicebear.com/8.x/initials/svg?seed=${closer.name}`}
@@ -238,10 +245,10 @@ export default function CloserLineup() {
                           className="w-16 h-16 rounded-full shadow-md object-cover"
                           title={closer.name}
                         />
-                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg z-10">
+                        <div className="closer-lineup-bubble w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
                           <span className="text-sm font-bold text-black">{index + 1}</span>
                         </div>
-                      </motion.div>
+                      </div>
                     </div>
                     <p className="text-sm font-medium text-[var(--text-primary)] text-center whitespace-nowrap">
                       {closer.name}

@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { Loader2, ShieldAlert, Building2, MapPin, Users, Plus, Settings2, Trash2, Edit2, MessageCircle, Upload, Image } from "lucide-react";
+import Image from "next/image";
+import { Loader2, ShieldAlert, Building2, MapPin, Users, Plus, Settings2, Trash2, Edit2, MessageCircle, Upload } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore";
 
 interface Region {
   id: string;
@@ -1092,10 +1093,12 @@ export default function AdminToolsPage() {
                                   <div className="flex items-center gap-3">
                                     {team.logoUrl && (
                                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                                        <img 
+                                        <Image 
                                           src={team.logoUrl} 
                                           alt={`${team.name} logo`}
-                                          className="w-6 h-6 object-cover rounded-full" 
+                                          className="w-6 h-6 object-cover rounded-full"
+                                          width={24}
+                                          height={24}
                                         />
                                       </div>
                                     )}

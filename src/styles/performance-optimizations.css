@@ -1,0 +1,217 @@
+/* ===================================================================
+   CRITICAL PERFORMANCE FIXES by Krzysztof Magiera
+   Hardware-accelerated animations replacing Framer Motion
+   =================================================================== */
+
+/* Hardware-accelerated fade-in animation (replaces Framer Motion) */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0; /* Initial state */
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform, opacity;
+  contain: layout style paint; /* Optimize rendering */
+}
+
+/* ===================================================================
+   HARDWARE ACCELERATION OPTIMIZATIONS
+   =================================================================== */
+
+/* Force GPU layers for all animated elements */
+.ios-button-base,
+.ios-card,
+.frosted-glass-card,
+[data-dashboard-card],
+.animate-spin,
+.animate-pulse {
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Optimize backdrop filters */
+.frosted-glass-card,
+.ios-glass-card {
+  /* Use simpler blur for better performance */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* Add hardware acceleration */
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* ===================================================================
+   SWIPE NAVIGATION PERFORMANCE FIXES
+   =================================================================== */
+
+/* Hardware-accelerated swipe transforms */
+.swipe-indicator,
+.swipe-navigation-wrapper {
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+}
+
+/* Optimize swipe progress animations */
+.swipe-navigation-active {
+  /* Prevent layout thrashing */
+  contain: layout style paint;
+  /* Use hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* ===================================================================
+   ATMOSPHERIC ANIMATION OPTIMIZATION
+   =================================================================== */
+
+/* Replace expensive background-position animation with transform */
+body::before {
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+}
+
+/* Optimized atmospheric flow using transform instead of background-position */
+@keyframes atmospheric-flow-optimized {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* ===================================================================
+   BUTTON PERFORMANCE OPTIMIZATIONS
+   =================================================================== */
+
+/* Hardware-accelerated button interactions */
+.ios-button-interactive {
+  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+}
+
+.ios-button-pressed {
+  transform: translateZ(0) scale(0.97);
+}
+
+/* ===================================================================
+   SCROLL PERFORMANCE FIXES
+   =================================================================== */
+
+/* Optimize scrolling containers */
+[data-radix-scroll-area-viewport] {
+  /* Use GPU for scrolling */
+  transform: translateZ(0);
+  will-change: scroll-position;
+  contain: layout style paint;
+  /* Better iOS scrolling */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ===================================================================
+   CONTAINMENT OPTIMIZATIONS
+   =================================================================== */
+
+/* Prevent layout recalculations */
+.closer-card,
+.lead-card,
+[data-testid="closer-card"],
+[data-testid="lead-card"] {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* Optimize space-y containers */
+.space-y-3,
+.space-y-4 {
+  contain: layout;
+  transform: translateZ(0);
+}
+
+/* ===================================================================
+   REDUCED MOTION SUPPORT
+   =================================================================== */
+
+/* Loading Spinner Animation - Always Available */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Force spinner animation to work regardless of user preferences */
+.animate-spin,
+.loading-spinner,
+[class*="animate-spin"] {
+  animation: spin 1s linear infinite !important;
+}
+
+/* Ensure Lucide Loader2 icons spin properly */
+.lucide-loader-2,
+.lucide[data-lucide="loader-2"] {
+  animation: spin 1s linear infinite !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeInUp,
+  .ios-button-interactive,
+  .animate-pulse {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Keep loading spinners working even with reduced motion - they're functional, not decorative */
+  .animate-spin,
+  .loading-spinner,
+  [class*="animate-spin"],
+  .lucide-loader-2,
+  .lucide[data-lucide="loader-2"] {
+    animation: spin 1s linear infinite !important;
+  }
+  
+  /* Still provide hardware acceleration for smooth interactions */
+  .ios-button-interactive {
+    transform: translateZ(0);
+    will-change: auto;
+  }
+}
+
+/* ===================================================================
+   iOS SAFARI SPECIFIC OPTIMIZATIONS
+   =================================================================== */
+
+@supports (-webkit-touch-callout: none) {
+  /* iOS-specific hardware acceleration */
+  * {
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Optimize for iOS Safari rendering */
+  .animate-fadeInUp {
+    -webkit-animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+  
+  /* Better touch performance */
+  .ios-button-base {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+  }
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TrendingUp, Target, Activity, Calendar } from "lucide-react";
 import { TeamMetrics } from "./types";

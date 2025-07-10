@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, Component, ReactNode } from "react";
+import { useEffect, Component, ReactNode } from "react";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -30,24 +30,59 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     // Log the error but don't crash for known issues
-    if (error.message.includes('serviceWorker') || 
-        error.message.includes('navigator') ||
-        error.message.includes('Firebase') ||
-        error.message.includes('messaging')) {
-      console.warn('Non-critical error caught by boundary:', error.message);
-      return { hasError: false }; // Don't break the app for these errors
-    }
+    try {
+      const errorMessage = error?.message || 'Unknown error';
+      
+      if (errorMessage.includes('serviceWorker') || 
+          errorMessage.includes('navigator') ||
+          errorMessage.includes('Firebase') ||
+          errorMessage.includes('messaging') ||
+          errorMessage.includes('ChunkLoadError') ||
+          errorMessage.includes('Loading chunk')) {
+        console.warn('Non-critical error caught by boundary:', errorMessage);
+        return { hasError: false }; // Don't break the app for these errors
+      }
 
-    console.error('🚨 Critical error caught by boundary:', error);
-    return { 
-      hasError: true, 
-      error 
-    };
+      console.error('🚨 Critical error caught by boundary:', {
+        message: errorMessage,
+        stack: error?.stack,
+        name: error?.name
+      });
+      
+      return { 
+        hasError: true, 
+        error 
+      };
+    } catch (boundaryError) {
+      // Fallback if error handling itself fails
+      console.error('🚨 Error Boundary itself failed:', boundaryError);
+      return { 
+        hasError: true, 
+        error: new Error('Error boundary failure')
+      };
+    }
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    console.error('🚨 Error Boundary Details:', { error, errorInfo });
-    this.setState({ errorInfo });
+    // Safely log error details with proper error handling
+    try {
+      console.error('🚨 Error Boundary Details:', {
+        error: {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        },
+        errorInfo: {
+          componentStack: errorInfo.componentStack
+        }
+      });
+      this.setState({ errorInfo });
+    } catch (loggingError) {
+      // Fallback if logging fails
+      console.error('🚨 Error Boundary caught error:', error.message);
+      console.error('🚨 Component stack:', errorInfo.componentStack);
+      this.setState({ errorInfo });
+    }
   }
 
   private handleTryAgain = (): void => {
@@ -104,50 +139,64 @@ export function Providers({ children }: ProvidersProps): React.ReactElement {
   useEffect(() => {
     // Enhanced global error handling
     const handleError = (event: ErrorEvent): void => {
-      const errorMessage = event.error?.message || event.message || 'Unknown error';
-      
-      // Handle service worker related errors gracefully
-      if (errorMessage.includes('serviceWorker') || 
-          errorMessage.includes('navigator.serviceWorker') ||
-          errorMessage.includes('addEventListener')) {
-        console.warn('ServiceWorker error handled gracefully:', errorMessage);
-        event.preventDefault();
-        return;
-      }
+      try {
+        const errorMessage = event.error?.message || event.message || 'Unknown error';
+        
+        // Handle service worker related errors gracefully
+        if (errorMessage.includes('serviceWorker') || 
+            errorMessage.includes('navigator.serviceWorker') ||
+            errorMessage.includes('addEventListener') ||
+            errorMessage.includes('ChunkLoadError') ||
+            errorMessage.includes('Loading chunk')) {
+          console.warn('ServiceWorker/Chunk error handled gracefully:', errorMessage);
+          event.preventDefault();
+          return;
+        }
 
-      // Handle Firebase messaging errors gracefully
-      if (errorMessage.includes('Firebase') || 
-          errorMessage.includes('messaging') ||
-          errorMessage.includes('unsupported-browser')) {
-        console.warn('Firebase messaging error handled gracefully:', errorMessage);
-        event.preventDefault();
-        return;
-      }
+        // Handle Firebase messaging errors gracefully
+        if (errorMessage.includes('Firebase') || 
+            errorMessage.includes('messaging') ||
+            errorMessage.includes('unsupported-browser')) {
+          console.warn('Firebase messaging error handled gracefully:', errorMessage);
+          event.preventDefault();
+          return;
+        }
 
-      // Log other errors but don't break the app
-      console.error('🚨 Global JavaScript Error:', {
-        message: errorMessage,
-        filename: event.filename,
-        lineno: event.lineno,
-        colno: event.colno,
-        error: event.error
-      });
+        // Log other errors but don't break the app
+        console.error('🚨 Global JavaScript Error:', {
+          message: errorMessage,
+          filename: event.filename || 'unknown',
+          lineno: event.lineno || 0,
+          colno: event.colno || 0,
+          error: event.error?.stack || 'No stack trace'
+        });
+      } catch (handlerError) {
+        console.error('🚨 Error handler itself failed:', handlerError);
+      }
     };
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent): void => {
-      const reason = event.reason?.message || event.reason || 'Unknown rejection';
-      
-      // Handle Firebase messaging promise rejections
-      if (typeof reason === 'string' && (
-          reason.includes('messaging/unsupported-browser') ||
-          reason.includes('serviceWorker') ||
-          reason.includes('Firebase'))) {
-        console.warn('Firebase/ServiceWorker promise rejection handled gracefully:', reason);
-        event.preventDefault();
-        return;
-      }
+      try {
+        const reason = event.reason?.message || event.reason || 'Unknown rejection';
+        
+        // Handle Firebase messaging promise rejections
+        if (typeof reason === 'string' && (
+            reason.includes('messaging/unsupported-browser') ||
+            reason.includes('serviceWorker') ||
+            reason.includes('Firebase') ||
+            reason.includes('ChunkLoadError') ||
+            reason.includes('Loading chunk'))) {
+          console.warn('Firebase/ServiceWorker/Chunk promise rejection handled gracefully:', reason);
+          event.preventDefault();
+          return;
+        }
 
-      console.error('🚨 Unhandled Promise Rejection:', reason);
+        console.error('🚨 Unhandled Promise Rejection:', {
+          reason: typeof reason === 'string' ? reason : JSON.stringify(reason, null, 2)
+        });
+      } catch (handlerError) {
+        console.error('🚨 Promise rejection handler failed:', handlerError);
+      }
     };
 
     // Viewport height handling for mobile

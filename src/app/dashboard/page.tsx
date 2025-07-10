@@ -11,16 +11,19 @@ import AetherTabBar from "@/components/dashboard/aether-tab-bar";
 import DaylightArcCard from "@/components/dashboard/daylight-arc-card-simple";
 
 // Lazily load components below the fold with dynamic imports
-const InProcessLeads = dynamic(() => import("@/components/dashboard/in-process-leads"), {
-  loading: () => <div className="frosted-glass-card p-6 animate-pulse h-64"></div>
+const InProcessLeads = dynamic(() => import("@/components/dashboard/in-process-leads").then(mod => ({ default: mod.default })), {
+  loading: () => <div className="frosted-glass-card p-6 animate-pulse h-64"></div>,
+  ssr: false
 });
 
-const CloserLineup = dynamic(() => import("@/components/dashboard/closer-lineup"), {
-  loading: () => <div className="frosted-glass-card p-6 animate-pulse h-48"></div>
+const CloserLineup = dynamic(() => import("@/components/dashboard/closer-lineup").then(mod => ({ default: mod.default })), {
+  loading: () => <div className="frosted-glass-card p-6 animate-pulse h-48"></div>,
+  ssr: false
 });
 
-const LeadQueue = dynamic(() => import("@/components/dashboard/lead-queue"), {
-  loading: () => <div className="frosted-glass-card p-6 animate-pulse h-64"></div>
+const LeadQueue = dynamic(() => import("@/components/dashboard/lead-queue").then(mod => ({ default: mod.default })), {
+  loading: () => <div className="frosted-glass-card p-6 animate-pulse h-64"></div>,
+  ssr: false
 });
 
 export default function DashboardPage() {

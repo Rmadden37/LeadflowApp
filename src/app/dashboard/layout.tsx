@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+
 import DashboardSidebar from "@/components/dashboard/dashboard-sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileNavigation } from "@/components/ui/mobile-navigation";

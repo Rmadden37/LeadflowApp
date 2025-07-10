@@ -20,6 +20,7 @@ import LeadDetailsDialog from "./lead-details-dialog";
 
 const FORTY_FIVE_MINUTES_MS = 45 * 60 * 1000;
 const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
+const MIN_LEAD_AGE_MS = 2 * 60 * 1000; // Don't process leads that are less than 2 minutes old
 
 type Tab = "waiting" | "scheduled";
 
@@ -208,28 +209,57 @@ export default function LeadQueue() {
           const appointmentTime = leadScheduledAppointmentTime.toDate();
           const timeUntilAppointment = appointmentTime.getTime() - now.getTime();
           const timePastAppointment = now.getTime() - appointmentTime.getTime();
+          
+          // Check lead age to prevent processing newly created leads
+          const leadAge = lead.createdAt ? now.getTime() - lead.createdAt.toDate().getTime() : Infinity;
+          
+          // Add debug logging to understand what's happening
+          console.log('🔍 Lead processing debug:', {
+            leadId: lead.id,
+            customerName: lead.customerName,
+            appointmentTime: appointmentTime.toISOString(),
+            currentTime: now.toISOString(),
+            timeUntilAppointment: timeUntilAppointment,
+            timePastAppointment: timePastAppointment,
+            leadAge: leadAge,
+            setterVerified: lead.setterVerified,
+            status: lead.status
+          });
 
-          if (timePastAppointment >= (10 * 60 * 1000) && !lead.setterVerified) {
-            const leadRef = doc(db, "leads", lead.id);
-            leadsToRemoveBatch.update(leadRef, {
-              status: "canceled",
-              dispositionNotes: "Automatically canceled - not verified within 10 minutes of scheduled time",
-              updatedAt: serverTimestamp(),
-            });
-            setProcessedScheduledLeadIds((prev) => new Set(prev).add(lead.id));
-            leadsRemovedCount++;
+          // Skip processing if lead is too new (less than 2 minutes old)
+          if (leadAge < MIN_LEAD_AGE_MS) {
+            console.log('⏸️ Skipping newly created lead:', lead.customerName, 'Age:', Math.round(leadAge / 1000), 'seconds');
+            return;
           }
-          else if (timePastAppointment >= FIFTEEN_MINUTES_MS) {
-            const leadRef = doc(db, "leads", lead.id);
-            leadsToRemoveBatch.update(leadRef, {
-              status: "expired",
-              dispositionNotes: "Appointment expired - 15 minutes past scheduled time",
-              updatedAt: serverTimestamp(),
-            });
-            setProcessedScheduledLeadIds((prev) => new Set(prev).add(lead.id));
-            leadsRemovedCount++;
+
+          // Only process leads that are actually past their appointment time (positive timePastAppointment)
+          if (timePastAppointment > 0) {
+            if (timePastAppointment >= (10 * 60 * 1000) && !lead.setterVerified) {
+              console.log('❌ Canceling unverified lead past 10 minutes:', lead.customerName);
+              const leadRef = doc(db, "leads", lead.id);
+              leadsToRemoveBatch.update(leadRef, {
+                status: "canceled",
+                dispositionNotes: "Automatically canceled - not verified within 10 minutes of scheduled time",
+                updatedAt: serverTimestamp(),
+              });
+              setProcessedScheduledLeadIds((prev) => new Set(prev).add(lead.id));
+              leadsRemovedCount++;
+            }
+            else if (timePastAppointment >= FIFTEEN_MINUTES_MS) {
+              console.log('⏰ Expiring lead past 15 minutes:', lead.customerName);
+              const leadRef = doc(db, "leads", lead.id);
+              leadsToRemoveBatch.update(leadRef, {
+                status: "expired",
+                dispositionNotes: "Appointment expired - 15 minutes past scheduled time",
+                updatedAt: serverTimestamp(),
+              });
+              setProcessedScheduledLeadIds((prev) => new Set(prev).add(lead.id));
+              leadsRemovedCount++;
+            }
           }
-          else if (timeUntilAppointment <= FORTY_FIVE_MINUTES_MS && lead.setterVerified === true) {
+          // Handle future appointments (negative timePastAppointment means appointment is in the future)
+          else if (timeUntilAppointment <= FORTY_FIVE_MINUTES_MS && timeUntilAppointment > 0 && lead.setterVerified === true) {
+            console.log('⏭️ Moving verified lead to waiting assignment (45 min window):', lead.customerName);
             const leadRef = doc(db, "leads", lead.id);
             leadsToMoveBatch.update(leadRef, {
               status: "waiting_assignment",
@@ -244,16 +274,17 @@ export default function LeadQueue() {
       if (leadsRemovedCount > 0) {
         try {
           await leadsToRemoveBatch.commit();
+          console.log(`✅ Successfully removed ${leadsRemovedCount} expired/unverified leads`);
           toast({
-            title: "Unverified Leads Removed",
-            description: `${leadsRemovedCount} unverified lead(s) past their scheduled time were automatically canceled.`,
+            title: "Expired Leads Processed",
+            description: `${leadsRemovedCount} lead(s) past their scheduled time were automatically processed.`,
             variant: "destructive",
           });
         } catch (_error) {
-          console.error("Error removing unverified leads:", _error);
+          console.error("Error removing expired leads:", _error);
           toast({
-            title: "Removal Failed",
-            description: "Could not remove unverified leads automatically.",
+            title: "Processing Failed",
+            description: "Could not process expired leads automatically.",
             variant: "destructive",
           });
         }
@@ -262,8 +293,9 @@ export default function LeadQueue() {
       if (leadsMovedCount > 0) {
         try {
           await leadsToMoveBatch.commit();
+          console.log(`✅ Successfully moved ${leadsMovedCount} verified leads to waiting assignment`);
           toast({
-            title: "Verified Leads Updated",
+            title: "Verified Leads Ready",
             description: `${leadsMovedCount} verified lead(s) moved to waiting list for assignment.`,
           });
         } catch {
@@ -593,12 +625,22 @@ export default function LeadQueue() {
           <div className="flex items-center gap-2">
             <CalendarClock className="w-4 h-4" />
             Scheduled 
-            <span className="text-xs font-normal opacity-75">
-              ({scheduledLeads.filter(lead => {
+            {(() => {
+              const scheduledCount = scheduledLeads.filter(lead => {
                 if (!lead.scheduledAppointmentTime) return false;
                 return isSameDay(lead.scheduledAppointmentTime.toDate(), selectedDate);
-              }).length})
-            </span>
+              }).length;
+              
+              return scheduledCount > 0 ? (
+                <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-[#007AFF] rounded-full min-w-[1.5rem] h-6 shadow-lg shadow-[#007AFF]/25 animate-pulse-subtle">
+                  {scheduledCount}
+                </span>
+              ) : (
+                <span className="text-xs font-normal opacity-75">
+                  (0)
+                </span>
+              );
+            })()}
           </div>
         </button>
       </div>
@@ -660,7 +702,12 @@ export default function LeadQueue() {
       <div className={activeTab === "scheduled" ? "block" : "hidden"}>
         {renderLeadsList(scheduledLeads, loadingScheduled, "scheduled")}
       </div>
-      <LeadDetailsDialog lead={selectedLead} isOpen={!!selectedLead} onClose={handleCloseDialog} />
+      <LeadDetailsDialog 
+        lead={selectedLead} 
+        isOpen={!!selectedLead} 
+        onClose={handleCloseDialog} 
+        context={activeTab === "waiting" ? "queue-waiting" : "queue-scheduled"}
+      />
     </>
   );
 }

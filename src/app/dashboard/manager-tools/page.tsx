@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { Users, ClipboardList, BarChart3, Settings } from "lucide-react";
@@ -12,7 +12,7 @@ export default function ManagerToolsPage() {
   const router = useRouter();
 
   // Redirect non-managers
-  React.useEffect(() => {
+  useEffect(() => {
     if (user && user.role !== 'manager' && user.role !== 'admin') {
       router.push('/dashboard');
     }

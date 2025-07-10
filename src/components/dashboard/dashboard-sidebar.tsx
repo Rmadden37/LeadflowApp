@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,7 +21,7 @@ import {
 import AvailabilityToggle from "./availability-toggle";
 import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { useState } from "react";
-import React from "react";
+
 import dynamic from "next/dynamic";
 import {
   Sidebar,
@@ -37,7 +38,7 @@ import { Separator } from "@/components/ui/separator";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
 
 // Dynamic import with Next.js dynamic to avoid circular dependency issues
-const CreateLeadFormEnhanced = dynamic(() => import("./create-lead-form-enhanced"), {
+const CreateLeadForm = dynamic(() => import("./create-lead-form"), {
   ssr: false,
   loading: () => <div>Loading...</div>
 });
@@ -355,7 +356,7 @@ function DashboardSidebarContent() {
             >
               ×
             </button>
-            <CreateLeadFormEnhanced isOpen={isCreateLeadModalOpen} onClose={() => setIsCreateLeadModalOpen(false)} />
+            <CreateLeadForm isOpen={isCreateLeadModalOpen} onClose={() => setIsCreateLeadModalOpen(false)} />
           </div>
         </div>
       )}

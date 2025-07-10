@@ -4,7 +4,7 @@
 import type {Closer, LeadStatus} from "@/types";
 import {Card, CardContent} from "@/components/ui/card";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {UserCheck, UserX, Loader2, ArrowUp, ArrowDown, Briefcase} from "lucide-react";
+import {Loader2, ArrowUp, ArrowDown, Briefcase, UserCheck, UserX} from "lucide-react";
 import {Switch} from "@/components/ui/switch";
 import {Label} from "@/components/ui/label";
 import {Button} from "@/components/ui/button";
