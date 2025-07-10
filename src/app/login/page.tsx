@@ -26,7 +26,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div data-auth-page className="flex min-h-screen flex-col items-center justify-center bg-background p-4 overflow-hidden">
+    <div data-auth-page className="fixed inset-0 flex flex-col items-center justify-center bg-background p-4 overflow-hidden">
       <div className="mb-8 flex items-center space-x-4 text-primary">
         <h1 className="text-4xl font-bold font-headline tracking-tight">LeadFlow</h1>
       </div>

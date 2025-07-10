@@ -8,14 +8,14 @@ import { collection, query, where, onSnapshot, orderBy, Timestamp as FirestoreTi
 import LeadCard from "./lead-card";
 import ScheduledLeadsCalendar from "./scheduled-leads-calendar";
 import VerifiedCheckbox from "./verified-checkbox";
-import { ListChecks, CalendarClock, Loader2, ChevronDown, ChevronUp, Calendar } from "lucide-react";
+import { ListChecks, CalendarClock, Loader2, Calendar } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format, isSameDay, addDays, subDays } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import LeadDetailsDialog from "./lead-details-dialog";
 
 const FORTY_FIVE_MINUTES_MS = 45 * 60 * 1000;
@@ -647,17 +647,7 @@ export default function LeadQueue() {
 
       {/* Date Navigator for Scheduled Tab */}
       {activeTab === "scheduled" && (
-        <div className="flex items-center justify-between mb-4 p-3 bg-white/5 rounded-lg border border-[var(--glass-border)]">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSelectedDate(subDays(selectedDate, 1))}
-            className="text-[var(--text-secondary)] hover:text-[#FFFFFF]"
-          >
-            <ChevronDown className="w-4 h-4 rotate-90" />
-            Previous Day
-          </Button>
-          
+        <div className="flex items-center justify-center mb-4 p-3 bg-white/5 rounded-lg border border-[var(--glass-border)]">
           <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -682,16 +672,6 @@ export default function LeadQueue() {
               />
             </PopoverContent>
           </Popover>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSelectedDate(addDays(selectedDate, 1))}
-            className="text-[var(--text-secondary)] hover:text-[#FFFFFF]"
-          >
-            Next Day
-            <ChevronUp className="w-4 h-4 rotate-90" />
-          </Button>
         </div>
       )}
 

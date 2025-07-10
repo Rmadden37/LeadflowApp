@@ -1,0 +1,138 @@
+/* ===================================================================
+   iOS DARK MODE FIXES - Resolves White Screen Issue on iPhone/iPad
+   =================================================================== */
+
+/* Force dark mode on iOS devices - Critical Fix */
+@supports (-webkit-touch-callout: none) {
+  /* Target only iOS Safari */
+  
+  html {
+    color-scheme: dark !important;
+    background-color: #0D0D0D !important;
+    color: #FFFFFF !important;
+  }
+  
+  body {
+    background-color: #0D0D0D !important;
+    color: #FFFFFF !important;
+    /* Ensure iOS respects our dark theme */
+    -webkit-color-scheme: dark !important;
+  }
+  
+  /* Force dark class application on iOS */
+  html.dark,
+  html[data-theme="dark"],
+  html[data-theme="system"] {
+    background-color: #0D0D0D !important;
+    color: #FFFFFF !important;
+  }
+  
+  /* Override any white backgrounds on iOS */
+  html:not(.dark) {
+    background-color: #0D0D0D !important;
+    color: #FFFFFF !important;
+  }
+  
+  /* Ensure all major containers follow dark theme on iOS */
+  body,
+  #__next,
+  [data-nextjs-container],
+  main,
+  .min-h-screen {
+    background-color: #0D0D0D !important;
+    color: #FFFFFF !important;
+  }
+}
+
+/* iOS-specific meta theme color enforcement */
+@media (prefers-color-scheme: dark) {
+  @supports (-webkit-touch-callout: none) {
+    html {
+      background-color: #0D0D0D !important;
+      color: #FFFFFF !important;
+    }
+    
+    body {
+      background-color: #0D0D0D !important;
+      color: #FFFFFF !important;
+    }
+  }
+}
+
+/* Fallback for iOS devices that don't detect dark mode properly */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Card fixes - ensure cards show with dark styling */
+  [data-card],
+  .card,
+  .frosted-glass-card {
+    background: rgba(30, 30, 30, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+  }
+  
+  /* iOS Dashboard cards */
+  [data-dashboard-card] {
+    background-color: rgba(30, 30, 30, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+  }
+  
+  /* iOS Text colors */
+  h1, h2, h3, h4, h5, h6, p, span, div {
+    color: #FFFFFF !important;
+  }
+  
+  /* iOS Button fixes */
+  button {
+    color: #FFFFFF !important;
+  }
+  
+  /* iOS Input fixes */
+  input, textarea, select {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+  }
+}
+
+/* iOS Safari viewport meta tag enforcement */
+@supports (-webkit-touch-callout: none) {
+  html {
+    /* Force iOS to use dark theme */
+    color-scheme: dark only !important;
+  }
+  
+  /* iOS status bar styling */
+  :root {
+    color-scheme: dark !important;
+  }
+}
+
+/* Progressive enhancement for iOS dark mode */
+@media (prefers-color-scheme: dark) {
+  @supports (-webkit-touch-callout: none) {
+    /* Double-ensure dark styling on iOS when system prefers dark */
+    * {
+      color-scheme: dark !important;
+    }
+    
+    html, body {
+      background: #0D0D0D !important;
+      color: #FFFFFF !important;
+    }
+  }
+}
+
+/* iOS-specific anti-flash of white screen */
+@supports (-webkit-touch-callout: none) {
+  html {
+    /* Prevent any white flash during load */
+    background: #0D0D0D !important;
+  }
+  
+  /* iOS loading state */
+  html:not(.hydrated) {
+    background: #0D0D0D !important;
+    color: #FFFFFF !important;
+  }
+}

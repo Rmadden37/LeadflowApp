@@ -5,6 +5,7 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BadgeServiceInitializer } from "@/components/badge-service-initializer";
+import { IOSThemeFix } from "@/components/ios-theme-fix";
 
 // Define proper types for ErrorBoundary
 interface ErrorBoundaryProps {
@@ -266,6 +267,7 @@ export function Providers({ children }: ProvidersProps): React.ReactElement {
           disableTransitionOnChange
           themes={['light', 'dark', 'system']}
         >
+          <IOSThemeFix />
           <AuthProvider>
             <BadgeServiceInitializer />
             {children}

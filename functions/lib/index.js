@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateChatChannelOnTeamUpdate = exports.initializeChatChannelsOnTeamCreate = exports.cleanupOldChatMessages = exports.updateAdminRoles = exports.generateAnalyticsReport = exports.getDetailedAnalytics = exports.updateUserRole = exports.inviteUser = exports.selfAssignLead = exports.processAppointmentReminders = exports.scheduleAppointmentReminder = exports.handleLeadDispositionUpdate = exports.getTeamStats = exports.acceptJob = exports.manualAssignLead = exports.handleCloserStatusChange = exports.assignLeadOnCreate = void 0;
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -31,7 +31,7 @@ async function sendPushNotification(userIds, payload) {
             data: payload.data || {},
             tokens: allTokens,
         };
-        const response = await admin.messaging().sendMulticast(message);
+        const response = await admin.messaging().sendEachForMulticast(message);
         functions.logger.info(`Notification sent to ${response.successCount} devices`);
         // Clean up invalid tokens
         if (response.failureCount > 0) {

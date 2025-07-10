@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions";
+import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
 
 // Initialize Firebase Admin
@@ -37,13 +37,13 @@ async function sendPushNotification(userIds: string[], payload: {
       tokens: allTokens,
     };
 
-    const response = await admin.messaging().sendMulticast(message);
+    const response = await admin.messaging().sendEachForMulticast(message);
     functions.logger.info(`Notification sent to ${response.successCount} devices`);
     
     // Clean up invalid tokens
     if (response.failureCount > 0) {
       const invalidTokens: string[] = [];
-      response.responses.forEach((resp, idx) => {
+      response.responses.forEach((resp: any, idx: number) => {
         if (!resp.success && allTokens[idx]) {
           invalidTokens.push(allTokens[idx]);
         }

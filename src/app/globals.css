@@ -7,6 +7,38 @@
 /* Import anti-jump form styles */
 @import '../styles/form-anti-jump.css';
 
+/* Prevent scrollbars on auth pages */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+[data-auth-page] {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Ensure auth page components never show scrollbars */
+[data-auth-page] * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+[data-auth-page] *::-webkit-scrollbar {
+  display: none;
+}
+
+/* iOS-style button refinements */
+[data-auth-page] button {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
 /* Ensure spinner animations always work */
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -24,6 +56,88 @@
   }
   50% {
     background-position: 100% 50%;
+  }
+}
+
+/* ===================================================================
+   iOS TOUCH FEEDBACK UTILITIES
+   =================================================================== */
+
+/* iOS-style touch feedback for interactive elements */
+.ios-touch-feedback {
+  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ios-touch-feedback:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+
+/* Manager Disposition Radio Button Enhancements */
+.manager-disposition-option {
+  min-height: 44px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.manager-disposition-option:active {
+  transform: scale(0.98);
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.manager-disposition-option[data-state="checked"] {
+  background: linear-gradient(135deg, 
+    rgba(0, 122, 255, 0.15) 0%, 
+    rgba(0, 122, 255, 0.08) 100%) !important;
+  border-color: rgba(0, 122, 255, 0.8) !important;
+}
+
+/* Radio button visual enhancements */
+.manager-disposition-radio {
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+}
+
+.manager-disposition-radio[data-state="checked"] {
+  border-color: #007AFF !important;
+  background: rgba(0, 122, 255, 0.1) !important;
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2) !important;
+}
+
+/* Radio button indicator styling */
+.manager-disposition-radio[data-state="checked"] .fill-current {
+  color: #007AFF !important;
+  transform: scale(1.2) !important;
+}
+
+/* Ensure radio button indicator is visible */
+.manager-disposition-radio [data-radix-radio-group-indicator] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.manager-disposition-radio[data-state="checked"] [data-radix-radio-group-indicator] circle {
+  fill: #007AFF !important;
+  r: 4 !important;
+}
+
+/* Dark mode safe areas for dialog */
+@media (prefers-color-scheme: dark) {
+  .manager-disposition-modal {
+    background: rgba(28, 28, 30, 0.95);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
   }
 }
 
@@ -196,6 +310,41 @@ body::before {
   will-change: transform;
   contain: layout style paint;
   backface-visibility: hidden;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.3) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.4) 0%, transparent 65%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.2) 0%, transparent 40%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 30s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages with more dynamic movement */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(3%) translateY(-2%) scale(1.02);
+    opacity: 0.9;
+  }
+  66% {
+    transform: translateX(-1%) translateY(1%) scale(1.01);
+    opacity: 0.95;
+  }
 }
 
 /* Ensure all content appears above atmosphere */
@@ -2134,7 +2283,7 @@ padding-right: 2rem;
     transform: rotate(180deg) scale(1);
     opacity: 1;
   }
-  100% {
+   100% {
     transform: rotate(360deg) scale(0.8);
     opacity: 0.6;
   }
@@ -2284,7 +2433,7 @@ padding-right: 2rem;
 
 /* iOS button with icon optimizations */
 .ios-button-base [data-icon] {
-  transition: transform 0.15s cubic-bezier(0.25, 0.46,   0.45, 0.94);
+  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .ios-button-pressed [data-icon] {
@@ -3047,4 +3196,49 @@ padding-right: 2rem;
 /* Ensure the main card container can show overflow */
 .frosted-glass-card {
   overflow: visible !important;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.3) 0%, transparent 65%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.15) 0%, transparent 40%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 30s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(3%) translateY(-2%) scale(1.02);
+    opacity: 0.9;
+  }
+  66% {
+    transform: translateX(-1%) translateY(1%) scale(1.01);
+    opacity: 0.95;
+  }
+}
+
+/* Ensure auth page content appears above enhanced atmosphere */
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
 }

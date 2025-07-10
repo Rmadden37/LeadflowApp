@@ -32,11 +32,13 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       console.log('⏰ Auth loading timeout reached, forcing loading to false');
-      setLoading(false);
-    }, 5000); // 5 second timeout for real Firebase auth
+      if (loading) {
+        setLoading(false);
+      }
+    }, 3000); // Reduced to 3 seconds
 
     return () => clearTimeout(timeout);
-  }, [firebaseUser, user]);
+  }, [loading]);
 
   useEffect(() => {
     console.log('🔥 Setting up Firebase auth listener');

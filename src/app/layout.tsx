@@ -1,6 +1,7 @@
 import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import "../styles/performance-optimizations.css";
+import "../styles/ios-theme-fix.css";
 import { Providers } from "./providers";
 import type { Metadata, Viewport } from 'next';
 
@@ -65,6 +66,33 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Preload critical fonts to prevent layout shifts and flashes of unstyled text */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // iOS Dark Mode Fix - Prevent white screen flash
+            (function() {
+              const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+              if (isIOS) {
+                const html = document.documentElement;
+                const body = document.body;
+                
+                // Immediately apply dark styling
+                html.classList.add('dark');
+                html.setAttribute('data-theme', 'dark');
+                html.style.backgroundColor = '#0D0D0D';
+                html.style.color = '#FFFFFF';
+                html.style.colorScheme = 'dark';
+                
+                // Ensure body gets styled too
+                if (body) {
+                  body.style.backgroundColor = '#0D0D0D';
+                  body.style.color = '#FFFFFF';
+                }
+                
+                console.log('🍎 iOS dark mode applied immediately');
+              }
+            })();
+          `
+        }} />
       </head>
       <body className={`${inter.className} ${lora.variable} font-body antialiased bg-background text-foreground min-h-screen`}>
         <script dangerouslySetInnerHTML={{

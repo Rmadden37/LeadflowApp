@@ -268,7 +268,7 @@ export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispos
     <Dialog open={isOpen} onOpenChange={(open) => {
       if (!open) onClose();
     }}>
-      <DialogContent className="sm:max-w-md bg-[var(--glass-bg)] backdrop-blur-[20px] border border-[var(--glass-border)] text-[var(--text-primary)]">
+      <DialogContent className="manager-disposition-modal sm:max-w-md max-w-[95vw] bg-[var(--glass-bg)] backdrop-blur-[20px] border border-[var(--glass-border)] text-[var(--text-primary)] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-[var(--text-primary)]">
             {(user?.role === "manager" || user?.role === "admin") ? "Manager Disposition" : "Update Lead Disposition"}
@@ -281,20 +281,38 @@ export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispos
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <RadioGroup onValueChange={(value) => setSelectedStatus(value as LeadStatus)} value={selectedStatus}>
+          <RadioGroup 
+            onValueChange={(value) => setSelectedStatus(value as LeadStatus)} 
+            value={selectedStatus}
+            className="space-y-2"
+          >
             {availableOptions.map((status) => (
               <div 
                 key={status} 
                 className={cn(
-                  "flex items-center space-x-2 rounded-md p-3 transition-colors",
-                  "frosted-glass-card",
+                  "flex items-center space-x-3 rounded-lg p-4 transition-all duration-200 cursor-pointer min-h-[44px]",
+                  "frosted-glass-card border border-[var(--glass-border)]",
+                  "hover:bg-white/10 hover:border-[var(--accent-light)]/50",
+                  "active:scale-[0.98] ios-touch-feedback manager-disposition-option",
                   status === "waiting_assignment" && (user?.role === "manager" || user?.role === "admin") 
-                    ? "bg-amber-500/20 border-amber-400/30" 
-                    : "hover:bg-white/5"
+                    ? "bg-amber-500/10 border-amber-400/30 hover:bg-amber-500/20" 
+                    : "",
+                  selectedStatus === status 
+                    ? "bg-[var(--accent-light)]/10 border-[var(--accent-light)]/60 shadow-lg"
+                    : ""
                 )}
+                data-state={selectedStatus === status ? "checked" : "unchecked"}
+                onClick={() => setSelectedStatus(status as LeadStatus)}
               >
-                <RadioGroupItem value={status} id={`status-${status}`} className="border-[var(--glass-border)] text-[var(--accent-light)]" />
-                <Label htmlFor={`status-${status}`} className="capitalize flex-1 text-[var(--text-primary)] cursor-pointer">
+                <RadioGroupItem 
+                  value={status} 
+                  id={`status-${status}`} 
+                  className="manager-disposition-radio border-[var(--accent-light)] text-[var(--accent-light)] data-[state=checked]:border-[var(--accent-light)] data-[state=checked]:bg-[var(--accent-light)]/20 h-5 w-5" 
+                />
+                <Label 
+                  htmlFor={`status-${status}`} 
+                  className="capitalize flex-1 text-[var(--text-primary)] cursor-pointer font-medium text-base leading-6"
+                >
                   {status === "waiting_assignment" && (user?.role === "manager" || user?.role === "admin") ? (
                     <span className="font-medium text-amber-300">
                       Reassign Closer

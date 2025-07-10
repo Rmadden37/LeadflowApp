@@ -102,15 +102,15 @@ export default function LoginForm() {
       </div>
 
       {/* Premium iOS-Style Form Container with Enhanced Glassmorphism */}
-      <div className="relative mb-8">
+      <div className="relative mb-6">
         {/* Subtle glow effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 rounded-2xl blur-xl opacity-50"></div>
         
         {/* Main form container */}
         <div className="relative bg-card/50 backdrop-blur-2xl rounded-2xl p-1 border border-border/30 shadow-2xl shadow-black/10">
-          <div className="bg-card/70 backdrop-blur-sm rounded-xl p-7">
+          <div className="bg-card/70 backdrop-blur-sm rounded-xl p-6 overflow-hidden">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-hidden">
                 <FormField
                   control={form.control}
                   name="email"
@@ -121,15 +121,15 @@ export default function LoginForm() {
                           {...field}
                           type="email"
                           placeholder="Email"
-                          className="h-12 px-4 text-base bg-secondary/20 border-0 rounded-xl 
+                          className="h-14 px-4 text-lg bg-secondary/20 border-0 rounded-2xl 
                                    placeholder:text-muted-foreground/60 
                                    focus:bg-secondary/40 focus:ring-2 focus:ring-primary/20 
                                    transition-all duration-300 font-medium
                                    hover:bg-secondary/30 backdrop-blur-sm
-                                   shadow-inner shadow-black/5"
+                                   shadow-inner shadow-black/5 min-h-[56px]"
                         />
                       </FormControl>
-                      <FormMessage className="text-xs mt-2 ml-1 text-destructive/80" />
+                      <FormMessage className="text-xs mt-1 ml-1 text-destructive/80" />
                     </FormItem>
                   )}
                 />
@@ -143,15 +143,15 @@ export default function LoginForm() {
                           {...field}
                           type="password" 
                           placeholder="Password"
-                          className="h-12 px-4 text-base bg-secondary/20 border-0 rounded-xl
+                          className="h-14 px-4 text-lg bg-secondary/20 border-0 rounded-2xl
                                    placeholder:text-muted-foreground/60
                                    focus:bg-secondary/40 focus:ring-2 focus:ring-primary/20
                                    transition-all duration-300 font-medium
                                    hover:bg-secondary/30 backdrop-blur-sm
-                                   shadow-inner shadow-black/5"
+                                   shadow-inner shadow-black/5 min-h-[56px]"
                         />
                       </FormControl>
-                      <FormMessage className="text-xs mt-2 ml-1 text-destructive/80" />
+                      <FormMessage className="text-xs mt-1 ml-1 text-destructive/80" />
                     </FormItem>
                   )}
                 />
@@ -162,19 +162,20 @@ export default function LoginForm() {
       </div>
 
       {/* Premium iOS-Native Primary Button */}
-      <div className="relative">
+      <div className="relative mb-6">
         {/* Button glow effect */}
-        <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg opacity-60 scale-105"></div>
+        <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-lg opacity-60 scale-105"></div>
         
         <Button 
           onClick={form.handleSubmit(onSubmit)}
           disabled={isLoading}
-          className="relative w-full h-12 text-base font-semibold rounded-xl 
+          className="relative w-full h-14 text-lg font-semibold rounded-2xl 
                      bg-primary hover:bg-primary/90 
                      active:scale-[0.98] transition-all duration-200
                      shadow-xl shadow-primary/30 backdrop-blur-sm
                      disabled:opacity-60 disabled:scale-100
-                     border-0 focus:ring-2 focus:ring-primary/30 focus:ring-offset-0"
+                     border-0 focus:ring-2 focus:ring-primary/30 focus:ring-offset-0
+                     min-h-[56px] px-8 overflow-hidden"
         >
           {isLoading ? (
             <>

@@ -159,14 +159,14 @@ export default function InviteNewUserButton({
       
       if (responseData?.success) {
         toast({
-          title: "Invitation Sent! ✉️",
-          description: responseData.message || "User invitation sent successfully",
-          duration: 5000,
+          title: "✅ Invitation Sent Successfully!",
+          description: responseData.message || `User ${data.email} has been successfully invited to your team with their login credentials.`,
+          duration: 6000,
         });
         
         handleModalClose();
       } else {
-        throw new Error("Invitation failed");
+        throw new Error(responseData?.message || "Invitation failed");
       }
     } catch (error: any) {
       console.error("Invite user error:", error);
