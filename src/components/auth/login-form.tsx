@@ -20,7 +20,6 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {useToast} from "@/hooks/use-toast";
 import {useState} from "react";
 import {Loader2} from "lucide-react";
-import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().email({message: "Invalid email address."}),
@@ -41,6 +40,13 @@ export default function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    // First validate the form
+    const isValid = await form.trigger();
+    if (!isValid) {
+      // Don't proceed if the form is invalid
+      return;
+    }
+    
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -50,9 +56,23 @@ export default function LoginForm() {
       });
       // Navigation is handled by useAuth hook
     } catch (error: any) {
+      let errorMessage = "An unexpected error occurred.";
+      
+      // Handle common Firebase auth errors
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = "Invalid email or password. Please try again.";
+        // Set form errors to highlight the fields
+        form.setError("email", { type: "manual" });
+        form.setError("password", { type: "manual" });
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = "Too many failed login attempts. Please try again later or reset your password.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Login Failed",
-        description: error.message || "An unexpected error occurred.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -110,7 +130,7 @@ export default function LoginForm() {
         <div className="relative bg-card/50 backdrop-blur-2xl rounded-2xl p-1 border border-border/30 shadow-2xl shadow-black/10">
           <div className="bg-card/70 backdrop-blur-sm rounded-xl p-6 overflow-hidden">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-hidden">
+              <form id="loginForm" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-hidden">
                 <FormField
                   control={form.control}
                   name="email"
@@ -121,15 +141,16 @@ export default function LoginForm() {
                           {...field}
                           type="email"
                           placeholder="Email"
-                          className="h-14 px-4 text-lg bg-secondary/20 border-0 rounded-2xl 
+                          className={`h-14 px-4 text-lg bg-secondary/20 border-0 rounded-2xl 
                                    placeholder:text-muted-foreground/60 
                                    focus:bg-secondary/40 focus:ring-2 focus:ring-primary/20 
                                    transition-all duration-300 font-medium
                                    hover:bg-secondary/30 backdrop-blur-sm
-                                   shadow-inner shadow-black/5 min-h-[56px]"
+                                   shadow-inner shadow-black/5 min-h-[56px]
+                                   ${form.formState.errors.email ? 'border-destructive border' : ''}`}
                         />
                       </FormControl>
-                      <FormMessage className="text-xs mt-1 ml-1 text-destructive/80" />
+                      <FormMessage className="text-xs mt-1 ml-1 text-destructive font-medium" />
                     </FormItem>
                   )}
                 />
@@ -143,15 +164,16 @@ export default function LoginForm() {
                           {...field}
                           type="password" 
                           placeholder="Password"
-                          className="h-14 px-4 text-lg bg-secondary/20 border-0 rounded-2xl
+                          className={`h-14 px-4 text-lg bg-secondary/20 border-0 rounded-2xl
                                    placeholder:text-muted-foreground/60
                                    focus:bg-secondary/40 focus:ring-2 focus:ring-primary/20
                                    transition-all duration-300 font-medium
                                    hover:bg-secondary/30 backdrop-blur-sm
-                                   shadow-inner shadow-black/5 min-h-[56px]"
+                                   shadow-inner shadow-black/5 min-h-[56px]
+                                   ${form.formState.errors.password ? 'border-destructive border' : ''}`}
                         />
                       </FormControl>
-                      <FormMessage className="text-xs mt-1 ml-1 text-destructive/80" />
+                      <FormMessage className="text-xs mt-1 ml-1 text-destructive font-medium" />
                     </FormItem>
                   )}
                 />
@@ -167,8 +189,13 @@ export default function LoginForm() {
         <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-lg opacity-60 scale-105"></div>
         
         <Button 
-          onClick={form.handleSubmit(onSubmit)}
+          type="submit"
+          form="loginForm"
           disabled={isLoading}
+          onClick={() => {
+            // Trigger validation on button click to ensure all errors display
+            form.trigger();
+          }}
           className="relative w-full h-14 text-lg font-semibold rounded-2xl 
                      bg-primary hover:bg-primary/90 
                      active:scale-[0.98] transition-all duration-200
@@ -190,16 +217,16 @@ export default function LoginForm() {
       
       {/* iOS-Native Secondary Actions */}
       <div className="mt-8 space-y-6">
-        {/* Forgot Password Link - Black Background */}
-        <div className="text-center">
+        {/* Forgot Password Link */}
+        <div className="text-center h-8">
           <button
             type="button"
             onClick={handlePasswordReset}
             disabled={isResettingPassword}
-            className="text-base font-medium text-white 
+            className="text-base font-medium text-primary 
                      transition-all duration-200 disabled:opacity-50 
-                     bg-black border-0 outline-none p-0 m-0
-                     cursor-pointer active:scale-95 transform
+                     bg-transparent border-0 outline-none p-0 m-0
+                     cursor-pointer
                      hover:opacity-70 focus:outline-none focus:ring-0
                      disabled:cursor-not-allowed"
           >
@@ -215,17 +242,20 @@ export default function LoginForm() {
         </div>
 
         {/* Sign Up Link */}
-        <div className="text-center text-base text-muted-foreground/80">
+        <div className="text-center text-base text-muted-foreground/80 h-8 mt-6">
           Don't have an account?{" "}
-          <Link 
+          <a 
             href="/signup" 
             className="font-semibold text-primary hover:text-primary/80 
-                     transition-all duration-200 active:scale-95 
-                     inline-block transform focus:outline-none
+                     transition-all duration-200
                      underline-offset-4 hover:underline"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = '/signup';
+            }}
           >
             Sign up
-          </Link>
+          </a>
         </div>
       </div>
     </div>

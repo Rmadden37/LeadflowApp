@@ -65,7 +65,7 @@ const timeSlots = (() => {
   return slots;
 })();
 
-export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionModalProps) {
+export function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionModalProps) {
   const [selectedStatus, setSelectedStatus] = useState<LeadStatus | undefined>(undefined);
   const [notes, setNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);

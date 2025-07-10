@@ -50,7 +50,12 @@ export default function LeadQueue() {
   const [loadingClosers, setLoadingClosers] = useState(true);
   const [assignedLeadCloserIds, setAssignedLeadCloserIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<"waiting" | "scheduled">("waiting");
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  // Initialize with today's date with time set to noon to avoid timezone issues
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    const today = new Date();
+    today.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+    return today;
+  });
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
@@ -213,18 +218,7 @@ export default function LeadQueue() {
           // Check lead age to prevent processing newly created leads
           const leadAge = lead.createdAt ? now.getTime() - lead.createdAt.toDate().getTime() : Infinity;
           
-          // Add debug logging to understand what's happening
-          console.log('🔍 Lead processing debug:', {
-            leadId: lead.id,
-            customerName: lead.customerName,
-            appointmentTime: appointmentTime.toISOString(),
-            currentTime: now.toISOString(),
-            timeUntilAppointment: timeUntilAppointment,
-            timePastAppointment: timePastAppointment,
-            leadAge: leadAge,
-            setterVerified: lead.setterVerified,
-            status: lead.status
-          });
+          // Skip further processing - normal operation
 
           // Skip processing if lead is too new (less than 2 minutes old)
           if (leadAge < MIN_LEAD_AGE_MS) {
@@ -521,6 +515,7 @@ export default function LeadQueue() {
     const filteredLeads = type === "scheduled" 
       ? leads.filter(lead => {
           if (!lead.scheduledAppointmentTime) return false;
+          
           const appointmentDate = lead.scheduledAppointmentTime.toDate();
           return isSameDay(appointmentDate, selectedDate);
         })
@@ -568,7 +563,7 @@ export default function LeadQueue() {
                         
                         {/* Verification Checkbox */}
                         <div className="ml-3 flex flex-col items-center">
-                          <VerifiedCheckbox leadId={lead.id} />
+                          {lead.id && <VerifiedCheckbox leadId={lead.id} />}
                           <span className="text-xs text-gray-400 mt-1">Verified</span>
                         </div>
                       </div>
@@ -581,7 +576,7 @@ export default function LeadQueue() {
             // For waiting leads, use the standard card
             return (
               <div key={lead.id} className="frosted-glass-card mb-2 overflow-hidden cursor-pointer hover:bg-white/5 transition-colors" onClick={() => handleLeadClick(lead)}>
-                <LeadCard lead={lead} context="queue-waiting" />
+                {lead && <LeadCard lead={lead} context="queue-waiting" />}
               </div>
             );
           })}
@@ -647,7 +642,21 @@ export default function LeadQueue() {
 
       {/* Date Navigator for Scheduled Tab */}
       {activeTab === "scheduled" && (
-        <div className="flex items-center justify-center mb-4 p-3 bg-white/5 rounded-lg border border-[var(--glass-border)]">
+        <div className="flex items-center justify-center gap-2 mb-4 p-3 bg-white/5 rounded-lg border border-[var(--glass-border)]">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // Set to today with noon time to avoid timezone issues
+              const today = new Date();
+              today.setHours(12, 0, 0, 0);
+              setSelectedDate(today);
+            }}
+            className="bg-transparent border-[var(--glass-border)] text-[#FFFFFF] hover:bg-white/10"
+          >
+            Today
+          </Button>
+          
           <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -664,7 +673,12 @@ export default function LeadQueue() {
                 selected={selectedDate}
                 onSelect={(date) => {
                   if (date) {
-                    setSelectedDate(date);
+                    // Ensure we're not losing time information
+                    const newDate = new Date(date);
+                    // Set hours to a safe value in the middle of the day to avoid timezone issues
+                    newDate.setHours(12, 0, 0, 0);
+                    
+                    setSelectedDate(newDate);
                     setIsDatePickerOpen(false);
                   }
                 }}

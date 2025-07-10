@@ -26,7 +26,6 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {useToast} from "@/hooks/use-toast";
 import {useState} from "react";
 import {Loader2} from "lucide-react";
-import Link from "next/link";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {message: "Full name must be at least 2 characters."}),
@@ -56,6 +55,13 @@ export default function SignupForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    // First validate the form
+    const isValid = await form.trigger();
+    if (!isValid) {
+      // Don't proceed if the form is invalid
+      return;
+    }
+    
     setIsLoading(true);
     try {
       // Create user account
@@ -69,11 +75,25 @@ export default function SignupForm() {
         description: "Your account is pending manager approval. You'll receive an email once approved and can then log in.",
       });
       
-      // Navigation is handled by useAuth hook
+      // Navigate to login page after successful signup
+      window.location.href = '/login';
     } catch (error: any) {
+      let errorMessage = "An unexpected error occurred.";
+      
+      // Handle common Firebase auth errors
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = "This email is already in use. Please try logging in instead.";
+        form.setError("email", { type: "manual", message: "Email already in use" });
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = "Password is too weak. Please choose a stronger password.";
+        form.setError("password", { type: "manual", message: "Password is too weak" });
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Signup Failed",
-        description: error.message || "An unexpected error occurred.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -270,7 +290,17 @@ export default function SignupForm() {
               />
             </div>
 
-            <Button type="submit" className="w-full mt-6" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              className="w-full mt-6" 
+              disabled={isLoading}
+              onClick={() => {
+                if (!form.formState.isValid) {
+                  // Make sure all errors are displayed
+                  form.trigger();
+                }
+              }}
+            >
               {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Create Account"}
             </Button>
           </form>
@@ -278,11 +308,18 @@ export default function SignupForm() {
         
         {/* Login Link */}
         <div className="mt-6 text-center">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground h-8">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
+            <a 
+              href="/login" 
+              className="font-medium text-primary hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = '/login';
+              }}
+            >
               Sign in
-            </Link>
+            </a>
           </div>
         </div>
       </CardContent>

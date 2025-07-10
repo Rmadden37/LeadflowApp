@@ -12,7 +12,7 @@ import ProfileCard from "./profile-card";
 import Image from "next/image";
 
 import {useAuth} from "@/hooks/use-auth";
-import {db} from "@/lib/firebase";
+import {db, acceptJobFunction} from "@/lib/firebase";
 import {doc, updateDoc, serverTimestamp} from "firebase/firestore";
 import {useToast} from "@/hooks/use-toast";
 import {useState, useCallback, memo} from "react";
@@ -58,6 +58,7 @@ const CloserCard = memo(function CloserCard({
   const {toast} = useToast();
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isAcceptingJob, setIsAcceptingJob] = useState(false);
   
   // Check lead status - memoized to avoid recalculation
   const isAcceptedLead = currentLeadStatus === "accepted";
@@ -156,36 +157,76 @@ const CloserCard = memo(function CloserCard({
 
   // Memoized disposition handlers
   const handleAcceptAndStart = useCallback(() => {
-    if (onDispositionChange) {
+    if (onDispositionChange && leadId && !isAcceptingJob) {
       console.log('🔥 CloserCard - Accept & Start button clicked:', { 
         closerName: closer.name, 
         leadStatus: currentLeadStatus,
         leadId: leadId,
         userRole: user?.role 
       });
-      onDispositionChange("in_process");
-      toast({
-        title: "Lead Accepted",
-        description: "Lead has been accepted and is now in process."
-      });
+      
+      setIsAcceptingJob(true);
+      
+      // First call the cloud function to record acceptance
+      acceptJobFunction({ leadId })
+        .then((result) => {
+          console.log('🔥 Cloud function acceptJob executed successfully:', result.data);
+          // Then update status to in_process
+          onDispositionChange("in_process");
+          toast({
+            title: "Lead Accepted",
+            description: "Lead has been accepted and is now in process."
+          });
+        })
+        .catch((error) => {
+          console.error('🔥 Error executing acceptJob cloud function:', error);
+          toast({
+            title: "Error Accepting Lead",
+            description: "There was an issue accepting this lead. Please try again.",
+            variant: "destructive"
+          });
+        })
+        .finally(() => {
+          setIsAcceptingJob(false);
+        });
     }
-  }, [onDispositionChange, closer.name, currentLeadStatus, leadId, user?.role, toast]);
+  }, [onDispositionChange, closer.name, currentLeadStatus, leadId, user?.role, toast, isAcceptingJob]);
 
   const handleAcceptJob = useCallback(() => {
-    if (onDispositionChange) {
+    if (onDispositionChange && leadId && !isAcceptingJob) {
       console.log('🔥 CloserCard - Accept Job button clicked:', { 
         closerName: closer.name, 
         leadStatus: currentLeadStatus,
         leadId: leadId,
         userRole: user?.role 
       });
-      onDispositionChange("accepted");
-      toast({
-        title: "Job Accepted",
-        description: "Job has been accepted."
-      });
+      
+      setIsAcceptingJob(true);
+      
+      // First call the cloud function to record acceptance in the backend
+      acceptJobFunction({ leadId })
+        .then((result) => {
+          console.log('🔥 Cloud function acceptJob executed successfully:', result.data);
+          // Then update local UI state
+          onDispositionChange("accepted");
+          toast({
+            title: "Job Accepted",
+            description: "Job has been accepted."
+          });
+        })
+        .catch((error) => {
+          console.error('🔥 Error executing acceptJob cloud function:', error);
+          toast({
+            title: "Error Accepting Job",
+            description: "There was an issue accepting this job. Please try again.",
+            variant: "destructive"
+          });
+        })
+        .finally(() => {
+          setIsAcceptingJob(false);
+        });
     }
-  }, [onDispositionChange, closer.name, currentLeadStatus, leadId, user?.role, toast]);
+  }, [onDispositionChange, closer.name, currentLeadStatus, leadId, user?.role, toast, isAcceptingJob]);
 
   const handleStartWorking = useCallback(() => {
     if (onDispositionChange) {
@@ -314,8 +355,16 @@ const CloserCard = memo(function CloserCard({
               size="sm" 
               className="h-6 px-2 text-xs bg-green-500/80 backdrop-blur-sm hover:bg-green-600/90 text-white border border-green-400/30 hover:border-green-300/50 transition-all duration-300 closer-action-btn"
               onClick={handleAcceptAndStart}
+              disabled={isAcceptingJob}
             >
-              Accept & Start
+              {isAcceptingJob ? (
+                <>
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Accept & Start"
+              )}
             </Button>
           )}
           
@@ -325,8 +374,16 @@ const CloserCard = memo(function CloserCard({
               size="sm" 
               className="h-6 px-2 text-xs bg-green-500/80 backdrop-blur-sm hover:bg-green-600/90 text-white border border-green-400/30 hover:border-green-300/50 transition-all duration-300 closer-action-btn"
               onClick={handleAcceptJob}
+              disabled={isAcceptingJob}
             >
-              Accept Job
+              {isAcceptingJob ? (
+                <>
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Accept Job"
+              )}
             </Button>
           )}
           

@@ -42,10 +42,6 @@ export default function ScheduledLeadsCalendar({ scheduledLeads, loading, isExpa
   const leadsToShow = isExpanded ? filteredLeads : filteredLeads.slice(0, 3);
 
   const handleLeadClick = (lead: Lead) => {
-    console.log('🔥 ScheduledLeadsCalendar - Lead clicked:', { 
-      leadId: lead.id, 
-      customerName: lead.customerName 
-    });
     setSelectedLead(lead);
     setIsModalOpen(true);
   };
@@ -96,7 +92,11 @@ export default function ScheduledLeadsCalendar({ scheduledLeads, loading, isExpa
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setSelectedDate(new Date())}
+                onClick={() => {
+                  const today = new Date();
+                  today.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+                  setSelectedDate(today);
+                }}
                 className="text-xs"
               >
                 Today
