@@ -269,7 +269,7 @@ export default function DaylightArcCard() {
   };
 
   return (
-    <div className="frosted-glass-card p-2">
+    <div className="frosted-glass-card p-4 max-w-full overflow-hidden">
       <div className="flex items-center justify-between">
         {/* Current Time Display - Compact Horizontal Layout */}
         <div className="text-left">
@@ -282,12 +282,13 @@ export default function DaylightArcCard() {
         </div>
 
         {/* Compact Arc Display */}
-        <div className="relative w-[100px] h-[50px]">
+        <div className="relative w-[100px] h-[50px] flex-shrink-0">
           <svg
             width="100"
             height="50"
             viewBox="0 0 100 50"
-            className="absolute inset-0"
+            className="absolute inset-0 overflow-visible"
+            preserveAspectRatio="xMidYMid meet"
           >
             {/* Background Arc */}
             <path

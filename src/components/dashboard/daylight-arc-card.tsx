@@ -214,43 +214,35 @@ export default function DaylightArcCard() {
   // Calculate current time in minutes since midnight
   const hours = currentTime.getHours();
   const minutes = currentTime.getMinutes();
-  // const totalMinutes = hours * 60 + minutes;
-  
-  // FOR TESTING: Simulate PRIMETIME mode:
-  const totalMinutes = sunsetMinutes + 10; // Simulates 10 minutes after sunset
+  const totalMinutes = hours * 60 + minutes;
   
   // Calculate progress through daylight hours
   let progress = 0;
-  let isPrimetime = true; // FORCE PRIMETIME FOR TESTING
-  let primetimeMinutesLeft = 25; // FORCE 25 MINUTES LEFT
-  
-  // DEBUG: Log all the values
-  console.log('🌅 Daylight Debug:', {
-    totalMinutes,
-    sunriseMinutes, 
-    sunsetMinutes,
-    currentTime: currentTime.toLocaleTimeString(),
-    testMode: 'FORCED PRIMETIME MODE'
-  });
+  let isPrimetime = false;
+  let primetimeMinutesLeft = 0;
   
   if (totalMinutes < sunriseMinutes) {
     progress = 0; // Before sunrise
   } else if (totalMinutes > sunsetMinutes) {
     progress = 1; // After sunset
+    // Check if we're in primetime (golden hour - 1 hour after sunset)
+    const minutesAfterSunset = totalMinutes - sunsetMinutes;
+    if (minutesAfterSunset <= 60) {
+      isPrimetime = true;
+      primetimeMinutesLeft = 60 - minutesAfterSunset;
+    }
   } else {
     progress = (totalMinutes - sunriseMinutes) / daylightDuration;
+    // Check if we're approaching sunset (last hour of daylight)
+    const minutesUntilSunset = sunsetMinutes - totalMinutes;
+    if (minutesUntilSunset <= 60) {
+      isPrimetime = true;
+      primetimeMinutesLeft = minutesUntilSunset;
+    }
   }
   
   // Clamp progress between 0 and 1
   progress = Math.max(0, Math.min(1, progress));
-  
-  // DEBUG: Final state
-  console.log('🎯 Final Render State:', { 
-    isPrimetime, 
-    primetimeMinutesLeft, 
-    progress,
-    willShowTimer: isPrimetime
-  });
   
   // SVG arc calculations - full semicircle with proper clearance
   const centerX = 120; // Half of 240
@@ -313,24 +305,11 @@ export default function DaylightArcCard() {
   };
 
   return (
-    <div className="frosted-glass-card px-6 py-8 overflow-hidden relative h-[240px]">
-      {/* DEBUG: Visual indicators */}
-      <div className="absolute top-2 left-2 z-50 text-xs space-y-1">
-        <div className="bg-red-500 text-white px-2 py-1 rounded">
-          Component Loaded ✓
-        </div>
-        <div className={`px-2 py-1 rounded text-white ${isPrimetime ? 'bg-orange-500' : 'bg-blue-500'}`}>
-          {isPrimetime ? `PRIMETIME: ${Math.floor(primetimeMinutesLeft)}min` : 'Normal Mode'}
-        </div>
-        <div className="bg-purple-500 text-white px-1 py-0.5 rounded text-[10px]">
-          Test: +10min
-        </div>
-      </div>
-      
-      <div className="flex flex-col items-center justify-between h-full overflow-hidden">
+    <div className="frosted-glass-card px-4 py-6 overflow-hidden relative h-[280px] max-w-full">
+      <div className="w-full max-w-full h-full flex flex-col">
         
         {/* Fixed Height Container for Clock/Timer Section */}
-        <div className="h-[50px] flex flex-col justify-center items-center relative">
+        <div className="h-[60px] flex flex-col justify-center items-center relative mb-4">
           
           {/* Normal Clock Display - DISAPPEARS during PRIMETIME */}
           <div className={`absolute inset-0 flex flex-col justify-center items-center transition-all duration-700 ${
@@ -338,7 +317,10 @@ export default function DaylightArcCard() {
           }`} style={{
             transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' // iOS native ease
           }}>
-            <div className="text-2xl font-light text-white tracking-wider">
+            <div className="text-3xl font-light text-white tracking-wider" style={{
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+              fontFeatureSettings: '"tnum"'
+            }}>
               {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
             <div className="text-xs text-white/60 opacity-60 uppercase tracking-widest mt-1">
@@ -352,10 +334,11 @@ export default function DaylightArcCard() {
           }`} style={{
             transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' // iOS native ease
           }}>
-            <div className="text-5xl font-light text-white tracking-wider leading-none" style={{
+            <div className="text-4xl font-light text-white tracking-wider leading-none" style={{
               filter: 'drop-shadow(0 0 20px rgba(255, 107, 71, 0.9))',
               textShadow: '0 0 40px rgba(255, 107, 71, 0.7), 0 0 60px rgba(255, 107, 71, 0.5)',
-              fontFeatureSettings: '"tnum"' // Tabular numbers for consistent spacing
+              fontFeatureSettings: '"tnum"',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
             }}>
               {Math.floor(primetimeMinutesLeft)}:00
             </div>
@@ -371,72 +354,76 @@ export default function DaylightArcCard() {
         </div>
 
         {/* Fixed Height Container for Arc Section - Appears/Disappears */}
-        <div className={`h-[100px] relative w-[200px] transition-all duration-700 ${
+        <div className={`h-[120px] relative w-full flex justify-center transition-all duration-700 ${
           isPrimetime ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'
         }`} style={{
           transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' // iOS native ease
         }}>
           
-          <svg
-            width="200"
-            height="100"
-            viewBox="0 0 200 100"
-            className="absolute inset-0"
-          >
-            {/* Background Arc */}
-            <path
-              d={`M 25 80 A 75 75 0 0 1 175 80`}
-              fill="none"
-              stroke="rgba(255, 255, 255, 0.1)"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
+          <div className="relative w-full max-w-[200px]">
+            <svg
+              width="100%"
+              height="120"
+              viewBox="0 0 200 120"
+              className="absolute inset-0 overflow-visible"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              {/* Background Arc */}
+              <path
+                d={`M 30 90 A 70 70 0 0 1 170 90`}
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.1)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              
+              {/* Progress Arc */}
+              <path
+                d={`M 30 90 A 70 70 0 0 1 170 90`}
+                fill="none"
+                stroke="rgba(46, 234, 154, 0.4)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeDasharray={Math.PI * 70}
+                strokeDashoffset={Math.PI * 70 * (1 - progress)}
+                style={{
+                  transition: 'stroke-dashoffset 0.5s ease-out'
+                }}
+              />
+              
+              {/* Sunrise Icon */}
+              <circle cx="30" cy="90" r="3" fill="rgba(255, 200, 50, 0.7)" />
+              <circle cx="30" cy="90" r="6" fill="none" stroke="rgba(255, 200, 50, 0.3)" strokeWidth="1" />
+              
+              {/* Sunset Icon */}
+              <circle cx="170" cy="90" r="3" fill="rgba(255, 140, 90, 0.7)" />
+              <circle cx="170" cy="90" r="6" fill="none" stroke="rgba(255, 140, 90, 0.3)" strokeWidth="1" />
+            </svg>
             
-            {/* Progress Arc */}
-            <path
-              d={`M 25 80 A 75 75 0 0 1 175 80`}
-              fill="none"
-              stroke="rgba(255, 255, 255, 0.3)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeDasharray={Math.PI * 75}
-              strokeDashoffset={Math.PI * 75 * (1 - progress)}
-              style={{
-                transition: 'stroke-dashoffset 0.5s ease-out'
-              }}
-            />
-            
-            {/* Sunrise Icon */}
-            <circle cx="25" cy="80" r="3" fill="rgba(255, 200, 50, 0.5)" />
-            <circle cx="25" cy="80" r="5" fill="none" stroke="rgba(255, 200, 50, 0.2)" strokeWidth="1" />
-            
-            {/* Sunset Icon */}
-            <circle cx="175" cy="80" r="3" fill="rgba(200, 200, 255, 0.5)" />
-            <circle cx="175" cy="80" r="5" fill="none" stroke="rgba(200, 200, 255, 0.2)" strokeWidth="1" />
-          </svg>
-          
-          {/* Sun Marker */}
-          <svg
-            width="200"
-            height="100"
-            viewBox="0 0 200 100"
-            className="absolute inset-0 pointer-events-none z-10"
-          >
-            <circle
-              cx={100 - 75 * Math.cos(Math.PI * progress)}
-              cy={80 - 75 * Math.sin(Math.PI * progress)}
-              r={5}
-              fill={getSunColor(daylightRemaining)}
-              style={{
-                filter: getSunGlow(daylightRemaining),
-                transition: 'fill 0.8s ease-out, filter 0.8s ease-out'
-              }}
-            />
-          </svg>
+            {/* Sun Marker */}
+            <svg
+              width="100%"
+              height="120"
+              viewBox="0 0 200 120"
+              className="absolute inset-0 pointer-events-none z-10 overflow-visible"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <circle
+                cx={100 - 70 * Math.cos(Math.PI * progress)}
+                cy={90 - 70 * Math.sin(Math.PI * progress)}
+                r={getSunRadius(1 - progress)}
+                fill={getSunColor(1 - progress)}
+                style={{
+                  filter: getSunGlow(1 - progress),
+                  transition: 'fill 0.8s ease-out, filter 0.8s ease-out'
+                }}
+              />
+            </svg>
+          </div>
         </div>
 
         {/* Labels Section - Disappears during PRIMETIME */}
-        <div className={`h-[50px] w-full flex justify-center items-center transition-all duration-700 ${
+        <div className={`flex-1 flex justify-center items-start transition-all duration-700 ${
           isPrimetime ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'
         }`} style={{
           transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' // iOS native ease
@@ -446,14 +433,18 @@ export default function DaylightArcCard() {
             <div className="flex justify-between w-full">
               <div className="text-center">
                 <div className="text-xs uppercase text-white/60 opacity-70 mb-1">Sunrise</div>
-                <div className="text-sm font-medium text-white">
+                <div className="text-sm font-medium text-white" style={{
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
+                }}>
                   {loading ? '...' : formatTime(sunrise[0], sunrise[1])}
                 </div>
               </div>
               
               <div className="text-center">
                 <div className="text-xs uppercase text-white/60 opacity-70 mb-1">Sunset</div>
-                <div className="text-sm font-medium text-white">
+                <div className="text-sm font-medium text-white" style={{
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
+                }}>
                   {loading ? '...' : formatTime(sunset[0], sunset[1])}
                 </div>
               </div>

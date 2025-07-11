@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import { Lead } from "@/types";
-import { Loader2, Calendar, CalendarClock } from "lucide-react";
+import { Loader2, Calendar, CalendarClock, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format, isSameDay } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -32,20 +32,18 @@ export default function ScheduledLeadsSection() {
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showLeadDetails, setShowLeadDetails] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date()); // Default to today
+  const [showCalendar, setShowCalendar] = useState(false);
 
   // Fetch all scheduled leads
   useEffect(() => {
-    console.log('ScheduledLeadsSection - useEffect triggered, user.teamId:', user?.teamId);
-    
     if (!user?.teamId) {
-      console.log('ScheduledLeadsSection - No teamId, setting empty leads');
       setLoading(false);
       setAllScheduledLeads([]);
       return;
     }
 
     setLoading(true);
-    console.log('ScheduledLeadsSection - Loading started');
 
     const scheduledQuery = query(
       collection(db, "leads"),
@@ -53,13 +51,10 @@ export default function ScheduledLeadsSection() {
       where("status", "in", ["scheduled", "rescheduled", "needs_verification"]),
       orderBy("scheduledAppointmentTime", "asc")
     );
-
-    console.log('ScheduledLeadsSection - Query created, about to subscribe to snapshot');
     
     const unsubscribe = onSnapshot(
       scheduledQuery,
       (querySnapshot) => {
-        console.log('ScheduledLeadsSection - Got snapshot with', querySnapshot.docs.length, 'docs');
         const leads = querySnapshot.docs.map((docSnapshot) => {
           const data = docSnapshot.data();
           
@@ -87,12 +82,11 @@ export default function ScheduledLeadsSection() {
           } as Lead;
         });
 
-        console.log('ScheduledLeadsSection - Processed', leads.length, 'leads, setting state');
         setAllScheduledLeads(leads);
         setLoading(false);
       },
       (error) => {
-        console.error('ScheduledLeadsSection - Error fetching leads:', error);
+        console.error('Error fetching leads:', error);
         toast({
           title: "Error",
           description: "Failed to load scheduled leads. Please refresh the page.",
@@ -104,73 +98,25 @@ export default function ScheduledLeadsSection() {
 
     return () => unsubscribe();
   }, [user?.teamId, toast]);
-
-  // If Firebase is causing issues, let's create some sample leads for testing
-  const useSampleData = true; // Enabling sample data for testing
   
-  const sampleLeads: Lead[] = useSampleData ? [
-    {
-      id: "sample1",
-      customerName: "John Doe",
-      customerPhone: "555-123-4567",
-      address: "123 Main St",
-      status: "scheduled",
-      teamId: "team1",
-      scheduledAppointmentTime: {
-        toDate: () => new Date('2025-07-11T14:00:00')
-      } as any,
-      setterVerified: true,
-      setterName: "Sarah",
-    } as Lead,
-    {
-      id: "sample2",
-      customerName: "Jane Smith",
-      customerPhone: "555-987-6543",
-      address: "456 Oak Ave",
-      status: "scheduled",
-      teamId: "team1",
-      scheduledAppointmentTime: {
-        toDate: () => new Date('2025-07-11T16:30:00')
-      } as any,
-      setterVerified: false,
-      setterName: "Mike",
-    } as Lead
-  ] : [];
-  
-  console.log('ScheduledLeadsSection - Total leads from Firebase:', allScheduledLeads.length);
-  console.log('ScheduledLeadsSection - Using sample data?', useSampleData);
-  
-  // Filter leads for the selected date (default to today)
+  // Filter leads for the selected date
   const filteredLeads = allScheduledLeads.filter(lead => {
     if (!lead.scheduledAppointmentTime) {
-      console.log('ScheduledLeadsSection - Skipping lead with no scheduledAppointmentTime:', lead.id);
       return false;
     }
     
     try {
       const appointmentDate = lead.scheduledAppointmentTime.toDate();
-      const selectedDate = new Date(); // Use actual current date
-      const isSelectedDate = isSameDay(appointmentDate, selectedDate);
-      
-      if (isSelectedDate) {
-        console.log('ScheduledLeadsSection - Lead matches today:', lead.id, format(appointmentDate, 'yyyy-MM-dd'));
-      }
-      
-      return isSelectedDate;
+      return isSameDay(appointmentDate, selectedDate);
     } catch (error) {
-      console.error('ScheduledLeadsSection - Error processing lead date:', error);
+      console.error('Error processing lead date:', error);
       return false;
     }
   });
   
-  console.log('ScheduledLeadsSection - Filtered leads for today:', filteredLeads.length);
-  
   // Separate verified and unverified leads
   const verifiedLeads = filteredLeads.filter(lead => lead.setterVerified === true);
   const unverifiedLeads = filteredLeads.filter(lead => lead.setterVerified !== true);
-  
-  console.log('ScheduledLeadsSection - Verified leads:', verifiedLeads.length);
-  console.log('ScheduledLeadsSection - Unverified leads:', unverifiedLeads.length);
 
   const handleLeadClick = (lead: Lead) => {
     setSelectedLead(lead);
@@ -188,39 +134,82 @@ export default function ScheduledLeadsSection() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
+      {/* Header with Date Selection */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <CalendarClock className="w-5 h-5 text-blue-400" />
-          <h2 className="text-lg font-semibold text-white">Today's Scheduled Leads</h2>
+          <h2 className="text-lg font-semibold text-white">Scheduled Leads</h2>
           <span className="text-sm text-gray-400">
-            ({filteredLeads.length} total)
+            ({filteredLeads.length} for selected date)
           </span>
         </div>
       </div>
 
-      {/* Today's Date Banner with Verification Stats */}
+      {/* Date Selection */}
       <div className="flex items-center justify-between p-3 bg-blue-900/20 rounded-lg border border-blue-500/20">
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-blue-400" />
           <span className="text-white font-semibold">
-            Today: {format(new Date(), "MMMM d, yyyy")}
+            {format(selectedDate, "MMMM d, yyyy")}
           </span>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1">
-            <div className="h-2 w-2 rounded-full bg-green-500"></div>
-            <span className="text-xs text-green-300">
-              {verifiedLeads.length} verified
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          {/* Quick Date Buttons */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedDate(new Date())}
+            className={cn(
+              "text-xs",
+              isSameDay(selectedDate, new Date()) ? "bg-blue-600 text-white" : "text-blue-300"
+            )}
+          >
+            Today
+          </Button>
           
-          <div className="flex items-center gap-1">
-            <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
-            <span className="text-xs text-yellow-300">
-              {unverifiedLeads.length} needs verification
-            </span>
+          {/* Calendar Popover */}
+          <Popover open={showCalendar} onOpenChange={setShowCalendar}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs bg-transparent border-blue-500/30 text-blue-300 hover:bg-blue-600/20"
+              >
+                <CalendarDays className="mr-1 h-3 w-3" />
+                Pick Date
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <CalendarComponent
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => {
+                  if (date) {
+                    setSelectedDate(date);
+                    setShowCalendar(false);
+                  }
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          
+          {/* Verification Stats */}
+          <div className="flex items-center gap-3 ml-2">
+            <div className="flex items-center gap-1">
+              <div className="h-2 w-2 rounded-full bg-green-500"></div>
+              <span className="text-xs text-green-300">
+                {verifiedLeads.length} verified
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-1">
+              <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
+              <span className="text-xs text-yellow-300">
+                {unverifiedLeads.length} needs verification
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -233,7 +222,7 @@ export default function ScheduledLeadsSection() {
               <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg font-medium">No scheduled leads</p>
               <p className="text-sm">
-                No leads are scheduled for today
+                No leads are scheduled for {format(selectedDate, "MMMM d, yyyy")}
               </p>
             </div>
           ) : (

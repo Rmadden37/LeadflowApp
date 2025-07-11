@@ -87,8 +87,12 @@ export default function FloatingCreateLeadButton({
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
       className={cn(
-        // Fixed positioning - positioned above bottom nav and chat button
-        "fixed bottom-28 left-1/2 transform -translate-x-1/2 z-40",
+        // Fixed positioning - positioned above bottom nav with safe overflow containment
+        "fixed left-1/2 transform -translate-x-1/2 z-40",
+        // Responsive bottom positioning - above bottom nav and safe areas
+        "bottom-[calc(5rem+env(safe-area-inset-bottom)+1rem)]",
+        // Ensure button stays within viewport bounds
+        "max-w-[16rem] max-h-[16rem] overflow-hidden",
         // iOS-native button foundation
         "ios-button-base ios-button-interactive ios-touch-target",
         // Size and shape - iOS guidelines compliance

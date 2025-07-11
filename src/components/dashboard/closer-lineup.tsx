@@ -197,14 +197,14 @@ export default function CloserLineup() {
     <>
       <h2 className="text-2xl font-lora text-[var(--text-primary)] mb-4">Up Next</h2>
       <div 
-        className="frosted-glass-card p-3 relative ios-slide-up"
+        className="frosted-glass-card p-2 relative ios-slide-up"
         data-testid="closer-lineup-card"
       >
         {/* Gear Icon for Management */}
         {canManageClosers && (
           <button
             onClick={handleCardClick}
-            className="absolute top-3 right-3 z-20 p-1 hover:bg-white/10 transition-all duration-200 rounded-sm gear-icon-btn ios-button-press ios-focus"
+            className="absolute top-2 right-2 z-20 p-1 hover:bg-white/10 transition-all duration-200 rounded-sm gear-icon-btn ios-button-press ios-focus"
             title="Manage Closers"
           >
             <Settings className="w-4 h-4 text-[var(--text-primary)] opacity-70 hover:opacity-100" />
@@ -217,9 +217,10 @@ export default function CloserLineup() {
           </div>
         ) : closers.length > 0 ? (
           <div className="relative">
-            <div className="flex gap-6 py-4 px-8 w-max min-w-full items-center h-24 overflow-x-auto overflow-y-hidden">
-              {closers.map((closer, index) => (
-                <div key={closer.uid} className="flex flex-col items-center flex-shrink-0">
+            {/* iOS-native grid layout - no horizontal scrolling */}
+            <div className="grid grid-cols-3 gap-3 py-3 px-2 items-center justify-items-center min-h-[90px]">
+              {closers.slice(0, 6).map((closer, index) => (
+                <div key={closer.uid} className="flex flex-col items-center w-full max-w-[80px]">
                   <div className="relative closer-lineup-avatar-container">
                     {/* Hardware-accelerated animation using CSS transforms */}
                     <div
@@ -239,24 +240,35 @@ export default function CloserLineup() {
                         className="w-12 h-12 rounded-full shadow-md object-cover"
                         title={closer.name}
                       />
-                      <div className="closer-lineup-bubble w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200 absolute -top-1 -right-1">
-                        <span className="text-xs font-bold text-black">{index + 1}</span>
+                      <div className="closer-lineup-bubble w-6 h-6 bg-[var(--accent-green)] rounded-full flex items-center justify-center shadow-lg absolute -top-2 -right-2 z-30">
+                        <span className="text-xs font-bold text-white">{index + 1}</span>
                       </div>
                     </div>
                   </div>
-                  <p className="text-xs font-medium text-[var(--text-primary)] text-center break-words max-w-[60px] leading-tight mt-1">
+                  <p 
+                    className="text-xs font-medium text-[var(--text-primary)] text-center leading-tight mt-2 px-1"
+                    style={{
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                      fontSize: '11px',
+                      lineHeight: '1.2',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: '70px'
+                    }}
+                  >
                     {closer.name}
                   </p>
                 </div>
               ))}
             </div>
             
-            {/* Scroll Indicator - only show if there are more than 3 closers */}
-            {closers.length > 3 && (
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[var(--text-secondary)] opacity-50 pointer-events-none">
-                <div className="flex flex-col items-center text-xs">
-                  <span>→</span>
-                  <span className="text-[10px]">{closers.length}</span>
+            {/* More indicator - shows when there are more than 6 closers */}
+            {closers.length > 6 && (
+              <div className="absolute bottom-2 right-2 text-[var(--text-secondary)] opacity-60">
+                <div className="flex items-center space-x-1 text-xs">
+                  <span>+{closers.length - 6} more</span>
+                  <Users className="w-3 h-3" />
                 </div>
               </div>
             )}

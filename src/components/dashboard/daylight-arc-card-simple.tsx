@@ -295,7 +295,7 @@ export default function DaylightArcCard() {
   };
 
   return (
-    <div className="frosted-glass-card px-6 py-8 overflow-hidden relative h-[240px]">
+    <div className="frosted-glass-card px-4 py-6 overflow-hidden relative h-[240px] max-w-full">
       {/* Debug indicators */}
       {isGoldenHour && (
         <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 text-xs rounded-full font-medium z-50">
@@ -308,7 +308,7 @@ export default function DaylightArcCard() {
         </div>
       )}
       
-      <div className="flex flex-col items-center justify-between h-full">
+      <div className="flex flex-col items-center justify-between h-full w-full max-w-full">
         
         {/* Dynamic Content Section - Clock/Timer/Day Complete */}
         <div className="h-[50px] flex flex-col justify-center items-center relative">
@@ -367,20 +367,21 @@ export default function DaylightArcCard() {
         </div>
 
         {/* Arc Section - Transforms based on state */}
-        <div className={`h-[100px] relative w-[200px] transition-all duration-700 ${
+        <div className={`h-[100px] relative w-full max-w-[180px] transition-all duration-700 ${
           isGoldenHour ? 'opacity-30 scale-95' : isDayComplete ? 'opacity-20 scale-90' : 'opacity-100 scale-100'
         }`} style={{
           transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
         }}>
           <svg
-            width="200"
+            width="100%"
             height="100"
-            viewBox="0 0 200 100"
-            className="absolute inset-0"
+            viewBox="0 0 180 100"
+            className="absolute inset-0 overflow-visible"
+            preserveAspectRatio="xMidYMid meet"
           >
             {/* Background Arc - Changes color when day is complete */}
             <path
-              d={`M 25 80 A 75 75 0 0 1 175 80`}
+              d={`M 25 80 A 65 65 0 0 1 155 80`}
               fill="none"
               stroke={isDayComplete ? "rgba(147, 51, 234, 0.2)" : "rgba(255, 255, 255, 0.1)"}
               strokeWidth="2"
@@ -390,13 +391,13 @@ export default function DaylightArcCard() {
             
             {/* Progress Arc - Subtle purple when complete */}
             <path
-              d={`M 25 80 A 75 75 0 0 1 175 80`}
+              d={`M 25 80 A 65 65 0 0 1 155 80`}
               fill="none"
               stroke={isDayComplete ? "rgba(147, 51, 234, 0.4)" : "rgba(255, 255, 255, 0.3)"}
               strokeWidth="2"
               strokeLinecap="round"
-              strokeDasharray={Math.PI * 75}
-              strokeDashoffset={Math.PI * 75 * (1 - progress)}
+              strokeDasharray={Math.PI * 65}
+              strokeDashoffset={Math.PI * 65 * (1 - progress)}
               style={{
                 transition: 'stroke-dashoffset 0.5s ease-out, stroke 1s ease-out'
               }}
@@ -408,14 +409,14 @@ export default function DaylightArcCard() {
             
             {/* Sunset Icon - Moon when day complete */}
             <circle 
-              cx="175" 
+              cx="155" 
               cy="80" 
               r="3" 
               fill={isDayComplete ? "rgba(147, 51, 234, 0.7)" : "rgba(200, 200, 255, 0.5)"}
               style={{ transition: 'fill 1s ease-out' }}
             />
             <circle 
-              cx="175" 
+              cx="155" 
               cy="80" 
               r="5" 
               fill="none" 
@@ -438,14 +439,15 @@ export default function DaylightArcCard() {
           
           {/* Sun Marker */}
           <svg
-            width="200"
+            width="100%"
             height="100"
-            viewBox="0 0 200 100"
-            className="absolute inset-0 pointer-events-none z-10"
+            viewBox="0 0 180 100"
+            className="absolute inset-0 pointer-events-none z-10 overflow-visible"
+            preserveAspectRatio="xMidYMid meet"
           >
             <circle
-              cx={100 - 75 * Math.cos(Math.PI * progress)}
-              cy={80 - 75 * Math.sin(Math.PI * progress)}
+              cx={90 - 65 * Math.cos(Math.PI * progress)}
+              cy={80 - 65 * Math.sin(Math.PI * progress)}
               r={5}
               fill={getSunColor(daylightRemaining)}
               style={{
@@ -462,7 +464,7 @@ export default function DaylightArcCard() {
         }`} style={{
           transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
         }}>
-          <div className="w-full max-w-[180px]">
+          <div className="w-full max-w-[160px]">
             <div className="flex justify-between w-full">
               <div className="text-center">
                 <div className="text-xs uppercase text-white/60 opacity-70 mb-1">

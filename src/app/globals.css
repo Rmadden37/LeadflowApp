@@ -253,6 +253,26 @@ body {
   contain: layout style paint; /* Optimize rendering */
 }
 
+/* Professional spotlight animation - subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.02) translateX(-0.5%) translateY(0.5%);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.01) translateX(-1%) translateY(1%);
+    opacity: 0.98;
+  }
+  75% {
+    transform: scale(1.015) translateX(-0.5%) translateY(0.5%);
+    opacity: 0.96;
+  }
+}
+
 /* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
 @keyframes atmospheric-flow {
   0%, 100% {
@@ -492,7 +512,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Atmosphere Layer - Full Screen Gradients */
+/* Atmosphere Layer - Professional Top-Right Spotlight */
 body::before {
   content: '';
   position: fixed;
@@ -503,10 +523,26 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background: 
-    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.2) 0%, transparent 50%);
-  background-size: 200% 200%;
-  animation: atmospheric-flow 25s ease-in-out infinite;
+    /* PROFESSIONAL TOP-RIGHT SPOTLIGHT - Creates depth and focus - MOVED HIGHER */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 30%, transparent 60%),
+    /* Secondary subtle gradients for depth */
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 75% 8%, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
+  background-size: 100% 100%, 150% 150%, 120% 120%;
+  animation: subtle-glow 30s ease-in-out infinite;
+}
+
+/* Enhanced spotlight for mobile - maintains top-right focus */
+@media (max-width: 768px) {
+  body::before {
+    background: 
+      /* MOBILE TOP-RIGHT SPOTLIGHT - Adjusted for smaller screens - MOVED HIGHER */
+      radial-gradient(ellipse 600px 450px at 80% 8%, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 25%, transparent 55%),
+      /* Supporting mobile gradients */
+      radial-gradient(ellipse at 85% 5%, rgba(255, 255, 255, 0.10) 0%, transparent 35%),
+      radial-gradient(ellipse at 70% 12%, rgba(255, 255, 255, 0.05) 0%, transparent 45%);
+    background-size: 100% 100%, 140% 140%, 110% 110%;
+  }
 }
 
 /* Ensure all content appears above atmosphere */
@@ -2534,8 +2570,6 @@ padding-right: 2rem;
 .ios-button-base {
   contain: layout style paint;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
 }
 
 /* Enhanced iOS-specific utilities for bottom navigation */
@@ -3099,388 +3133,195 @@ padding-right: 2rem;
 }
 
 /* ===================================================================
-   CLOSER LINEUP NUMBER BUBBLE FIXES - PREVENT CUT-OFF
+   DAYLIGHT ARC & CLOSER LINEUP CONTAINMENT FIXES - NO SCROLLING
    =================================================================== */
 
-/* Ensure number bubbles have proper spacing and aren't clipped */
-[data-testid="closer-lineup-card"] .relative[style*="padding"] {
-  /* Ensure adequate padding for position bubbles */
-  padding: 8px !important;
+/* Prevent scrolling in daylight arc cards with new viewBox */
+.frosted-glass-card:has(svg[viewBox*="200 120"]) {
+  overflow: hidden !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-/* Position number bubbles with better positioning */
-[data-testid="closer-lineup-card"] .absolute.-top-2.-right-2 {
-  /* Better positioning to prevent clipping */
-  top: -0.5rem !important;
-  right: -0.5rem !important;
-  /* Ensure proper layering */
-  z-index: 20 !important;
-  /* Prevent any potential clipping */
-  overflow: visible !important;
+/* Ensure proper containment for closer lineup cards */
+.frosted-glass-card[data-testid="closer-lineup-card"] {
+  overflow: hidden !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-/* Ensure the bubble container maintains proper boundaries */
-[data-testid="closer-lineup-card"] .flex-col.items-center.flex-shrink-0 {
-  /* Extra margin to accommodate positioned bubbles */
-  margin: 0 4px !important;
+/* Prevent any unexpected scrolling on mobile */
+.frosted-glass-card[data-testid="closer-lineup-card"] * {
+  overflow-x: hidden !important;
 }
 
-/* Mobile-specific fixes for closer lineup bubbles */
+/* iOS-native animation for staggered fade-in */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Enhanced closer lineup grid layout for iOS-native feel */
+.closer-lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 0.75rem 0.5rem;
+  min-height: 90px;
+  align-items: center;
+  justify-items: center;
+}
+
+/* Closer lineup avatar sizing consistency */
+.closer-lineup-avatar-container img {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Closer lineup bubble positioning */
+.closer-lineup-bubble {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 30;
+  background-color: var(--accent-green, #2EEA9A);
+  color: white;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+/* Closer lineup avatar containers */
+.closer-lineup-avatar-container {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  overflow: visible;
+}
+
+/* Position badges with proper visibility */
+.closer-lineup-position-badge {
+  position: absolute;
+  top: -0.375rem;
+  right: -0.375rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--accent-green, #30D158);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+}
+
+.closer-lineup-position-badge span {
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Closer name styling with proper truncation */
+.closer-lineup-name {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70px;
+  margin-top: 0.5rem;
+}
+
+/* Mobile-specific enhancements */
 @media (max-width: 768px) {
-  [data-testid="closer-lineup-card"] .relative[style*="padding"] {
-    /* Slightly more padding on mobile for better visibility */
-    padding: 10px !important;
+  .closer-lineup-grid {
+    gap: 0.75rem;
+    padding: 0.75rem 0.25rem;
   }
   
-  [data-testid="closer-lineup-card"] .absolute.-top-2.-right-2 {
-    /* Adjusted positioning for mobile */
-    top: -0.375rem !important;
-    right: -0.375rem !important;
+  .closer-lineup-avatar-container {
+    width: 2.75rem;
+    height: 2.75rem;
   }
   
-  /* Ensure ScrollArea doesn't clip bubbles on mobile */
-  [data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
-    /* Add extra padding to prevent clipping */
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
+  .closer-lineup-position-badge {
+    width: 1.25rem;
+    height: 1.25rem;
+    top: -0.25rem;
+    right: -0.25rem;
+  }
+  
+  .closer-lineup-position-badge span {
+    font-size: 0.5rem;
+  }
+  
+  .closer-lineup-name {
+    font-size: 10px;
+    max-width: 60px;
   }
 }
 
-/* Ensure number bubbles in closer lineup are not clipped */
-[data-testid="closer-lineup-card"] .overflow-visible,
-[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
-  overflow: visible !important;
+/* ===================================================================
+   DAYLIGHT ARC CARD ENHANCED CONTAINMENT
+   =================================================================== */
+
+/* Ensure daylight arc cards never scroll and maintain proper proportions */
+.frosted-glass-card:has(svg[viewBox*="200 120"]) .relative {
+  overflow: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
-/* Ensure closer lineup containers have proper spacing for bubbles */
-[data-testid="closer-lineup-card"] {
-  overflow: visible !important;
-}
-
-/* Closer Lineup - No Vertical Scrolling, Horizontal Only - REMOVED: obsolete ScrollArea class */
-
-/* Ensure the closer lineup card has no vertical scrolling */
-[data-testid="closer-lineup-card"] {
-  overflow: visible !important;
+/* Daylight arc SVG optimization */
+.frosted-glass-card:has(svg[viewBox*="200 120"]) svg {
+  max-width: 100% !important;
   height: auto !important;
+  contain: layout style paint !important;
+  transform: translateZ(0) !important;
 }
 
-/* Prevent any vertical scrolling in closer lineup */
-[data-testid="closer-lineup-card"] .relative {
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
+/* Daylight arc container spacing */
+.daylight-arc-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* Custom scrollbar for closer lineup horizontal scroll */
-[data-testid="closer-lineup-card"] .overflow-x-auto::-webkit-scrollbar {
-  height: 4px;
-  display: block;
-}
-
-[data-testid="closer-lineup-card"] .overflow-x-auto::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-}
-
-[data-testid="closer-lineup-card"] .overflow-x-auto::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-}
-
-[data-testid="closer-lineup-card"] .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-/* Ensure the main card container can show overflow */
-.frosted-glass-card {
-  overflow: visible !important;
-}
-
-/* ===================================================================
-   iOS-STYLE TOAST SYSTEM - Premium Notifications
-   =================================================================== */
-
-/* Base iOS toast styling */
-.ios-toast-base {
-  /* Hardware acceleration for smooth animations */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  will-change: transform, opacity;
-  contain: layout style paint;
-  
-  /* iOS-style backdrop blur */
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  
-  /* Smooth iOS-style border */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  
-  /* Premium shadow system */
-  box-shadow: 
-    0 10px 40px rgba(0, 0, 0, 0.15),
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.ios-toast-shadow {
-  /* Enhanced shadow for dark mode */
-  box-shadow: 
-    0 10px 40px rgba(0, 0, 0, 0.3),
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* Toast viewport positioning with safe areas */
-.ios-toast-viewport {
-  padding-top: max(1rem, env(safe-area-inset-top));
-  padding-left: max(1rem, env(safe-area-inset-left));
-  padding-right: max(1rem, env(safe-area-inset-right));
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
-}
-
-/* iOS-style slide animations */
-@keyframes ios-toast-slide-in-top {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, -100%, 0) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-@keyframes ios-toast-slide-out-top {
-  0% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate3d(0, -100%, 0) scale(0.95);
-  }
-}
-
-/* Override Radix animations with iOS-style */
-[data-state="open"][data-radix-toast-root] {
-  animation: ios-toast-slide-in-top 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-[data-state="closed"][data-radix-toast-root] {
-  animation: ios-toast-slide-out-top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Toast swipe gestures */
-[data-swipe="move"][data-radix-toast-root] {
-  transition: none;
-  transform: translateX(var(--radix-toast-swipe-move-x));
-}
-
-[data-swipe="end"][data-radix-toast-root] {
-  animation: ios-toast-slide-out-top 0.2s ease-out;
-}
-
-/* ===================================================================
-   ENHANCED SAFE AREA SUPPORT - Complete iOS Integration
-   =================================================================== */
-
-/* Enhanced safe area utilities */
-.pt-safe-top-enhanced {
-  padding-top: max(1.5rem, env(safe-area-inset-top, 0));
-}
-
-.pb-safe-bottom-enhanced {
-  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0));
-}
-
-.pl-safe-left-enhanced {
-  padding-left: max(1rem, env(safe-area-inset-left, 0));
-}
-
-.pr-safe-right-enhanced {
-  padding-right: max(1rem, env(safe-area-inset-right, 0));
-}
-
-/* Full safe area padding */
-.p-safe-all {
-  padding-top: max(1rem, env(safe-area-inset-top, 0));
-  padding-right: max(1rem, env(safe-area-inset-right, 0));
-  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0));
-  padding-left: max(1rem, env(safe-area-inset-left, 0));
-}
-
-/* Navigation safe areas */
-.nav-safe-top {
-  top: env(safe-area-inset-top, 0);
-}
-
-.nav-safe-bottom {
-  bottom: env(safe-area-inset-bottom, 0);
-}
-
-/* Dashboard content with safe areas */
-.dashboard-safe-content {
-  padding-top: max(1rem, env(safe-area-inset-top));
-  padding-bottom: max(6rem, env(safe-area-inset-bottom) + 5rem); /* Bottom nav + safe area */
-  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-}
-
-/* ===================================================================
-   COMPLETE DARK MODE ENFORCEMENT - Always Dark
-   =================================================================== */
-
-/* Force dark mode on all elements */
-:root {
-  color-scheme: dark;
-  --background: 213 27% 8%;
-  --foreground: 210 20% 98%;
-  --card: 213 27% 10%;
-  --card-foreground: 210 20% 98%;
-  --popover: 213 27% 9%;
-  --popover-foreground: 210 20% 98%;
-  --primary: 210 20% 98%;
-  --primary-foreground: 220 14.3% 95.9%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 20% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 20% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 20% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-}
-
-/* Force dark on html and body */
-html {
-  color-scheme: dark !important;
-  background-color: hsl(213, 27%, 8%) !important;
-}
-
-body {
-  background-color: hsl(213, 27%, 8%) !important;
-  color: hsl(210, 20%, 98%) !important;
-}
-
-/* Dark mode for system UI elements */
-@media (prefers-color-scheme: light) {
-  :root {
-    color-scheme: dark !important;
-  }
-  
-  html {
-    color-scheme: dark !important;
-    background-color: hsl(213, 27%, 8%) !important;
-  }
-  
-  body {
-    background-color: hsl(213, 27%, 8%) !important;
-    color: hsl(210, 20%, 98%) !important;
-  }
-}
-
-/* Override any light mode attempts */
-.light,
-[data-theme="light"] {
-  color-scheme: dark !important;
-  --background: 213 27% 8% !important;
-  --foreground: 210 20% 98% !important;
-}
-
-/* iOS status bar and meta theme colors */
-meta[name="theme-color"] {
-  content: "#0F1419" !important;
-}
-
-meta[name="msapplication-TileColor"] {
-  content: "#0F1419" !important;
-}
-
-/* ===================================================================
-   PULL-TO-REFRESH ENHANCEMENTS
-   =================================================================== */
-
-/* Smooth pull-to-refresh indicator */
-.pull-to-refresh-indicator {
-  transform: translateZ(0);
-  will-change: transform, opacity;
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Pull-to-refresh backdrop */
-.pull-to-refresh-backdrop {
-  background: rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-/* ===================================================================
-   ENHANCED MOBILE OPTIMIZATION
-   =================================================================== */
-
-/* Better mobile touch targets */
+/* Mobile optimizations for daylight arc */
 @media (max-width: 768px) {
-  /* Ensure all interactive elements meet iOS guidelines */
-  button, 
-  [role="button"], 
-  [role="tab"], 
-  [role="menuitem"],
-  .ios-touch-target {
-    min-height: 44px !important;
-    min-width: 44px !important;
-    touch-action: manipulation !important;
-    -webkit-tap-highlight-color: transparent !important;
+  .frosted-glass-card:has(svg[viewBox*="200 120"]) {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    overflow: hidden !important;
   }
   
-  /* Prevent zoom on inputs */
-  input, 
-  textarea, 
-  select {
-    font-size: 16px !important;
-    -webkit-appearance: none !important;
-    appearance: none !important;
+  .frosted-glass-card:has(svg[viewBox*="200 120"]) svg {
+    max-width: calc(100% - 1.5rem) !important;
+    width: calc(100% - 1.5rem) !important;
   }
-  
-  /* Better scrolling */
-  * {
-    -webkit-overflow-scrolling: touch !important;
-    overscroll-behavior: contain !important;
-  }
-}
-
-/* iPhone X and newer specific optimizations */
-@supports (padding: max(0px)) and (-webkit-touch-callout: none) {
-  /* Enhanced safe area support for notched devices */
-  .ios-full-height {
-    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  }
-  
-  /* Status bar considerations */
-  .ios-status-bar-height {
-    padding-top: max(20px, env(safe-area-inset-top));
-  }
-  
-  /* Home indicator considerations */
-  .ios-home-indicator-height {
-    padding-bottom: max(20px, env(safe-area-inset-bottom));
-  }
-}
-
-/* Performance optimizations for all iOS features */
-.ios-optimized {
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  will-change: auto;
-  contain: layout style paint;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
 }
