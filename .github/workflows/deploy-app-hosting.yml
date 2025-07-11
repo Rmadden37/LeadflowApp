@@ -1,0 +1,57 @@
+name: Deploy to Firebase App Hosting
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+
+jobs:
+  deploy_app_hosting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Clean build directories
+        run: rm -rf .next out dist
+        
+      - name: Configure Next.js for App Hosting
+        run: |
+          # Use the App Hosting configuration
+          cp next.config.app-hosting.js next.config.js
+          
+      - name: Build application
+        run: |
+          NEXT_PUBLIC_DEPLOY_TARGET=app-hosting NEXT_PUBLIC_STATIC_EXPORT=false npm run build
+        env:
+          NODE_ENV: production
+          
+      - name: Configure Firebase for App Hosting
+        run: |
+          cp firebase.app-hosting.json firebase.json
+          
+      - name: Deploy to Firebase App Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_LEADFLOW }}'
+          projectId: leadflow-4lvrr
+          target: apphosting
+          channelId: live

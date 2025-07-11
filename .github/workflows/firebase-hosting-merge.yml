@@ -21,6 +21,15 @@ jobs:
           chmod +x ./ci-build.sh
           # Run CI-specific build script
           ./ci-build.sh
+          
+      - name: Verify App Hosting Configuration
+        run: |
+          # Check that build directory exists
+          if [ ! -d ".next" ]; then
+            echo "❌ .next directory not found! Build failed or incorrect configuration."
+            exit 1
+          fi
+          echo "✅ Build directory verified"
       - name: Deploy to Firebase App Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:

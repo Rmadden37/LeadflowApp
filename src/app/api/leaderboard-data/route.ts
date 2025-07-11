@@ -12,15 +12,16 @@ export async function GET(request: NextRequest) {
   const url = process.env.GOOGLE_SHEETS_OVERALL_CSV_URL;
   if (!url) return NextResponse.json({ error: 'CSV URL not set' }, { status: 500 });
 
+  let csvResponse;
   try {
-    const res = await fetch(url);
-    if (!res.ok) return NextResponse.json({ error: 'Failed to fetch CSV' }, { status: 500 });
+    csvResponse = await fetch(url);
+    if (!csvResponse.ok) return NextResponse.json({ error: 'Failed to fetch CSV' }, { status: 500 });
   } catch (error) {
     console.error('Failed to fetch CSV:', error);
     return NextResponse.json({ error: 'Failed to fetch CSV', details: error }, { status: 500 });
   }
 
-  const csv = await res.text();
+  const csv = await csvResponse.text();
   
   // Better CSV parsing that handles quoted fields with commas
   function parseCSVLine(line: string): string[] {

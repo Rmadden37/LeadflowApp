@@ -5,9 +5,17 @@ runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
+  # Add memory configuration
+  memory: 1Gi
+  # Specify the runtime
+  runtime: nodejs20
 
 # Exclude functions directory from App Hosting build
 build:
   ignore:
     - "functions/**"
     - "functions"
+    
+# Build command for App Hosting (Next.js server-side rendering)
+buildCommand: "npm run build"
+startCommand: "npm start"

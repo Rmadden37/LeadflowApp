@@ -8,18 +8,23 @@ echo "🚀 Running CI-specific build script..."
 # Set NODE_OPTIONS to increase memory limit if needed
 export NODE_OPTIONS="--max-old-space-size=4096"
 
-# Set environment variables for static export
-echo "Setting up environment variables for static build..."
+# Set environment variables for App Hosting (server-side rendering)
+echo "Setting up environment variables for App Hosting build..."
 export NEXT_PUBLIC_CI_BUILD=true
 export NODE_ENV=production
+export NEXT_PUBLIC_DEPLOY_TARGET=app-hosting
 
-# Skip API calls during build
-echo "Setting up environment to prevent API calls during build..."
-export NEXT_PUBLIC_STATIC_EXPORT=true
-export NEXT_PUBLIC_SKIP_API_CALLS=true
+# Configure for server-side rendering
+echo "Setting up environment for server-side rendering..."
+export NEXT_PUBLIC_STATIC_EXPORT=false
+export NEXT_PUBLIC_SKIP_API_CALLS=false
+
+# Use the App Hosting specific Next.js config
+echo "Using App Hosting specific Next.js config..."
+cp next.config.app-hosting.js next.config.js
 
 # Run next build without prebuild checks
-echo "Building Next.js application..."
+echo "Building Next.js application for App Hosting..."
 npx next build
 
 # Check build status
