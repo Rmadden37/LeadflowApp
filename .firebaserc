@@ -3,6 +3,14 @@
     ".": "leadflow-4lvrr",
     "default": "leadflow-4lvrr"
   },
-  "targets": {},
+  "targets": {
+    "leadflow-4lvrr": {
+      "hosting": {
+        "apphosting": [
+          "leadflow-4lvrr"
+        ]
+      }
+    }
+  },
   "etags": {}
 }

@@ -13,6 +13,7 @@
     "rules": "storage.rules"
   },
   "hosting": {
+    "target": "apphosting",
     "public": "dist",
     "ignore": [
       "firebase.json",

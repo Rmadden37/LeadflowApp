@@ -42,7 +42,7 @@ fi
 
 # Deploy to Firebase App Hosting
 echo "🚀 Deploying to Firebase App Hosting..."
-firebase deploy --only apphosting
+firebase deploy --only hosting:apphosting
 
 echo "✅ Deployment complete!"
 echo "🌐 Your application should be available at your Firebase App Hosting URL"
