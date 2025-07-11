@@ -120,9 +120,10 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     if (loading) return;
     
     // Only redirect if we're certain about the auth state
-    if (!user && pathname !== "/login") {
+    // Allow access to both login and signup pages for unauthenticated users
+    if (!user && pathname !== "/login" && pathname !== "/signup") {
       router.replace("/login");
-    } else if (user && pathname === "/login") {
+    } else if (user && (pathname === "/login" || pathname === "/signup")) {
       router.replace("/dashboard");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -137,9 +138,9 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     setLoading(false);
   };
 
-  // Avoid rendering children if loading and not on login page without a user
+  // Avoid rendering children if loading and not on auth pages without a user
   // This prevents a flash of content before redirect
-  if (loading && pathname !== "/login" && !user) {
+  if (loading && pathname !== "/login" && pathname !== "/signup" && !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />

@@ -5,10 +5,30 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
 import {cn} from "@/lib/utils";
 import {buttonVariants} from "@/components/ui/button";
+import {useHapticFeedback} from "@/utils/haptic";
 
 const AlertDialog = AlertDialogPrimitive.Root;
 
-const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
+const AlertDialogTrigger = React.forwardRef<
+  React.ElementRef<typeof AlertDialogPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Trigger>
+>(({onClick, ...props}, ref) => {
+  const haptic = useHapticFeedback();
+
+  const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    haptic.modalOpen();
+    onClick?.(e);
+  }, [haptic, onClick]);
+
+  return (
+    <AlertDialogPrimitive.Trigger
+      ref={ref}
+      onClick={handleClick}
+      {...props}
+    />
+  );
+});
+AlertDialogTrigger.displayName = AlertDialogPrimitive.Trigger.displayName;
 
 const AlertDialogPortal = AlertDialogPrimitive.Portal;
 
@@ -128,29 +148,49 @@ AlertDialogDescription.displayName =
 const AlertDialogAction = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Action>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action>
->(({className, ...props}, ref) => (
-  <AlertDialogPrimitive.Action
-    ref={ref}
-    className={cn(buttonVariants(), className)}
-    {...props}
-  />
-));
+>(({className, onClick, ...props}, ref) => {
+  const haptic = useHapticFeedback();
+
+  const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    haptic.confirm();
+    onClick?.(e);
+  }, [haptic, onClick]);
+
+  return (
+    <AlertDialogPrimitive.Action
+      ref={ref}
+      className={cn(buttonVariants(), "touch-manipulation", className)}
+      onClick={handleClick}
+      {...props}
+    />
+  );
+});
 AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName;
 
 const AlertDialogCancel = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Cancel>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Cancel>
->(({className, ...props}, ref) => (
-  <AlertDialogPrimitive.Cancel
-    ref={ref}
-    className={cn(
-      buttonVariants({variant: "outline"}),
-      "mt-2 sm:mt-0",
-      className
-    )}
-    {...props}
-  />
-));
+>(({className, onClick, ...props}, ref) => {
+  const haptic = useHapticFeedback();
+
+  const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    haptic.modalClose();
+    onClick?.(e);
+  }, [haptic, onClick]);
+
+  return (
+    <AlertDialogPrimitive.Cancel
+      ref={ref}
+      className={cn(
+        buttonVariants({variant: "outline"}),
+        "mt-2 sm:mt-0 touch-manipulation",
+        className
+      )}
+      onClick={handleClick}
+      {...props}
+    />
+  );
+});
 AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName;
 
 export {

@@ -1,0 +1,734 @@
+/* ===================================================================
+   iOS NATIVE DESIGN SYSTEM - CRITICAL UI/UX FIXES BY AURELIAN SALOMAN
+   Complete transformation to App Store-quality iOS design
+   =================================================================== */
+
+/* ===================================================================
+   1. iOS NATIVE TYPOGRAPHY SYSTEM
+   =================================================================== */
+
+:root {
+  /* iOS Native Typography Scale - San Francisco Font Sizes */
+  --ios-typography-largeTitle: 34px;      /* iOS Large Title */
+  --ios-typography-title1: 28px;          /* iOS Title 1 */
+  --ios-typography-title2: 22px;          /* iOS Title 2 */
+  --ios-typography-title3: 20px;          /* iOS Title 3 */
+  --ios-typography-headline: 17px;        /* iOS Headline */
+  --ios-typography-body: 17px;            /* iOS Body */
+  --ios-typography-callout: 16px;         /* iOS Callout */
+  --ios-typography-subheadline: 15px;     /* iOS Subheadline */
+  --ios-typography-footnote: 13px;        /* iOS Footnote */
+  --ios-typography-caption1: 12px;        /* iOS Caption 1 */
+  --ios-typography-caption2: 11px;        /* iOS Caption 2 */
+
+  /* iOS Native Font Weights */
+  --ios-weight-ultraLight: 100;
+  --ios-weight-thin: 200;
+  --ios-weight-light: 300;
+  --ios-weight-regular: 400;
+  --ios-weight-medium: 500;
+  --ios-weight-semibold: 600;
+  --ios-weight-bold: 700;
+  --ios-weight-heavy: 800;
+  --ios-weight-black: 900;
+
+  /* iOS Line Heights */
+  --ios-lineHeight-tight: 1.1;
+  --ios-lineHeight-normal: 1.2;
+  --ios-lineHeight-relaxed: 1.4;
+  --ios-lineHeight-loose: 1.6;
+}
+
+/* ===================================================================
+   2. iOS NATIVE COLOR SYSTEM STANDARDIZATION
+   =================================================================== */
+
+:root {
+  /* iOS System Blue Family - Primary Brand */
+  --ios-blue: #007AFF;                     /* iOS System Blue */
+  --ios-blue-light: #0A84FF;              /* iOS Blue Light */
+  --ios-blue-dark: #0056CC;               /* iOS Blue Dark */
+  --ios-blue-subtle: rgba(0, 122, 255, 0.1);
+  --ios-blue-background: rgba(0, 122, 255, 0.05);
+
+  /* iOS System Colors */
+  --ios-red: #FF3B30;                     /* iOS System Red */
+  --ios-orange: #FF9500;                  /* iOS System Orange */
+  --ios-yellow: #FFCC00;                  /* iOS System Yellow */
+  --ios-green: #30D158;                   /* iOS System Green */
+  --ios-mint: #00C7BE;                    /* iOS System Mint */
+  --ios-teal: #30B0C7;                    /* iOS System Teal */
+  --ios-cyan: #32D74B;                    /* iOS System Cyan */
+  --ios-indigo: #5856D6;                  /* iOS System Indigo */
+  --ios-purple: #AF52DE;                  /* iOS System Purple */
+  --ios-pink: #FF2D92;                    /* iOS System Pink */
+  --ios-brown: #A2845E;                   /* iOS System Brown */
+
+  /* iOS Gray Scale */
+  --ios-gray1: #8E8E93;                   /* iOS System Gray */
+  --ios-gray2: #AEAEB2;                   /* iOS System Gray 2 */
+  --ios-gray3: #C7C7CC;                   /* iOS System Gray 3 */
+  --ios-gray4: #D1D1D6;                   /* iOS System Gray 4 */
+  --ios-gray5: #E5E5EA;                   /* iOS System Gray 5 */
+  --ios-gray6: #F2F2F7;                   /* iOS System Gray 6 */
+
+  /* iOS Dark Mode Colors */
+  --ios-label: #FFFFFF;                   /* Primary text in dark mode */
+  --ios-secondaryLabel: rgba(235, 235, 245, 0.6);  /* Secondary text */
+  --ios-tertiaryLabel: rgba(235, 235, 245, 0.3);   /* Tertiary text */
+  --ios-quaternaryLabel: rgba(235, 235, 245, 0.18); /* Quaternary text */
+
+  /* iOS Dark Backgrounds */
+  --ios-systemBackground: #000000;        /* Primary background */
+  --ios-secondarySystemBackground: #1C1C1E; /* Secondary background */
+  --ios-tertiarySystemBackground: #2C2C2E;   /* Tertiary background */
+
+  /* iOS Fill Colors */
+  --ios-systemFill: rgba(120, 120, 128, 0.2);
+  --ios-secondarySystemFill: rgba(120, 120, 128, 0.16);
+  --ios-tertiarySystemFill: rgba(118, 118, 128, 0.12);
+  --ios-quaternarySystemFill: rgba(118, 118, 128, 0.08);
+
+  /* iOS Separator Colors */
+  --ios-separator: rgba(84, 84, 88, 0.65);
+  --ios-opaqueSeparator: #38383A;
+}
+
+/* ===================================================================
+   3. iOS NATIVE TYPOGRAPHY IMPLEMENTATION
+   =================================================================== */
+
+/* iOS Large Title - For main page headers */
+.ios-typography-largeTitle {
+  font-size: var(--ios-typography-largeTitle);
+  font-weight: var(--ios-weight-bold);
+  line-height: var(--ios-lineHeight-tight);
+  letter-spacing: -0.02em;
+  color: var(--ios-label);
+}
+
+/* iOS Title 1 - For section headers */
+.ios-typography-title1 {
+  font-size: var(--ios-typography-title1);
+  font-weight: var(--ios-weight-bold);
+  line-height: var(--ios-lineHeight-normal);
+  letter-spacing: -0.015em;
+  color: var(--ios-label);
+}
+
+/* iOS Title 2 - For card headers */
+.ios-typography-title2 {
+  font-size: var(--ios-typography-title2);
+  font-weight: var(--ios-weight-bold);
+  line-height: var(--ios-lineHeight-normal);
+  letter-spacing: -0.01em;
+  color: var(--ios-label);
+}
+
+/* iOS Title 3 - For sub-headers */
+.ios-typography-title3 {
+  font-size: var(--ios-typography-title3);
+  font-weight: var(--ios-weight-semibold);
+  line-height: var(--ios-lineHeight-normal);
+  letter-spacing: -0.008em;
+  color: var(--ios-label);
+}
+
+/* iOS Headline - For emphasis text */
+.ios-typography-headline {
+  font-size: var(--ios-typography-headline);
+  font-weight: var(--ios-weight-semibold);
+  line-height: var(--ios-lineHeight-normal);
+  letter-spacing: -0.005em;
+  color: var(--ios-label);
+}
+
+/* iOS Body - For primary content */
+.ios-typography-body {
+  font-size: var(--ios-typography-body);
+  font-weight: var(--ios-weight-regular);
+  line-height: var(--ios-lineHeight-relaxed);
+  letter-spacing: -0.003em;
+  color: var(--ios-label);
+}
+
+/* iOS Callout - For important secondary text */
+.ios-typography-callout {
+  font-size: var(--ios-typography-callout);
+  font-weight: var(--ios-weight-regular);
+  line-height: var(--ios-lineHeight-relaxed);
+  letter-spacing: -0.002em;
+  color: var(--ios-label);
+}
+
+/* iOS Subheadline - For metadata */
+.ios-typography-subheadline {
+  font-size: var(--ios-typography-subheadline);
+  font-weight: var(--ios-weight-regular);
+  line-height: var(--ios-lineHeight-normal);
+  color: var(--ios-secondaryLabel);
+}
+
+/* iOS Footnote - For supporting details */
+.ios-typography-footnote {
+  font-size: var(--ios-typography-footnote);
+  font-weight: var(--ios-weight-regular);
+  line-height: var(--ios-lineHeight-normal);
+  color: var(--ios-secondaryLabel);
+}
+
+/* iOS Caption 1 - For small details */
+.ios-typography-caption1 {
+  font-size: var(--ios-typography-caption1);
+  font-weight: var(--ios-weight-regular);
+  line-height: var(--ios-lineHeight-normal);
+  color: var(--ios-tertiaryLabel);
+}
+
+/* iOS Caption 2 - For tiny details */
+.ios-typography-caption2 {
+  font-size: var(--ios-typography-caption2);
+  font-weight: var(--ios-weight-regular);
+  line-height: var(--ios-lineHeight-normal);
+  color: var(--ios-tertiaryLabel);
+}
+
+/* ===================================================================
+   4. iOS CARD SYSTEM WITH PROPER VISUAL HIERARCHY
+   =================================================================== */
+
+/* iOS Native Card Base */
+.ios-card {
+  background: var(--ios-secondarySystemBackground);
+  border-radius: 12px;
+  border: 1px solid var(--ios-separator);
+  padding: 16px;
+  margin-bottom: 8px;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.ios-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ios-card:active {
+  transform: translateY(0);
+  background: var(--ios-tertiarySystemBackground);
+}
+
+/* iOS Card Header */
+.ios-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ios-separator);
+}
+
+.ios-card-title {
+  font-size: var(--ios-typography-headline);
+  font-weight: var(--ios-weight-semibold);
+  color: var(--ios-label);
+  margin: 0;
+}
+
+.ios-card-subtitle {
+  font-size: var(--ios-typography-subheadline);
+  color: var(--ios-secondaryLabel);
+  margin-top: 2px;
+  margin-bottom: 0;
+}
+
+/* iOS Card Content */
+.ios-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ios-card-content-primary {
+  font-size: var(--ios-typography-body);
+  color: var(--ios-label);
+  font-weight: var(--ios-weight-regular);
+}
+
+.ios-card-content-secondary {
+  font-size: var(--ios-typography-footnote);
+  color: var(--ios-secondaryLabel);
+}
+
+/* iOS Card Actions */
+.ios-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ios-separator);
+}
+
+/* ===================================================================
+   5. iOS BUTTON SYSTEM REDESIGN
+   =================================================================== */
+
+/* iOS Button Base */
+.ios-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: var(--ios-weight-semibold);
+  font-size: var(--ios-typography-body);
+  line-height: 1;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  min-height: 44px;
+  padding: 12px 20px;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS Primary Button */
+.ios-button-primary {
+  background: var(--ios-blue);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
+.ios-button-primary:hover {
+  background: var(--ios-blue-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+}
+
+.ios-button-primary:active {
+  background: var(--ios-blue-dark);
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 122, 255, 0.3);
+}
+
+/* iOS Secondary Button */
+.ios-button-secondary {
+  background: var(--ios-systemFill);
+  color: var(--ios-label);
+  border: 1px solid var(--ios-separator);
+}
+
+.ios-button-secondary:hover {
+  background: var(--ios-secondarySystemFill);
+  border-color: var(--ios-opaqueSeparator);
+  transform: translateY(-1px);
+}
+
+.ios-button-secondary:active {
+  background: var(--ios-tertiarySystemFill);
+  transform: translateY(0);
+}
+
+/* iOS Destructive Button */
+.ios-button-destructive {
+  background: var(--ios-red);
+  color: white;
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3);
+}
+
+.ios-button-destructive:hover {
+  background: #D70015;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.4);
+}
+
+.ios-button-destructive:active {
+  background: #D70015;
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(255, 59, 48, 0.3);
+}
+
+/* iOS Button Sizes */
+.ios-button-small {
+  min-height: 32px;
+  padding: 8px 16px;
+  font-size: var(--ios-typography-footnote);
+  border-radius: 6px;
+}
+
+.ios-button-large {
+  min-height: 50px;
+  padding: 15px 24px;
+  font-size: var(--ios-typography-headline);
+  border-radius: 10px;
+}
+
+/* ===================================================================
+   6. iOS FORM FIELD ENHANCEMENTS
+   =================================================================== */
+
+/* iOS Form Field Base */
+.ios-form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.ios-form-label {
+  font-size: var(--ios-typography-subheadline);
+  font-weight: var(--ios-weight-medium);
+  color: var(--ios-label);
+  margin-bottom: 6px;
+}
+
+.ios-form-input {
+  background: var(--ios-tertiarySystemBackground);
+  border: 1px solid var(--ios-separator);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: var(--ios-typography-body);
+  color: var(--ios-label);
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  min-height: 44px;
+}
+
+.ios-form-input:focus {
+  outline: none;
+  border-color: var(--ios-blue);
+  background: var(--ios-systemBackground);
+  box-shadow: 0 0 0 3px var(--ios-blue-subtle);
+}
+
+.ios-form-input::placeholder {
+  color: var(--ios-tertiaryLabel);
+}
+
+/* iOS Form Field Error State */
+.ios-form-field-error .ios-form-input {
+  border-color: var(--ios-red);
+  background: rgba(255, 59, 48, 0.05);
+}
+
+.ios-form-field-error .ios-form-input:focus {
+  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.2);
+}
+
+.ios-form-error-message {
+  font-size: var(--ios-typography-caption1);
+  color: var(--ios-red);
+  margin-top: 4px;
+}
+
+/* iOS Form Field Success State */
+.ios-form-field-success .ios-form-input {
+  border-color: var(--ios-green);
+  background: rgba(48, 209, 88, 0.05);
+}
+
+/* ===================================================================
+   7. iOS MODAL AND DIALOG IMPROVEMENTS
+   =================================================================== */
+
+/* iOS Modal Backdrop */
+.ios-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* iOS Modal Container */
+.ios-modal {
+  background: var(--ios-secondarySystemBackground);
+  border-radius: 16px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+  position: relative;
+  animation: ios-modal-enter 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes ios-modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* iOS Modal Header */
+.ios-modal-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--ios-separator);
+}
+
+.ios-modal-title {
+  font-size: var(--ios-typography-title3);
+  font-weight: var(--ios-weight-semibold);
+  color: var(--ios-label);
+  margin: 0;
+  text-align: center;
+}
+
+/* iOS Modal Content */
+.ios-modal-content {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+/* iOS Modal Actions */
+.ios-modal-actions {
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--ios-separator);
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* ===================================================================
+   8. iOS STATUS BADGES AND INDICATORS
+   =================================================================== */
+
+/* iOS Badge Base */
+.ios-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: var(--ios-typography-caption1);
+  font-weight: var(--ios-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* iOS Status Badge Colors */
+.ios-badge-success {
+  background: rgba(48, 209, 88, 0.15);
+  color: var(--ios-green);
+}
+
+.ios-badge-warning {
+  background: rgba(255, 204, 0, 0.15);
+  color: var(--ios-yellow);
+}
+
+.ios-badge-error {
+  background: rgba(255, 59, 48, 0.15);
+  color: var(--ios-red);
+}
+
+.ios-badge-info {
+  background: var(--ios-blue-subtle);
+  color: var(--ios-blue);
+}
+
+.ios-badge-neutral {
+  background: var(--ios-systemFill);
+  color: var(--ios-secondaryLabel);
+}
+
+/* ===================================================================
+   9. iOS SPACING SYSTEM
+   =================================================================== */
+
+/* iOS Native Spacing Scale */
+:root {
+  --ios-spacing-1: 2px;    /* Tight */
+  --ios-spacing-2: 4px;    /* Extra Small */
+  --ios-spacing-3: 8px;    /* Small */
+  --ios-spacing-4: 12px;   /* Medium Small */
+  --ios-spacing-5: 16px;   /* Medium */
+  --ios-spacing-6: 20px;   /* Medium Large */
+  --ios-spacing-7: 24px;   /* Large */
+  --ios-spacing-8: 32px;   /* Extra Large */
+  --ios-spacing-9: 40px;   /* XXL */
+  --ios-spacing-10: 48px;  /* XXXL */
+}
+
+/* iOS Spacing Utility Classes */
+.ios-p-1 { padding: var(--ios-spacing-1); }
+.ios-p-2 { padding: var(--ios-spacing-2); }
+.ios-p-3 { padding: var(--ios-spacing-3); }
+.ios-p-4 { padding: var(--ios-spacing-4); }
+.ios-p-5 { padding: var(--ios-spacing-5); }
+.ios-p-6 { padding: var(--ios-spacing-6); }
+.ios-p-7 { padding: var(--ios-spacing-7); }
+.ios-p-8 { padding: var(--ios-spacing-8); }
+
+.ios-m-1 { margin: var(--ios-spacing-1); }
+.ios-m-2 { margin: var(--ios-spacing-2); }
+.ios-m-3 { margin: var(--ios-spacing-3); }
+.ios-m-4 { margin: var(--ios-spacing-4); }
+.ios-m-5 { margin: var(--ios-spacing-5); }
+.ios-m-6 { margin: var(--ios-spacing-6); }
+.ios-m-7 { margin: var(--ios-spacing-7); }
+.ios-m-8 { margin: var(--ios-spacing-8); }
+
+.ios-gap-1 { gap: var(--ios-spacing-1); }
+.ios-gap-2 { gap: var(--ios-spacing-2); }
+.ios-gap-3 { gap: var(--ios-spacing-3); }
+.ios-gap-4 { gap: var(--ios-spacing-4); }
+.ios-gap-5 { gap: var(--ios-spacing-5); }
+.ios-gap-6 { gap: var(--ios-spacing-6); }
+.ios-gap-7 { gap: var(--ios-spacing-7); }
+.ios-gap-8 { gap: var(--ios-spacing-8); }
+
+/* ===================================================================
+   10. LEAD CARD VISUAL HIERARCHY FIXES
+   =================================================================== */
+
+/* Enhanced Lead Card with iOS Design */
+.ios-lead-card {
+  background: var(--ios-secondarySystemBackground);
+  border: 1px solid var(--ios-separator);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 8px;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.ios-lead-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ios-lead-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.ios-lead-card-title {
+  font-size: var(--ios-typography-headline);
+  font-weight: var(--ios-weight-semibold);
+  color: var(--ios-label);
+  margin: 0 0 4px 0;
+}
+
+.ios-lead-card-subtitle {
+  font-size: var(--ios-typography-subheadline);
+  color: var(--ios-secondaryLabel);
+  margin: 0;
+}
+
+.ios-lead-card-status {
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.ios-lead-card-content {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.ios-lead-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ios-lead-card-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--ios-typography-footnote);
+  color: var(--ios-secondaryLabel);
+}
+
+.ios-lead-card-detail-label {
+  font-weight: var(--ios-weight-medium);
+  min-width: 60px;
+}
+
+.ios-lead-card-detail-value {
+  color: var(--ios-label);
+}
+
+.ios-lead-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+/* ===================================================================
+   11. RESPONSIVE iOS DESIGN
+   =================================================================== */
+
+/* iPhone SE and smaller */
+@media (max-width: 375px) {
+  .ios-card {
+    padding: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .ios-button {
+    min-height: 44px;
+    font-size: var(--ios-typography-callout);
+  }
+  
+  .ios-modal {
+    margin: 8px;
+    border-radius: 12px;
+  }
+}
+
+/* iPhone and larger */
+@media (min-width: 376px) {
+  .ios-card {
+    padding: 16px;
+  }
+  
+  .ios-button-large {
+    min-height: 54px;
+    font-size: var(--ios-typography-title3);
+  }
+}
+
+/* iPad and larger */
+@media (min-width: 768px) {
+  .ios-modal {
+    max-width: 500px;
+  }
+  
+  .ios-lead-card-content {
+    grid-template-columns: 1fr 1fr auto;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .ios-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 25px rgba(0, 0, 0, 0.15),
+      0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}

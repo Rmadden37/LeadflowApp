@@ -4,15 +4,15 @@ import {getFirestore, connectFirestoreEmulator} from "firebase/firestore";
 import {getStorage} from "firebase/storage";
 import {getFunctions, httpsCallable} from "firebase/functions";
 
-// Firebase configuration
+// Firebase configuration - Using environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyBc3jmFE6dRXBApmWD9Jg2PO86suqGgaZw",
-  authDomain: "leadflow-4lvrr.firebaseapp.com",
-  projectId: "leadflow-4lvrr",
-  storageBucket: "leadflow-4lvrr.firebasestorage.app",
-  messagingSenderId: "13877630896",
-  appId: "1:13877630896:web:ab7d2717024960ec36e875",
-  measurementId: "G-KDEF2C21SH",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase

@@ -2,9 +2,20 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read/write access on all documents to any user signed in to the application
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdminOrManager() {
+      return isSignedIn() && 
+        (request.auth.token.role == 'admin' || 
+         request.auth.token.role == 'manager');
+    }
+
+    // Default deny all
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
     
     // More specific rules for different collections:

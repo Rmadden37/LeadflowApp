@@ -51,10 +51,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#2DD4BF' },
-    { media: '(prefers-color-scheme: dark)', color: '#0F1419' },
-  ],
+  themeColor: '#0F1419', // Force dark theme always
 };
 
 export default function RootLayout({
@@ -65,36 +62,40 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Force dark mode meta tags */}
+        <meta name="color-scheme" content="dark" />
+        <meta name="theme-color" content="#0F1419" />
+        <meta name="msapplication-navbutton-color" content="#0F1419" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        
         {/* Preload critical fonts to prevent layout shifts and flashes of unstyled text */}
         <script dangerouslySetInnerHTML={{
           __html: `
-            // iOS Dark Mode Fix - Prevent white screen flash
+            // Complete Dark Mode Enforcement - Always Dark
             (function() {
-              const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-              if (isIOS) {
-                const html = document.documentElement;
-                const body = document.body;
-                
-                // Immediately apply dark styling
-                html.classList.add('dark');
-                html.setAttribute('data-theme', 'dark');
-                html.style.backgroundColor = '#0D0D0D';
-                html.style.color = '#FFFFFF';
-                html.style.colorScheme = 'dark';
-                
-                // Ensure body gets styled too
-                if (body) {
-                  body.style.backgroundColor = '#0D0D0D';
-                  body.style.color = '#FFFFFF';
-                }
-                
-                console.log('🍎 iOS dark mode applied immediately');
+              // Immediately apply dark mode to prevent any light flash
+              const html = document.documentElement;
+              const body = document.body;
+              
+              // Force dark mode styling
+              html.classList.add('dark');
+              html.setAttribute('data-theme', 'dark');
+              html.style.backgroundColor = '#0D0D0D';
+              html.style.color = '#FFFFFF';
+              html.style.colorScheme = 'dark';
+              
+              // Ensure body gets styled too
+              if (body) {
+                body.style.backgroundColor = '#0D0D0D';
+                body.style.color = '#FFFFFF';
               }
+              
+              console.log('🌙 Dark mode enforced - LeadFlow is always dark');
             })();
           `
         }} />
       </head>
-      <body className={`${inter.className} ${lora.variable} font-body antialiased bg-background text-foreground min-h-screen`}>
+      <body className={`${inter.className} ${lora.variable} font-body antialiased bg-background text-foreground min-h-screen dark ios-optimized dashboard-safe-content`}>
         <script dangerouslySetInnerHTML={{
           __html: `
             // Global error handler to prevent keyboard dismissal

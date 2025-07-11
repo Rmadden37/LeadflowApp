@@ -18,6 +18,7 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dispatchType, setDispatchType] = useState<'immediate' | 'scheduled'>('immediate');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,6 +35,25 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
       const appointmentDate = formData.get('appointmentDate') as string;
       const appointmentTime = formData.get('appointmentTime') as string;
       const assignToSelf = formData.get('assignToSelf') === 'on';
+
+      console.log('🔍 Form submission debug:', {
+        dispatchType,
+        appointmentDate,
+        appointmentTime,
+        customerName
+      });
+
+      // Validate scheduled appointment fields when scheduled dispatch is selected
+      if (dispatchType === 'scheduled' && (!appointmentDate || !appointmentTime)) {
+        console.log('❌ Validation failed: missing date/time');
+        toast({
+          title: "Scheduled appointment required",
+          description: "Please select both date and time for scheduled appointments.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
       const leadData: Record<string, unknown> = {
         customerName,
@@ -55,9 +75,13 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
       // Handle scheduled appointment
       if (dispatchType === 'scheduled' && appointmentDate && appointmentTime) {
         const [hours, minutes] = appointmentTime.split(':').map(Number);
-        const scheduledDateTime = new Date(appointmentDate);
-        scheduledDateTime.setHours(hours, minutes, 0, 0);
+        // Create date in local timezone to avoid UTC conversion issues
+        const scheduledDateTime = new Date(appointmentDate + 'T' + appointmentTime + ':00');
+        console.log('✅ Creating scheduled lead with scheduledAppointmentTime:', scheduledDateTime.toISOString());
+        console.log('📅 Local time representation:', scheduledDateTime.toLocaleString());
         leadData.scheduledAppointmentTime = Timestamp.fromDate(scheduledDateTime);
+      } else if (dispatchType === 'scheduled') {
+        console.log('❌ Scheduled dispatch selected but missing date/time:', { appointmentDate, appointmentTime });
       }
 
       await addDoc(collection(db, "leads"), leadData);
@@ -69,6 +93,7 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
 
       // Reset form
       formRef.current?.reset();
+      setDispatchType('immediate'); // Reset state too
       if (onSuccess) onSuccess();
       if (onClose) onClose();
 
@@ -81,13 +106,6 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
       });
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const toggleScheduledSection = (show: boolean) => {
-    const section = document.getElementById('scheduled-section');
-    if (section) {
-      section.style.display = show ? 'block' : 'none';
     }
   };
 
@@ -163,6 +181,31 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
             width: 16px;
             height: 16px;
             accent-color: #007AFF;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .pure-radio:checked {
+            border-color: #007AFF;
+            background: #007AFF;
+          }
+
+          .pure-radio:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
           }
 
           .pure-radio-label {
@@ -183,6 +226,30 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
             width: 16px;
             height: 16px;
             accent-color: #007AFF;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .pure-checkbox:checked {
+            border-color: #007AFF;
+            background: #007AFF;
+          }
+
+          .pure-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
           }
 
           .pure-checkbox-label {
@@ -197,7 +264,6 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
             padding: 20px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none;
           }
 
           .pure-buttons {
@@ -336,8 +402,12 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
                   name="dispatchType"
                   value="immediate"
                   className="pure-radio"
-                  defaultChecked
-                  onChange={() => toggleScheduledSection(false)}
+                  checked={dispatchType === 'immediate'}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setDispatchType('immediate');
+                    }
+                  }}
                 />
                 <label htmlFor="immediate" className="pure-radio-label">Immediate Dispatch</label>
               </div>
@@ -348,7 +418,12 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
                   name="dispatchType"
                   value="scheduled"
                   className="pure-radio"
-                  onChange={() => toggleScheduledSection(true)}
+                  checked={dispatchType === 'scheduled'}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setDispatchType('scheduled');
+                    }
+                  }}
                 />
                 <label htmlFor="scheduled" className="pure-radio-label">Scheduled Dispatch</label>
               </div>
@@ -374,33 +449,37 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
           )}
 
           {/* Scheduled Appointment Section */}
-          <div id="scheduled-section" className="pure-scheduled-section">
-            <h4 style={{ margin: '0 0 16px 0', color: '#e5e5e5', fontSize: '16px', fontWeight: '500' }}>
-              Schedule Appointment
-            </h4>
-            
-            <div className="pure-field">
-              <label htmlFor="appointmentDate" className="pure-label">Date</label>
-              <input
-                type="date"
-                id="appointmentDate"
-                name="appointmentDate"
-                className="pure-input"
-                min={new Date().toISOString().split('T')[0]}
-              />
-            </div>
+          {dispatchType === 'scheduled' && (
+            <div id="scheduled-section" className="pure-scheduled-section">
+              <h4 style={{ margin: '0 0 16px 0', color: '#e5e5e5', fontSize: '16px', fontWeight: '500' }}>
+                Schedule Appointment
+              </h4>
+              
+              <div className="pure-field">
+                <label htmlFor="appointmentDate" className="pure-label">Date *</label>
+                <input
+                  type="date"
+                  id="appointmentDate"
+                  name="appointmentDate"
+                  className="pure-input"
+                  min={new Date().toISOString().split('T')[0]}
+                  required
+                />
+              </div>
 
-            <div className="pure-field">
-              <label htmlFor="appointmentTime" className="pure-label">Time</label>
-              <input
-                type="time"
-                id="appointmentTime"
-                name="appointmentTime"
-                className="pure-input"
-                defaultValue="17:00"
-              />
+              <div className="pure-field">
+                <label htmlFor="appointmentTime" className="pure-label">Time *</label>
+                <input
+                  type="time"
+                  id="appointmentTime"
+                  name="appointmentTime"
+                  className="pure-input"
+                  defaultValue="17:00"
+                  required
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Submit Buttons */}
           <div className="pure-buttons">

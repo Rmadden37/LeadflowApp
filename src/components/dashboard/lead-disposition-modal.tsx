@@ -15,6 +15,7 @@ import {Label} from "@/components/ui/label";
 import {Textarea} from "@/components/ui/textarea";
 import {useToast} from "@/hooks/use-toast";
 import {useAuth} from "@/hooks/use-auth";
+import {useHapticFeedback} from "@/utils/haptic";
 import {db} from "@/lib/firebase";
 import {doc, updateDoc, serverTimestamp, Timestamp, collection, query, where, onSnapshot} from "firebase/firestore";
 import {useState, useEffect} from "react";
@@ -36,6 +37,7 @@ const dispositionOptions: LeadStatus[] = [
   "no_sale", 
   "canceled",
   "rescheduled",
+  "scheduled", // Added for testing scheduled leads
   "credit_fail",
   "waiting_assignment", // Allow managers to reassign leads - Reassign Closer option
 ];
@@ -65,12 +67,13 @@ const timeSlots = (() => {
   return slots;
 })();
 
-export function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionModalProps) {
+export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionModalProps) {
   const [selectedStatus, setSelectedStatus] = useState<LeadStatus | undefined>(undefined);
   const [notes, setNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const {toast} = useToast();
   const {user} = useAuth();
+  const haptic = useHapticFeedback();
 
   const [appointmentDate, setAppointmentDate] = useState<Date | undefined>(undefined);
   const [appointmentTime, setAppointmentTime] = useState<string>("17:00"); // Default to 5:00 PM
@@ -156,6 +159,7 @@ export function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionMod
 
   const handleSubmit = async () => {
     if (!selectedStatus) {
+      haptic.formError();
       toast({
         title: "No Status Selected",
         description: "Please select a disposition status.",
@@ -166,6 +170,7 @@ export function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionMod
 
     // If reassigning to a specific closer, validate selection
     if (selectedStatus === "waiting_assignment" && (user?.role === "manager" || user?.role === "admin") && availableClosers.length > 0 && !selectedCloserId) {
+      haptic.formError();
       toast({
         title: "No Closer Selected",
         description: "Please select a closer to reassign this lead to.",
@@ -175,8 +180,9 @@ export function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionMod
     }
 
     let scheduledTimestamp: Timestamp | undefined = undefined;
-    if (selectedStatus === "rescheduled") {
+    if (selectedStatus === "rescheduled" || selectedStatus === "scheduled") {
       if (!appointmentDate || !appointmentTime) {
+        haptic.formError();
         toast({
           title: "Missing Appointment Time",
           description: "Please select a date and time for the appointment.",
@@ -185,10 +191,11 @@ export function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionMod
         return;
       }
       const [hours, minutes] = appointmentTime.split(':').map(Number);
-      const combinedDateTime = new Date(appointmentDate);
-      combinedDateTime.setHours(hours, minutes, 0, 0);
+      // Create date in local timezone to avoid UTC conversion issues
+      const combinedDateTime = new Date(appointmentDate + 'T' + appointmentTime + ':00');
 
       if (combinedDateTime <= new Date()) {
+        haptic.formError();
         toast({
           title: "Invalid Appointment Time",
           description: "Scheduled appointment time must be in the future.",
@@ -208,10 +215,10 @@ export function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionMod
         updatedAt: serverTimestamp(),
       };
 
-      if (selectedStatus === "rescheduled" && scheduledTimestamp) {
+      if ((selectedStatus === "rescheduled" || selectedStatus === "scheduled") && scheduledTimestamp) {
         updateData.scheduledAppointmentTime = scheduledTimestamp;
       } else {
-        // Clear scheduled time if not rescheduled or if it was previously and now something else
+        // Clear scheduled time if not rescheduled/scheduled or if it was previously and now something else
         updateData.scheduledAppointmentTime = null;
       }
 
@@ -248,12 +255,14 @@ export function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionMod
         ? `Lead reassigned to ${availableClosers.find(c => c.uid === selectedCloserId)?.name}.`
         : `Lead marked as ${selectedStatus.replace("_", " ")}.`;
         
+      haptic.formSubmit();
       toast({
         title: "Disposition Updated",
         description: successMessage,
       });
       onClose();
     } catch {
+      haptic.formError();
       toast({
         title: "Update Failed",
         description: "Could not update lead disposition.",
@@ -282,7 +291,10 @@ export function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionMod
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <RadioGroup 
-            onValueChange={(value) => setSelectedStatus(value as LeadStatus)} 
+            onValueChange={(value) => {
+              haptic.listItemSelect();
+              setSelectedStatus(value as LeadStatus);
+            }} 
             value={selectedStatus}
             className="space-y-2"
           >

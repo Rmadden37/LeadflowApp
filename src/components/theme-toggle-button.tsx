@@ -12,9 +12,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {useHapticFeedback} from "@/utils/haptic";
 
 export function ThemeToggleButton() {
   const {setTheme} = useTheme();
+  const haptic = useHapticFeedback();
+
+  const handleThemeChange = React.useCallback((theme: string) => {
+    haptic.listItemSelect();
+    setTheme(theme);
+  }, [haptic, setTheme]);
 
   return (
     <DropdownMenu>
@@ -26,13 +33,13 @@ export function ThemeToggleButton() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("light")}>
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("system")}>
           System
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -21,6 +21,7 @@ import {
 import AvailabilityToggle from "./availability-toggle";
 import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { useState } from "react";
+import { useHapticFeedback } from "@/utils/haptic";
 
 import dynamic from "next/dynamic";
 import {
@@ -49,6 +50,7 @@ function DashboardSidebarContent() {
   const [isCreateLeadModalOpen, setIsCreateLeadModalOpen] = useState(false);
   const pathname = usePathname();
   const { isMobile, setOpenMobile, openMobile } = useSidebar();
+  const haptic = useHapticFeedback();
   
   // Listen for custom event to open create lead modal from bottom nav
   React.useEffect(() => {
@@ -138,6 +140,7 @@ function DashboardSidebarContent() {
 
   // Helper to close sidebar on mobile after navigation
   const handleNav = () => {
+    haptic.pageChange();
     if (isMobile) setOpenMobile(false);
   };
 

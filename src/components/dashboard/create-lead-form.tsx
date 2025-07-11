@@ -55,9 +55,8 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
 
       // Handle scheduled appointment
       if (dispatchType === 'scheduled' && appointmentDate && appointmentTime) {
-        const [hours, minutes] = appointmentTime.split(':').map(Number);
-        const scheduledDateTime = new Date(appointmentDate);
-        scheduledDateTime.setHours(hours, minutes, 0, 0);
+        // Fix timezone bug: create date in local timezone consistently
+        const scheduledDateTime = new Date(appointmentDate + 'T' + appointmentTime + ':00');
         leadData.scheduledAppointmentTime = Timestamp.fromDate(scheduledDateTime);
       }
 
@@ -164,6 +163,31 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
             width: 16px;
             height: 16px;
             accent-color: #007AFF;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .pure-radio:checked {
+            border-color: #007AFF;
+            background: #007AFF;
+          }
+
+          .pure-radio:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
           }
 
           .pure-radio-label {
@@ -184,6 +208,30 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
             width: 16px;
             height: 16px;
             accent-color: #007AFF;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .pure-checkbox:checked {
+            border-color: #007AFF;
+            background: #007AFF;
+          }
+
+          .pure-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
           }
 
           .pure-checkbox-label {

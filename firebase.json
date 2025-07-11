@@ -13,14 +13,44 @@
     "rules": "storage.rules"
   },
   "hosting": {
-    "source": ".",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "**/*.js.map",
+      "**/check-*.js",
+      "**/test-*.js",
+      "**/debug-*.js",
+      "**/simple-*.js",
+      "**/*.html",
+      "**/.git/**"
     ],
-    "frameworksBackend": {
-      "region": "us-central1"
-    }
+    "headers": [
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png|svg|webp)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000"
+          }
+        ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LeadFlow Icon Generator</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 { color: #0D8FFF; }
+    .button {
+      background-color: #0D8FFF;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+    .button:hover { background-color: #0A6DD1; }
+    .preview-container { 
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .preview {
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    canvas { 
+      display: block;
+      margin: 10px auto;
+      border: 1px solid #eee;
+    }
+    #dropArea {
+      border: 3px dashed #0D8FFF;
+      border-radius: 10px;
+      padding: 40px;
+      text-align: center;
+      margin-bottom: 30px;
+      background-color: #f8f8f8;
+    }
+    .highlight { background-color: #e3f2fd; }
+    #status {
+      padding: 10px;
+      margin: 20px 0;
+      border-radius: 4px;
+      display: none;
+    }
+    .success { background-color: #d4edda; color: #155724; }
+    .error { background-color: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>LeadFlow Icon Generator</h1>
+  
+  <div id="loadingStep">
+    <p>First, let's load the LeadFlow logo you provided:</p>
+    
+    <div id="dropArea">
+      <p>Drag and drop your LeadFlow logo here or</p>
+      <input type="file" id="imageInput" accept="image/*" style="display: none;">
+      <button class="button" onclick="document.getElementById('imageInput').click()">Select Image</button>
+    </div>
+  </div>
+  
+  <div id="processStep" style="display: none;">
+    <h2>Generate App Icons</h2>
+    <p>Your image has been loaded. Click the button below to generate all required icons:</p>
+    
+    <button id="generateButton" class="button">Generate All Icons</button>
+    
+    <div class="preview-container" id="previewContainer"></div>
+  </div>
+  
+  <div id="status"></div>
+  
+  <script>
+    // Elements
+    const dropArea = document.getElementById('dropArea');
+    const imageInput = document.getElementById('imageInput');
+    const loadingStep = document.getElementById('loadingStep');
+    const processStep = document.getElementById('processStep');
+    const generateButton = document.getElementById('generateButton');
+    const previewContainer = document.getElementById('previewContainer');
+    const statusEl = document.getElementById('status');
+    
+    // Source image
+    let sourceImage = null;
+    
+    // Icon configurations
+    const iconConfigs = [
+      { name: 'icon-512x512.png', width: 512, height: 512, displayWidth: 150, displayHeight: 150 },
+      { name: 'icon-192x192.png', width: 192, height: 192, displayWidth: 120, displayHeight: 120 },
+      { name: 'apple-touch-icon.png', width: 180, height: 180, displayWidth: 120, displayHeight: 120 },
+      { name: 'favicon-32x32.png', width: 32, height: 32, displayWidth: 32, displayHeight: 32 }
+    ];
+    
+    // Event listeners
+    dropArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropArea.classList.add('highlight');
+    });
+    
+    dropArea.addEventListener('dragleave', () => {
+      dropArea.classList.remove('highlight');
+    });
+    
+    dropArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('highlight');
+      
+      if (e.dataTransfer.files.length > 0) {
+        handleFileSelect(e.dataTransfer.files[0]);
+      }
+    });
+    
+    imageInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+      }
+    });
+    
+    generateButton.addEventListener('click', generateIcons);
+    
+    // Handle file selection
+    function handleFileSelect(file) {
+      if (!file.type.match('image.*')) {
+        showStatus('Please select an image file', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        sourceImage = new Image();
+        sourceImage.onload = function() {
+          showStatus('Image loaded successfully!', 'success');
+          loadingStep.style.display = 'none';
+          processStep.style.display = 'block';
+        };
+        sourceImage.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    // Generate icons
+    function generateIcons() {
+      previewContainer.innerHTML = '';
+      
+      iconConfigs.forEach(config => {
+        const { name, width, height, displayWidth, displayHeight } = config;
+        
+        // Create preview container
+        const previewDiv = document.createElement('div');
+        previewDiv.className = 'preview';
+        
+        // Add heading
+        const heading = document.createElement('h3');
+        heading.textContent = name;
+        previewDiv.appendChild(heading);
+        
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.style.width = displayWidth + 'px';
+        canvas.style.height = displayHeight + 'px';
+        
+        // Draw image
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#151621';
+        ctx.fillRect(0, 0, width, height);
+        
+        const scale = Math.min(width / sourceImage.width, height / sourceImage.height);
+        const x = (width - sourceImage.width * scale) / 2;
+        const y = (height - sourceImage.height * scale) / 2;
+        
+        ctx.drawImage(sourceImage, x, y, sourceImage.width * scale, sourceImage.height * scale);
+        
+        previewDiv.appendChild(canvas);
+        
+        // Download button
+        const downloadButton = document.createElement('button');
+        downloadButton.className = 'button';
+        downloadButton.textContent = 'Download';
+        downloadButton.addEventListener('click', () => {
+          const link = document.createElement('a');
+          link.download = name;
+          link.href = canvas.toDataURL('image/png');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        });
+        
+        previewDiv.appendChild(downloadButton);
+        previewContainer.appendChild(previewDiv);
+      });
+      
+      showStatus('Icons generated successfully! Click "Download" to save each icon.', 'success');
+    }
+    
+    // Show status message
+    function showStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = type;
+      statusEl.style.display = 'block';
+      
+      if (type !== 'error') {
+        setTimeout(() => {
+          statusEl.style.display = 'none';
+        }, 5000);
+      }
+    }
+    
+    // Auto-load the image if provided in URL
+    window.addEventListener('load', () => {
+      // If you want to auto-load an image, uncomment and set URL below
+      // loadImageFromUrl('path/to/your/image.png');
+    });
+    
+    function loadImageFromUrl(url) {
+      sourceImage = new Image();
+      sourceImage.crossOrigin = 'Anonymous';
+      sourceImage.onload = function() {
+        showStatus('Image loaded successfully!', 'success');
+        loadingStep.style.display = 'none';
+        processStep.style.display = 'block';
+      };
+      sourceImage.onerror = function() {
+        showStatus('Error loading the image. Please select a different image.', 'error');
+      };
+      sourceImage.src = url;
+    }
+  </script>
+</body>
+</html>

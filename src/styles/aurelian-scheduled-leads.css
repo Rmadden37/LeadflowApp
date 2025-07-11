@@ -1,0 +1,404 @@
+/* ===================================================================
+   AURELIAN SALOMAN - SCHEDULED LEADS UI/UX ENHANCEMENTS
+   World-Class iOS-Native Scheduled Appointments Interface
+   =================================================================== */
+
+/* Base Scheduled Lead Card - Premium Glass Morphism */
+.aurelian-scheduled-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%, 
+    rgba(255, 255, 255, 0.06) 100%);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 12px;
+  
+  /* iOS-native shadow system */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Hover State - Refined iOS Interaction */
+.aurelian-scheduled-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Active State - iOS Native Feel */
+.aurelian-scheduled-card:active {
+  transform: translateY(-1px) scale(0.99);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===================================================================
+   URGENCY INDICATOR SYSTEM - Visual Priority Communication
+   =================================================================== */
+
+/* Urgency Bar - Left Edge Indicator */
+.aurelian-urgency-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  z-index: 1;
+}
+
+.aurelian-urgency-bar.urgent {
+  background: linear-gradient(180deg, #FF9500 0%, #FF8C00 100%);
+  box-shadow: 0 0 12px rgba(255, 149, 0, 0.4);
+}
+
+.aurelian-urgency-bar.critical {
+  background: linear-gradient(180deg, #FF3B30 0%, #CC2E24 100%);
+  box-shadow: 0 0 16px rgba(255, 59, 48, 0.6);
+  animation: aurelian-critical-pulse 2s ease-in-out infinite;
+}
+
+.aurelian-urgency-bar.past {
+  background: linear-gradient(180deg, #8E8E93 0%, #636366 100%);
+  box-shadow: 0 0 8px rgba(142, 142, 147, 0.3);
+}
+
+/* Critical Pulse Animation */
+@keyframes aurelian-critical-pulse {
+  0%, 100% {
+    box-shadow: 0 0 16px rgba(255, 59, 48, 0.6);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 59, 48, 0.8);
+    opacity: 0.9;
+  }
+}
+
+/* ===================================================================
+   APPOINTMENT AVATAR SYSTEM - Dynamic Status Indicators
+   =================================================================== */
+
+.aurelian-appointment-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  
+  /* Base styling */
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Verified State */
+.aurelian-appointment-avatar.verified {
+  background: linear-gradient(135deg, #30D158 0%, #28C840 100%);
+  border-color: rgba(48, 209, 88, 0.6);
+  box-shadow: 
+    0 4px 16px rgba(48, 209, 88, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.aurelian-appointment-avatar.verified .checkmark-icon {
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Unverified State */
+.aurelian-appointment-avatar.unverified {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.15) 0%, 
+    rgba(255, 255, 255, 0.08) 100%);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.aurelian-appointment-avatar.unverified svg {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ===================================================================
+   TYPOGRAPHY SYSTEM - iOS-Native Text Hierarchy
+   =================================================================== */
+
+.aurelian-customer-name {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.aurelian-appointment-time {
+  display: flex;
+  align-items: center;
+  margin: 8px 0 6px 0;
+  font-size: 15px;
+  color: #007AFF;
+  font-weight: 500;
+}
+
+.aurelian-appointment-time svg {
+  color: #007AFF;
+  flex-shrink: 0;
+}
+
+.aurelian-time-indicator {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.aurelian-time-indicator.urgent {
+  color: #FF9500;
+  font-weight: 500;
+}
+
+.aurelian-lead-meta {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.3;
+}
+
+.aurelian-closer-assigned {
+  color: #007AFF;
+  font-weight: 500;
+}
+
+/* ===================================================================
+   VERIFICATION ZONE - Enhanced Status Communication
+   =================================================================== */
+
+.aurelian-verification-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.aurelian-verification-status {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.aurelian-verification-status.verified {
+  color: #30D158;
+  background: rgba(48, 209, 88, 0.15);
+  border: 1px solid rgba(48, 209, 88, 0.3);
+}
+
+.aurelian-verification-status.pending {
+  color: #FF9500;
+  background: rgba(255, 149, 0, 0.15);
+  border: 1px solid rgba(255, 149, 0, 0.3);
+  animation: aurelian-pending-pulse 3s ease-in-out infinite;
+}
+
+@keyframes aurelian-pending-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* ===================================================================
+   PRIORITY BADGE SYSTEM - Visual Urgency Communication
+   =================================================================== */
+
+.aurelian-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  background: linear-gradient(135deg, 
+    rgba(255, 149, 0, 0.2) 0%, 
+    rgba(255, 149, 0, 0.1) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 149, 0, 0.4);
+  animation: aurelian-priority-glow 2s ease-in-out infinite;
+}
+
+@keyframes aurelian-priority-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(255, 149, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(255, 149, 0, 0.5);
+  }
+}
+
+/* ===================================================================
+   CARD STATE VARIATIONS - Context-Aware Styling
+   =================================================================== */
+
+/* Urgent State */
+.aurelian-scheduled-card.urgent {
+  border-left: 4px solid #FF9500;
+  background: linear-gradient(135deg, 
+    rgba(255, 149, 0, 0.08) 0%, 
+    rgba(255, 255, 255, 0.06) 100%);
+}
+
+/* Critical State */
+.aurelian-scheduled-card.critical {
+  border-left: 4px solid #FF3B30;
+  background: linear-gradient(135deg, 
+    rgba(255, 59, 48, 0.12) 0%, 
+    rgba(255, 255, 255, 0.08) 100%);
+  animation: aurelian-critical-card-pulse 3s ease-in-out infinite;
+}
+
+@keyframes aurelian-critical-card-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.25),
+      0 2px 8px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 12px 40px rgba(255, 59, 48, 0.2),
+      0 4px 16px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Past Due State */
+.aurelian-scheduled-card.past-due {
+  border-left: 4px solid #8E8E93;
+  background: linear-gradient(135deg, 
+    rgba(142, 142, 147, 0.08) 0%, 
+    rgba(255, 255, 255, 0.04) 100%);
+  opacity: 0.8;
+}
+
+/* Verified State Enhancement */
+.aurelian-scheduled-card.verified {
+  border-color: rgba(48, 209, 88, 0.3);
+}
+
+.aurelian-scheduled-card.verified::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 20px 20px 0;
+  border-color: transparent #30D158 transparent transparent;
+  opacity: 0.8;
+}
+
+/* ===================================================================
+   RESPONSIVE OPTIMIZATIONS - Mobile Excellence
+   =================================================================== */
+
+@media (max-width: 768px) {
+  .aurelian-scheduled-card {
+    border-radius: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .aurelian-customer-name {
+    font-size: 16px;
+  }
+  
+  .aurelian-appointment-time {
+    font-size: 14px;
+  }
+  
+  .aurelian-appointment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+  }
+  
+  .aurelian-verification-zone {
+    gap: 6px;
+  }
+}
+
+/* ===================================================================
+   DARK MODE REFINEMENTS - Perfect iOS Integration
+   =================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  .aurelian-scheduled-card {
+    /* Enhanced contrast for OLED displays */
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.15) 0%, 
+      rgba(255, 255, 255, 0.08) 100%);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .aurelian-customer-name {
+    color: #FFFFFF;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ===================================================================
+   ACCESSIBILITY ENHANCEMENTS - Universal Design
+   =================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .aurelian-scheduled-card,
+  .aurelian-urgency-bar,
+  .aurelian-appointment-avatar,
+  .aurelian-priority-badge,
+  .aurelian-verification-status {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .aurelian-scheduled-card {
+    border-width: 2px;
+    border-color: #FFFFFF;
+  }
+  
+  .aurelian-customer-name,
+  .aurelian-appointment-time {
+    color: #FFFFFF;
+    text-shadow: 1px 1px 0 #000000;
+  }
+}
+
+/* Focus states for keyboard navigation */
+.aurelian-scheduled-card:focus {
+  outline: 3px solid #007AFF;
+  outline-offset: 2px;
+}

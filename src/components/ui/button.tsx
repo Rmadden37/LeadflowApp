@@ -3,7 +3,7 @@ import {Slot} from "@radix-ui/react-slot";
 import {cva, type VariantProps} from "class-variance-authority";
 
 import {cn} from "@/lib/utils";
-import {useHapticFeedback} from "@/lib/haptic-feedback";
+import {useHapticFeedback, type HapticFeedbackType} from "@/utils/haptic";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 touch-manipulation select-none relative overflow-hidden ios-button-base",
@@ -52,7 +52,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
-  hapticFeedback?: 'light' | 'medium' | 'heavy' | 'success' | 'error' | 'selection' | 'none';
+  hapticFeedback?: HapticFeedbackType | 'none';
   ios?: boolean;
 }
 
@@ -92,7 +92,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       
       // Immediate haptic feedback on touch start (iOS pattern)
       if (hapticFeedback !== 'none') {
-        haptic[hapticFeedback]();
+        haptic.triggerHaptic(hapticFeedback);
       }
     }, [disabled, loading, ios, hapticFeedback, haptic]);
     
@@ -109,7 +109,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       
       // Desktop haptic feedback simulation
       if (hapticFeedback !== 'none' && !('ontouchstart' in window)) {
-        haptic[hapticFeedback]();
+        haptic.triggerHaptic(hapticFeedback);
       }
       
       onClick?.(e);

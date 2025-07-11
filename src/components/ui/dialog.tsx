@@ -5,14 +5,53 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {X} from "lucide-react";
 
 import {cn} from "@/lib/utils";
+import {useHapticFeedback} from "@/utils/haptic";
 
 const Dialog = DialogPrimitive.Root;
 
-const DialogTrigger = DialogPrimitive.Trigger;
+const DialogTrigger = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Trigger>
+>(({onClick, ...props}, ref) => {
+  const haptic = useHapticFeedback();
+
+  const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    haptic.modalOpen();
+    onClick?.(e);
+  }, [haptic, onClick]);
+
+  return (
+    <DialogPrimitive.Trigger
+      ref={ref}
+      onClick={handleClick}
+      {...props}
+    />
+  );
+});
+DialogTrigger.displayName = DialogPrimitive.Trigger.displayName;
 
 const DialogPortal = DialogPrimitive.Portal;
 
-const DialogClose = DialogPrimitive.Close;
+const DialogClose = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Close>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Close>
+>(({onClick, ...props}, ref) => {
+  const haptic = useHapticFeedback();
+
+  const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    haptic.modalClose();
+    onClick?.(e);
+  }, [haptic, onClick]);
+
+  return (
+    <DialogPrimitive.Close
+      ref={ref}
+      onClick={handleClick}
+      {...props}
+    />
+  );
+});
+DialogClose.displayName = DialogPrimitive.Close.displayName;
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,

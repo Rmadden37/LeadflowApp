@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BadgeServiceInitializer } from "@/components/badge-service-initializer";
 import { IOSThemeFix } from "@/components/ios-theme-fix";
+import NotificationPermissionPrompt from "@/components/notifications/notification-permission-prompt";
 
 // Define proper types for ErrorBoundary
 interface ErrorBoundaryProps {
@@ -272,6 +273,7 @@ export function Providers({ children }: ProvidersProps): React.ReactElement {
             <BadgeServiceInitializer />
             {children}
             <Toaster />
+            <NotificationPermissionPrompt />
           </AuthProvider>
         </ThemeProvider>
       </div>

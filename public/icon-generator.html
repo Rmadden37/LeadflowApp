@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LeadFlow Icon Generator</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .icon-container { margin-bottom: 30px; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+    .preview { margin: 10px 0; }
+    .preview img { border: 1px solid #eee; }
+    button { background: #0070f3; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #0051cc; }
+    h2 { margin-top: 0; }
+    .dropzone {
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .dropzone.highlight {
+      border-color: #0070f3;
+      background-color: #f0f7ff;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <h1>LeadFlow Icon Generator</h1>
+  <p>This tool generates all required icons for LeadFlow from your source image.</p>
+  
+  <div class="dropzone" id="dropzone">
+    <p>Drag and drop your high-resolution LeadFlow logo here (or click to select)</p>
+    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+  </div>
+  
+  <div id="status" class="status" style="display: none;"></div>
+  
+  <div class="icon-container" id="previewContainer" style="display: none;">
+    <h2>Icon Previews</h2>
+    <div id="iconPreviews"></div>
+    <button id="generateAll">Generate All Icons</button>
+    <div id="downloadLinks"></div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const status = document.getElementById('status');
+    const previewContainer = document.getElementById('previewContainer');
+    const iconPreviews = document.getElementById('iconPreviews');
+    const generateAllBtn = document.getElementById('generateAll');
+    const downloadLinks = document.getElementById('downloadLinks');
+    
+    // Icon configurations
+    const iconConfigs = [
+      { name: 'icon-512x512.png', width: 512, height: 512 },
+      { name: 'icon-192x192.png', width: 192, height: 192 },
+      { name: 'apple-touch-icon.png', width: 180, height: 180 },
+      { name: 'favicon-32x32.png', width: 32, height: 32 }
+    ];
+    
+    // Source image
+    let sourceImage = null;
+
+    // Event listeners
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', handleFileSelect);
+    dropzone.addEventListener('dragover', handleDragOver);
+    dropzone.addEventListener('dragleave', handleDragLeave);
+    dropzone.addEventListener('drop', handleDrop);
+    generateAllBtn.addEventListener('click', generateAllIcons);
+
+    // Handlers
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.add('highlight');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.remove('highlight');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.remove('highlight');
+      
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length > 0) {
+        processFile(files[0]);
+      }
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      if (files.length > 0) {
+        processFile(files[0]);
+      }
+    }
+
+    function processFile(file) {
+      if (!file.type.match('image.*')) {
+        showStatus('Please select an image file.', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        sourceImage = new Image();
+        sourceImage.onload = function() {
+          showStatus('Image loaded successfully!', 'success');
+          generatePreviews();
+          previewContainer.style.display = 'block';
+        };
+        sourceImage.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function generatePreviews() {
+      iconPreviews.innerHTML = '';
+      
+      iconConfigs.forEach(config => {
+        const canvas = document.createElement('canvas');
+        canvas.width = config.width;
+        canvas.height = config.height;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw background
+        ctx.fillStyle = '#151621';
+        ctx.fillRect(0, 0, config.width, config.height);
+        
+        // Draw the image centered and scaled properly
+        const scale = Math.min(config.width / sourceImage.width, config.height / sourceImage.height) * 0.8;
+        const x = (config.width - sourceImage.width * scale) / 2;
+        const y = (config.height - sourceImage.height * scale) / 2;
+        ctx.drawImage(sourceImage, x, y, sourceImage.width * scale, sourceImage.height * scale);
+        
+        // Create preview container
+        const previewDiv = document.createElement('div');
+        previewDiv.className = 'preview';
+        
+        // Create heading
+        const heading = document.createElement('h3');
+        heading.textContent = `${config.name} (${config.width}x${config.height})`;
+        previewDiv.appendChild(heading);
+        
+        // Add the canvas image
+        const img = document.createElement('img');
+        img.src = canvas.toDataURL('image/png');
+        img.width = config.width;
+        img.height = config.height;
+        if (config.width > 100) {
+          img.width = 100;
+          img.height = 100;
+        }
+        previewDiv.appendChild(img);
+        
+        // Add to preview container
+        iconPreviews.appendChild(previewDiv);
+      });
+    }
+
+    function generateAllIcons() {
+      downloadLinks.innerHTML = '';
+      
+      iconConfigs.forEach(config => {
+        const canvas = document.createElement('canvas');
+        canvas.width = config.width;
+        canvas.height = config.height;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw background
+        ctx.fillStyle = '#151621';
+        ctx.fillRect(0, 0, config.width, config.height);
+        
+        // Draw the image centered and scaled properly
+        const scale = Math.min(config.width / sourceImage.width, config.height / sourceImage.height) * 0.8;
+        const x = (config.width - sourceImage.width * scale) / 2;
+        const y = (config.height - sourceImage.height * scale) / 2;
+        ctx.drawImage(sourceImage, x, y, sourceImage.width * scale, sourceImage.height * scale);
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = config.name;
+        link.textContent = `Download ${config.name}`;
+        link.className = 'download-link';
+        link.style.display = 'block';
+        link.style.marginBottom = '10px';
+        downloadLinks.appendChild(link);
+        
+        // Trigger click for automatic download
+        link.click();
+      });
+      
+      showStatus('All icons have been generated and downloaded!', 'success');
+    }
+
+    function showStatus(message, type) {
+      status.textContent = message;
+      status.className = `status ${type}`;
+      status.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

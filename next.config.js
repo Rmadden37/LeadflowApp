@@ -10,6 +10,12 @@ const withPWA = require('next-pwa')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Firebase App Hosting configuration (dynamic Next.js app)
+  output: 'export', // Optimized for Firebase Hosting
+  distDir: 'dist',  // Firebase Hosting looks for static files in this directory
+  images: {
+    unoptimized: true, // Required for 'export' output
+  },
+  trailingSlash: true, // For better Firebase Hosting compatibility
   turbopack: {
     rules: {
       '*.svg': {

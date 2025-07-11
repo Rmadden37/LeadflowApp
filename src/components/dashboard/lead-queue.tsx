@@ -50,10 +50,10 @@ export default function LeadQueue() {
   const [loadingClosers, setLoadingClosers] = useState(true);
   const [assignedLeadCloserIds, setAssignedLeadCloserIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<"waiting" | "scheduled">("waiting");
-  // Initialize with today's date with time set to noon to avoid timezone issues
+  // Initialize with today's date at start of day for consistent filtering
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
     const today = new Date();
-    today.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+    today.setHours(0, 0, 0, 0); // Set to start of day for consistent filtering
     return today;
   });
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
@@ -158,6 +158,7 @@ export default function LeadQueue() {
     const unsubscribeScheduled = onSnapshot(qScheduled, async (querySnapshot) => {
       const leadsData = querySnapshot.docs.map((docSnapshot) => {
         const data = docSnapshot.data();
+        
         let createdAtTimestamp: FirestoreTimestamp | null = null;
         if (data.submissionTime) {
           if (data.submissionTime instanceof FirestoreTimestamp) {
@@ -195,6 +196,7 @@ export default function LeadQueue() {
           verifiedBy: data.verifiedBy || null,
         } as Lead;
       });
+      
       setScheduledLeads(leadsData);
       setLoadingScheduled(false);
 
@@ -514,10 +516,27 @@ export default function LeadQueue() {
     // Filter scheduled leads by selected date
     const filteredLeads = type === "scheduled" 
       ? leads.filter(lead => {
-          if (!lead.scheduledAppointmentTime) return false;
+          if (!lead.scheduledAppointmentTime) {
+            return false;
+          }
+          
+          // Special case: if selectedDate is in far future (show all mode)
+          if (selectedDate.getFullYear() > 2029) {
+            return true;
+          }
           
           const appointmentDate = lead.scheduledAppointmentTime.toDate();
-          return isSameDay(appointmentDate, selectedDate);
+          
+          // Use more forgiving date comparison for same day
+          const selectedDateStart = new Date(selectedDate);
+          selectedDateStart.setHours(0, 0, 0, 0);
+          const selectedDateEnd = new Date(selectedDate);
+          selectedDateEnd.setHours(23, 59, 59, 999);
+          
+          const appointmentTime = appointmentDate.getTime();
+          const isInDateRange = appointmentTime >= selectedDateStart.getTime() && appointmentTime <= selectedDateEnd.getTime();
+          
+          return isInDateRange;
         })
       : leads;
 
@@ -535,36 +554,78 @@ export default function LeadQueue() {
           {filteredLeads.map((lead) => {
             // For scheduled leads, show enhanced card with verification checkbox
             if (type === "scheduled") {
+              const appointmentTime = lead.scheduledAppointmentTime?.toDate();
+              const now = new Date();
+              const timeUntilAppointment = appointmentTime ? appointmentTime.getTime() - now.getTime() : null;
+              const isUrgent = timeUntilAppointment && timeUntilAppointment <= 60 * 60 * 1000; // Within 1 hour
+              const isCritical = timeUntilAppointment && timeUntilAppointment <= 15 * 60 * 1000; // Within 15 minutes
+              const isPast = timeUntilAppointment && timeUntilAppointment < 0;
+              
               return (
-                <div key={lead.id} className="frosted-glass-card p-3 overflow-hidden cursor-pointer hover:bg-white/5 transition-colors" onClick={() => handleLeadClick(lead)}>
-                  <div className="flex items-center gap-3">
-                    {/* Avatar */}
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                      <CalendarClock className="w-4 h-4 text-gray-600" />
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-white text-sm leading-tight truncate">
-                            {lead.customerName}
-                          </h3>
-                          <p className="text-xs text-gray-400 truncate leading-tight">
-                            {lead.scheduledAppointmentTime ? format(lead.scheduledAppointmentTime.toDate(), "MMM d, h:mm a") : "No time set"}
-                          </p>
-                          <p className="text-xs text-gray-400 truncate leading-tight">
-                            Source: {lead.setterName ? `${lead.setterName}` : 'Web Inquiry'}
-                            {lead.assignedCloserName && (
-                              <span className="text-blue-400 ml-2">• {lead.assignedCloserName}</span>
-                            )}
-                          </p>
-                        </div>
-                        
-                        {/* Verification Checkbox */}
-                        <div className="ml-3 flex flex-col items-center">
-                          {lead.id && <VerifiedCheckbox leadId={lead.id} />}
-                          <span className="text-xs text-gray-400 mt-1">Verified</span>
+                <div key={lead.id} className={`aurelian-scheduled-card ${isUrgent ? 'urgent' : ''} ${isCritical ? 'critical' : ''} ${isPast ? 'past-due' : ''} ${lead.setterVerified ? 'verified' : 'unverified'} cursor-pointer transition-all duration-300`} onClick={() => handleLeadClick(lead)}>
+                  {/* Urgency Indicator Bar */}
+                  {(isUrgent || isCritical || isPast) && (
+                    <div className={`aurelian-urgency-bar ${isCritical ? 'critical' : isPast ? 'past' : 'urgent'}`} />
+                  )}
+                  
+                  <div className="p-4">
+                    <div className="flex items-start gap-3">
+                      {/* Dynamic Status Avatar */}
+                      <div className={`aurelian-appointment-avatar ${lead.setterVerified ? 'verified' : 'unverified'}`}>
+                        {lead.setterVerified ? (
+                          <div className="checkmark-icon">✓</div>
+                        ) : (
+                          <CalendarClock className="w-5 h-5" />
+                        )}
+                      </div>
+                      
+                      {/* Main Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            {/* Customer Name with Priority Indicator */}
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="aurelian-customer-name">
+                                {lead.customerName}
+                              </h3>
+                              {isUrgent && (
+                                <span className="aurelian-priority-badge">
+                                  {isCritical ? '🔥' : '⚡'}
+                                </span>
+                              )}
+                            </div>
+                            
+                            {/* Appointment Time - Prominent Display */}
+                            <div className="aurelian-appointment-time">
+                              <CalendarClock className="w-4 h-4 mr-2" />
+                              <span className="font-semibold">
+                                {appointmentTime ? format(appointmentTime, "MMM d, h:mm a") : "No time set"}
+                              </span>
+                              {timeUntilAppointment && (
+                                <span className={`aurelian-time-indicator ${isUrgent ? 'urgent' : ''}`}>
+                                  {isPast ? ' (Overdue)' : ` (${Math.floor(timeUntilAppointment / (60 * 1000))}m)`}
+                                </span>
+                              )}
+                            </div>
+                            
+                            {/* Secondary Info */}
+                            <div className="aurelian-lead-meta">
+                              <span>Source: {lead.setterName || 'Web Inquiry'}</span>
+                              {lead.assignedCloserName && (
+                                <span className="aurelian-closer-assigned">
+                                  • Closer: {lead.assignedCloserName}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Verification Status */}
+                          <div className="aurelian-verification-zone">
+                            {lead.id && <VerifiedCheckbox leadId={lead.id} />}
+                            <div className={`aurelian-verification-status ${lead.setterVerified ? 'verified' : 'pending'}`}>
+                              {lead.setterVerified ? 'Verified' : 'Pending'}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -605,7 +666,9 @@ export default function LeadQueue() {
           <div className="flex items-center gap-2">
             <ListChecks className="w-4 h-4" />
             Waiting List 
-            <span className="text-xs font-normal opacity-75">({waitingLeads.length})</span>
+            <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-[#007AFF] rounded-full min-w-[1.5rem] h-6 shadow-lg shadow-[#007AFF]/25">
+              {waitingLeads.length}
+            </span>
           </div>
         </button>
         <button
@@ -623,16 +686,25 @@ export default function LeadQueue() {
             {(() => {
               const scheduledCount = scheduledLeads.filter(lead => {
                 if (!lead.scheduledAppointmentTime) return false;
-                return isSameDay(lead.scheduledAppointmentTime.toDate(), selectedDate);
+                
+                // Special case: if selectedDate is in far future (show all mode)
+                if (selectedDate.getFullYear() > 2029) {
+                  return true;
+                }
+                
+                const appointmentDate = lead.scheduledAppointmentTime.toDate();
+                const selectedDateStart = new Date(selectedDate);
+                selectedDateStart.setHours(0, 0, 0, 0);
+                const selectedDateEnd = new Date(selectedDate);
+                selectedDateEnd.setHours(23, 59, 59, 999);
+                
+                const appointmentTime = appointmentDate.getTime();
+                return appointmentTime >= selectedDateStart.getTime() && appointmentTime <= selectedDateEnd.getTime();
               }).length;
               
-              return scheduledCount > 0 ? (
-                <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-[#007AFF] rounded-full min-w-[1.5rem] h-6 shadow-lg shadow-[#007AFF]/25 animate-pulse-subtle">
+              return (
+                <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-[#007AFF] rounded-full min-w-[1.5rem] h-6 shadow-lg shadow-[#007AFF]/25">
                   {scheduledCount}
-                </span>
-              ) : (
-                <span className="text-xs font-normal opacity-75">
-                  (0)
                 </span>
               );
             })()}
@@ -640,44 +712,56 @@ export default function LeadQueue() {
         </button>
       </div>
 
-      {/* Date Navigator for Scheduled Tab */}
+      {/* Date Navigator for Scheduled Tab - Simplified */}
       {activeTab === "scheduled" && (
-        <div className="flex items-center justify-center gap-2 mb-4 p-3 bg-white/5 rounded-lg border border-[var(--glass-border)]">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              // Set to today with noon time to avoid timezone issues
-              const today = new Date();
-              today.setHours(12, 0, 0, 0);
-              setSelectedDate(today);
-            }}
-            className="bg-transparent border-[var(--glass-border)] text-[#FFFFFF] hover:bg-white/10"
-          >
-            Today
-          </Button>
-          
+        <div className="flex items-center justify-center mb-4">
           <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="justify-center text-sm font-medium bg-transparent border-[var(--glass-border)] text-[#FFFFFF] hover:bg-white/10"
+                className="justify-center text-sm font-medium bg-white/5 border-[var(--glass-border)] text-[#FFFFFF] hover:bg-white/10 px-4 py-2"
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {format(selectedDate, "MMM d, yyyy")}
+                {selectedDate.getFullYear() > 2029 ? "All Dates" : format(selectedDate, "MMM d, yyyy")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="center">
+              <div className="p-3 border-b border-border">
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      setSelectedDate(today);
+                      setIsDatePickerOpen(false);
+                    }}
+                    className="text-xs"
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const farFutureDate = new Date('2030-12-31');
+                      setSelectedDate(farFutureDate);
+                      setIsDatePickerOpen(false);
+                    }}
+                    className="text-xs"
+                  >
+                    All Dates
+                  </Button>
+                </div>
+              </div>
               <CalendarComponent
                 mode="single"
-                selected={selectedDate}
+                selected={selectedDate.getFullYear() > 2029 ? undefined : selectedDate}
                 onSelect={(date) => {
                   if (date) {
-                    // Ensure we're not losing time information
                     const newDate = new Date(date);
-                    // Set hours to a safe value in the middle of the day to avoid timezone issues
-                    newDate.setHours(12, 0, 0, 0);
-                    
+                    newDate.setHours(0, 0, 0, 0);
                     setSelectedDate(newDate);
                     setIsDatePickerOpen(false);
                   }

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LeadFlow Icon Converter</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .icon-container { margin-bottom: 30px; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+    canvas { border: 1px solid #eee; margin: 10px 0; }
+    button { background: #0070f3; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0051cc; }
+    h2 { margin-top: 0; }
+  </style>
+</head>
+<body>
+  <h1>LeadFlow Icon Generator</h1>
+  <p>This tool helps generate the required icons for the LeadFlow app from the provided designs.</p>
+  
+  <div class="icon-container">
+    <h2>Icon 1 - Standard Icon (192x192)</h2>
+    <canvas id="canvas1" width="192" height="192"></canvas><br>
+    <button onclick="downloadIcon('canvas1', 'icon-192x192.png', 192)">Download 192x192 Icon</button>
+  </div>
+  
+  <div class="icon-container">
+    <h2>Icon 2 - High Resolution Icon (512x512)</h2>
+    <canvas id="canvas2" width="512" height="512"></canvas><br>
+    <button onclick="downloadIcon('canvas2', 'icon-512x512.png', 512)">Download 512x512 Icon</button>
+  </div>
+  
+  <div class="icon-container">
+    <h2>Icon 3 - Apple Touch Icon (180x180)</h2>
+    <canvas id="canvas3" width="180" height="180"></canvas><br>
+    <button onclick="downloadIcon('canvas3', 'apple-touch-icon.png', 180)">Download Apple Touch Icon</button>
+  </div>
+  
+  <div class="icon-container">
+    <h2>Icon 4 - Favicon (32x32)</h2>
+    <canvas id="canvas4" width="32" height="32"></canvas><br>
+    <button onclick="downloadIcon('canvas4', 'favicon-32x32.png', 32)">Download Favicon</button>
+  </div>
+
+  <script>
+    // Icon 1 - Standard dark background with LF logo for 192x192
+    const drawIcon1 = () => {
+      const canvas = document.getElementById('canvas1');
+      const ctx = canvas.getContext('2d');
+      
+      // Draw dark background
+      ctx.fillStyle = '#151621';
+      ctx.fillRect(0, 0, 192, 192);
+      
+      // Draw "L" letter
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 100px Arial';
+      ctx.fillText('L', 40, 125);
+      
+      // Draw "F" letter
+      ctx.fillStyle = '#0D8FFF';
+      ctx.font = 'bold 100px Arial';
+      ctx.fillText('F', 95, 125);
+    };
+    
+    // Icon 2 - High res icon for 512x512
+    const drawIcon2 = () => {
+      const canvas = document.getElementById('canvas2');
+      const ctx = canvas.getContext('2d');
+      
+      // Draw dark background
+      ctx.fillStyle = '#151621';
+      ctx.fillRect(0, 0, 512, 512);
+      
+      // Draw "L" letter
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 260px Arial';
+      ctx.fillText('L', 110, 330);
+      
+      // Draw "F" letter
+      ctx.fillStyle = '#0D8FFF';
+      ctx.font = 'bold 260px Arial';
+      ctx.fillText('F', 250, 330);
+    };
+    
+    // Icon 3 - Apple Touch Icon with slightly different background for 180x180
+    const drawIcon3 = () => {
+      const canvas = document.getElementById('canvas3');
+      const ctx = canvas.getContext('2d');
+      
+      // Draw dark background
+      ctx.fillStyle = '#1A1B26';
+      ctx.fillRect(0, 0, 180, 180);
+      
+      // Draw "L" letter
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 90px Arial';
+      ctx.fillText('L', 40, 115);
+      
+      // Draw "F" letter
+      ctx.fillStyle = '#0D8FFF';
+      ctx.font = 'bold 90px Arial';
+      ctx.fillText('F', 90, 115);
+    };
+    
+    // Icon 4 - Small favicon 32x32
+    const drawIcon4 = () => {
+      const canvas = document.getElementById('canvas4');
+      const ctx = canvas.getContext('2d');
+      
+      // Draw dark background
+      ctx.fillStyle = '#151621';
+      ctx.fillRect(0, 0, 32, 32);
+      
+      // Draw "L" letter
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 18px Arial';
+      ctx.fillText('L', 6, 22);
+      
+      // Draw "F" letter
+      ctx.fillStyle = '#0D8FFF';
+      ctx.font = 'bold 18px Arial';
+      ctx.fillText('F', 16, 22);
+    };
+    
+    // Download function
+    function downloadIcon(canvasId, fileName, size) {
+      const canvas = document.getElementById(canvasId);
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = canvas.toDataURL('image/png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    // Initialize all icons
+    drawIcon1();
+    drawIcon2();
+    drawIcon3();
+    drawIcon4();
+  </script>
+</body>
+</html>

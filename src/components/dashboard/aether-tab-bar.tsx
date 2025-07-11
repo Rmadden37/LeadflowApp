@@ -62,8 +62,8 @@ export default function AetherTabBar() {
   });
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] backdrop-filter backdrop-blur-[20px] border-t border-white/10 pb-[env(safe-area-inset-bottom)] z-50">
-      <div className="flex justify-around items-center h-16 max-w-screen-lg mx-auto">
+    <footer className="fixed bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.95)] backdrop-filter backdrop-blur-[20px] border-t border-white/10 pb-safe-bottom-enhanced z-50 nav-safe-bottom ios-optimized">
+      <div className="flex justify-around items-center h-16 max-w-screen-lg mx-auto px-safe-left-enhanced pr-safe-right-enhanced">
         {visibleTabs.map((tab) => {
           // Improved active state detection for nested routes
           const isActive = tab.path === "/dashboard" 
@@ -74,26 +74,26 @@ export default function AetherTabBar() {
             <Link 
               href={tab.path} 
               key={tab.path}
-              className="flex flex-col items-center justify-center w-full py-2 relative"
+              className="flex flex-col items-center justify-center w-full py-3 px-2 relative ios-touch-target transition-all duration-200 hover:bg-white/5 active:scale-95"
               onClick={tab.onClick}
             >
               <div className="relative">
                 <tab.icon 
-                  className={`w-6 h-6 mb-1 transition-all ${
+                  className={`w-6 h-6 mb-1 transition-all duration-200 ${
                     isActive 
-                      ? "text-white animate-icon-pulse" 
-                      : "text-[#A0A0A0]"
+                      ? "text-white animate-icon-pulse scale-110" 
+                      : "text-[#A0A0A0] hover:text-white/80"
                   }`} 
                 />
                 {tab.hasNotification && (
-                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse border border-white/20" />
+                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse border border-white/20 shadow-lg" />
                 )}
               </div>
               <span 
-                className={`text-xs font-medium transition-all ${
+                className={`text-xs font-medium transition-all duration-200 ${
                   isActive 
-                    ? "text-white" 
-                    : "text-[#A0A0A0]"
+                    ? "text-white font-semibold" 
+                    : "text-[#A0A0A0] hover:text-white/80"
                 }`}
               >
                 {tab.label}

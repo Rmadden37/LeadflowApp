@@ -4,6 +4,8 @@ build/
 .next/
 out/
 .env
+.env.*
+!.env.example
 firestore-debug.log
 tsconfig.tsbuildinfo
 leadflow-4lvrr-c0ece655e181.json

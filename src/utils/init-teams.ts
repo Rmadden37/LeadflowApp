@@ -41,6 +41,54 @@ const DEFAULT_TEAMS: Omit<Team, "createdAt" | "updatedAt">[] = [
         timezone: "America/Los_Angeles"
       }
     }
+  },
+  {
+    id: "empire-team",
+    name: "Empire (Team)",
+    description: "Main Empire team for user assignments",
+    regionId: "default",
+    isActive: true,
+    settings: {
+      autoAssignment: true,
+      maxLeadsPerCloser: 12,
+      workingHours: {
+        start: "07:00",
+        end: "22:00",
+        timezone: "America/Los_Angeles"
+      }
+    }
+  },
+  {
+    id: "takeoverpros",
+    name: "Takeover Pros",
+    description: "Takeover specialists team",
+    regionId: "default",
+    isActive: true,
+    settings: {
+      autoAssignment: true,
+      maxLeadsPerCloser: 10,
+      workingHours: {
+        start: "07:00",
+        end: "22:00",
+        timezone: "America/Los_Angeles"
+      }
+    }
+  },
+  {
+    id: "revolution",
+    name: "Revolution",
+    description: "Revolutionary sales team",
+    regionId: "default",
+    isActive: true,
+    settings: {
+      autoAssignment: true,
+      maxLeadsPerCloser: 10,
+      workingHours: {
+        start: "07:00",
+        end: "22:00",
+        timezone: "America/Los_Angeles"
+      }
+    }
   }
 ];
 

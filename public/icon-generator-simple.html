@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LeadFlow Icon Generation</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    h1 {
+      color: #0D8FFF;
+      margin-bottom: 20px;
+    }
+    
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .icon-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      width: 200px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .icon-preview {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 150px;
+      margin-bottom: 15px;
+      background-color: #f8f8f8;
+      border-radius: 4px;
+    }
+    
+    .button {
+      background-color: #0D8FFF;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+      width: 100%;
+    }
+    
+    .button:hover {
+      background-color: #0A6DD1;
+    }
+    
+    .instructions {
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    
+    code {
+      background-color: #eaeaea;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    
+    #status {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <h1>LeadFlow Icon Generation</h1>
+  
+  <div class="instructions">
+    <h2>Instructions</h2>
+    <p>Click the buttons below to download each icon file. After downloading, move them to your project's public directory.</p>
+    <p>This tool uses the images you've provided to generate the proper icon sizes for your LeadFlow app.</p>
+  </div>
+  
+  <div class="container">
+    <!-- Icon 1: 512x512 -->
+    <div class="icon-card">
+      <div class="icon-preview">
+        <canvas id="canvas512" width="512" height="512" style="max-width: 150px; max-height: 150px;"></canvas>
+      </div>
+      <h3>App Icon (512x512)</h3>
+      <a href="#" id="download512" class="button">Download icon-512x512.png</a>
+    </div>
+    
+    <!-- Icon 2: 192x192 -->
+    <div class="icon-card">
+      <div class="icon-preview">
+        <canvas id="canvas192" width="192" height="192" style="max-width: 150px; max-height: 150px;"></canvas>
+      </div>
+      <h3>App Icon (192x192)</h3>
+      <a href="#" id="download192" class="button">Download icon-192x192.png</a>
+    </div>
+    
+    <!-- Icon 3: Apple Touch Icon -->
+    <div class="icon-card">
+      <div class="icon-preview">
+        <canvas id="canvasApple" width="180" height="180" style="max-width: 150px; max-height: 150px;"></canvas>
+      </div>
+      <h3>Apple Touch Icon (180x180)</h3>
+      <a href="#" id="downloadApple" class="button">Download apple-touch-icon.png</a>
+    </div>
+    
+    <!-- Icon 4: Favicon -->
+    <div class="icon-card">
+      <div class="icon-preview">
+        <canvas id="canvasFavicon" width="32" height="32" style="width: 32px; height: 32px;"></canvas>
+      </div>
+      <h3>Favicon (32x32)</h3>
+      <a href="#" id="downloadFavicon" class="button">Download favicon-32x32.png</a>
+    </div>
+  </div>
+  
+  <div id="status"></div>
+  
+  <script>
+    // Base64 encoded versions of the provided images
+    // Use placeholder data URLs until we load the actual image data
+    const iconImageSources = [
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', // Placeholder for image 1
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', // Placeholder for image 2
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==' // Placeholder for image 3
+    ];
+    
+    // Canvas elements
+    const canvas512 = document.getElementById('canvas512');
+    const canvas192 = document.getElementById('canvas192');
+    const canvasApple = document.getElementById('canvasApple');
+    const canvasFavicon = document.getElementById('canvasFavicon');
+    
+    // Download links
+    const download512 = document.getElementById('download512');
+    const download192 = document.getElementById('download192');
+    const downloadApple = document.getElementById('downloadApple');
+    const downloadFavicon = document.getElementById('downloadFavicon');
+    
+    // Status element
+    const statusEl = document.getElementById('status');
+    
+    // Load the images
+    const loadImages = () => {
+      const images = [];
+      
+      for (let i = 0; i < 3; i++) {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.src = iconImageSources[i];
+        images.push(img);
+      }
+      
+      // When all images are loaded, draw them to canvases
+      Promise.all(images.map(img => {
+        return new Promise(resolve => {
+          img.onload = () => resolve(img);
+        });
+      })).then(loadedImages => {
+        // Draw image 3 (high res) to 512x512 canvas
+        drawToCanvas(canvas512, loadedImages[2], 512, 512);
+        
+        // Draw image 1 to 192x192 canvas
+        drawToCanvas(canvas192, loadedImages[0], 192, 192);
+        
+        // Draw image 2 to Apple Touch Icon canvas
+        drawToCanvas(canvasApple, loadedImages[1], 180, 180);
+        
+        // Draw image 1 to favicon canvas
+        drawToCanvas(canvasFavicon, loadedImages[0], 32, 32);
+        
+        // Set up download handlers
+        setupDownloadHandlers();
+        
+        showStatus('Icons ready! Click the buttons to download.', 'success');
+      }).catch(err => {
+        showStatus('Error loading images. Please try again.', 'error');
+        console.error(err);
+      });
+    };
+    
+    // Draw image to canvas with proper scaling
+    const drawToCanvas = (canvas, image, width, height) => {
+      const ctx = canvas.getContext('2d');
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, width, height);
+      
+      // Draw the image scaled to fit
+      const scale = Math.min(width / image.width, height / image.height);
+      const x = (width - image.width * scale) / 2;
+      const y = (height - image.height * scale) / 2;
+      
+      ctx.drawImage(image, x, y, image.width * scale, image.height * scale);
+    };
+    
+    // Set up download handlers
+    const setupDownloadHandlers = () => {
+      download512.addEventListener('click', () => {
+        downloadCanvasAsImage(canvas512, 'icon-512x512.png');
+      });
+      
+      download192.addEventListener('click', () => {
+        downloadCanvasAsImage(canvas192, 'icon-192x192.png');
+      });
+      
+      downloadApple.addEventListener('click', () => {
+        downloadCanvasAsImage(canvasApple, 'apple-touch-icon.png');
+      });
+      
+      downloadFavicon.addEventListener('click', () => {
+        downloadCanvasAsImage(canvasFavicon, 'favicon-32x32.png');
+      });
+    };
+    
+    // Download canvas as image
+    const downloadCanvasAsImage = (canvas, filename) => {
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showStatus(`Downloaded ${filename}`, 'success');
+    };
+    
+    // Show status message
+    const showStatus = (message, type) => {
+      statusEl.textContent = message;
+      statusEl.className = type;
+      statusEl.style.display = 'block';
+      
+      setTimeout(() => {
+        statusEl.style.display = 'none';
+      }, 3000);
+    };
+    
+    // Replace placeholder image sources with the actual images
+    // You should replace these with your actual image data
+    iconImageSources[0] = 'data:image/png;base64,/* BASE64_ENCODED_IMAGE_1 */';
+    iconImageSources[1] = 'data:image/png;base64,/* BASE64_ENCODED_IMAGE_2 */';
+    iconImageSources[2] = 'data:image/png;base64,/* BASE64_ENCODED_IMAGE_3 */';
+    
+    // Start loading images
+    loadImages();
+  </script>
+</body>
+</html>

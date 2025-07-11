@@ -7,6 +7,12 @@
 /* Import anti-jump form styles */
 @import '../styles/form-anti-jump.css';
 
+/* Import Aurelian Saloman's Scheduled Leads Enhancements */
+@import '../styles/aurelian-scheduled-leads.css';
+
+/* Import iOS Native Design System - CRITICAL UI/UX FIXES */
+@import '../styles/ios-native-design-system.css';
+
 /* Prevent scrollbars on auth pages */
 html {
   scroll-behavior: smooth;
@@ -320,9 +326,9 @@ body:has([data-auth-page])::before {
   z-index: 0;
   pointer-events: none;
   background: 
-    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.3) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.4) 0%, transparent 65%),
-    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.2) 0%, transparent 40%);
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.3) 0%, transparent 65%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.15) 0%, transparent 40%);
   background-size: 180% 180%, 160% 160%, 120% 120%;
   animation: auth-atmospheric-flow 30s ease-in-out infinite;
   transform: translateZ(0);
@@ -331,7 +337,7 @@ body:has([data-auth-page])::before {
   backface-visibility: hidden;
 }
 
-/* Enhanced animation for auth pages with more dynamic movement */
+/* Enhanced animation for auth pages */
 @keyframes auth-atmospheric-flow {
   0%, 100% {
     transform: translateX(0%) translateY(0%) scale(1);
@@ -347,12 +353,26 @@ body:has([data-auth-page])::before {
   }
 }
 
-/* Ensure all content appears above atmosphere */
-#__next, 
-[data-nextjs-container],
-main {
-  position: relative;
-  z-index: 1;
+/* Breathing radial gradient animation for login page */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Ensure auth page content appears above enhanced atmosphere */
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
 }
 
 /* Step 2: Frosted Glass Card Class */
@@ -2516,8 +2536,6 @@ padding-right: 2rem;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  will-change: transform;
 }
 
 /* Enhanced iOS-specific utilities for bottom navigation */
@@ -3141,56 +3159,38 @@ padding-right: 2rem;
   overflow: visible !important;
 }
 
-/* Closer Lineup Horizontal-Only Scrolling - Complete Solution */
-.closer-lineup-scroll {
-  overflow: hidden !important;
-  max-block-size: 128px !important; /* Enforce container height */
+/* Closer Lineup - No Vertical Scrolling, Horizontal Only - REMOVED: obsolete ScrollArea class */
+
+/* Ensure the closer lineup card has no vertical scrolling */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
+  height: auto !important;
 }
 
-/* Force ScrollArea viewport to enable horizontal scrolling while completely disabling vertical scrolling */
-.closer-lineup-scroll [data-radix-scroll-area-viewport] {
+/* Prevent any vertical scrolling in closer lineup */
+[data-testid="closer-lineup-card"] .relative {
   overflow-x: auto !important;
   overflow-y: hidden !important;
-  scroll-behavior: smooth;
-  max-height: 128px !important; /* Match h-32 class */
 }
 
-/* Specific overrides for bubble positioning */
-.closer-lineup-avatar-container {
-  position: relative !important;
-  padding: 12px !important;
-  overflow: visible !important;
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] .overflow-x-auto::-webkit-scrollbar {
+  height: 4px;
+  display: block;
 }
 
-.closer-lineup-bubble {
-  position: absolute !important;
-  inset-block-start: 0 !important;
-  inset-inline-end: 0 !important;
-  z-index: 20 !important;
+[data-testid="closer-lineup-card"] .overflow-x-auto::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
 }
 
-/* Additional ScrollArea overflow fixes */
-.closer-lineup-scroll [data-radix-scroll-area-content] {
-  padding: 12px 8px !important;
-  display: flex !important;
-  align-items: center !important;
+[data-testid="closer-lineup-card"] .overflow-x-auto::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
 }
 
-.closer-lineup-scroll [data-radix-scroll-area-scrollbar][data-orientation="vertical"] {
-  display: none !important;
-}
-
-.closer-lineup-scroll [data-radix-scroll-area-scrollbar][data-orientation="horizontal"] {
-  display: block !important;
-  block-size: 8px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 4px !important;
-  margin-top: 4px !important;
-}
-
-.closer-lineup-scroll [data-radix-scroll-area-thumb] {
-  background: rgba(255, 255, 255, 0.3) !important;
-  border-radius: 4px !important;
+[data-testid="closer-lineup-card"] .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 /* Ensure the main card container can show overflow */
@@ -3198,47 +3198,289 @@ padding-right: 2rem;
   overflow: visible !important;
 }
 
-/* Enhanced atmospheric gradient for authentication pages */
-body:has([data-auth-page])::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: 
-    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.25) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.3) 0%, transparent 65%),
-    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.15) 0%, transparent 40%);
-  background-size: 180% 180%, 160% 160%, 120% 120%;
-  animation: auth-atmospheric-flow 30s ease-in-out infinite;
+/* ===================================================================
+   iOS-STYLE TOAST SYSTEM - Premium Notifications
+   =================================================================== */
+
+/* Base iOS toast styling */
+.ios-toast-base {
+  /* Hardware acceleration for smooth animations */
   transform: translateZ(0);
-  will-change: transform;
+  -webkit-transform: translateZ(0);
+  will-change: transform, opacity;
   contain: layout style paint;
-  backface-visibility: hidden;
+  
+  /* iOS-style backdrop blur */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  
+  /* Smooth iOS-style border */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Premium shadow system */
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Enhanced animation for auth pages */
-@keyframes auth-atmospheric-flow {
-  0%, 100% {
-    transform: translateX(0%) translateY(0%) scale(1);
+.ios-toast-shadow {
+  /* Enhanced shadow for dark mode */
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Toast viewport positioning with safe areas */
+.ios-toast-viewport {
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* iOS-style slide animations */
+@keyframes ios-toast-slide-in-top {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0) scale(0.95);
+  }
+  100% {
     opacity: 1;
-  }
-  33% {
-    transform: translateX(3%) translateY(-2%) scale(1.02);
-    opacity: 0.9;
-  }
-  66% {
-    transform: translateX(-1%) translateY(1%) scale(1.01);
-    opacity: 0.95;
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
-/* Ensure auth page content appears above enhanced atmosphere */
-[data-auth-page] {
-  overflow: hidden !important;
-  height: 100vh !important;
-  width: 100vw !important;
-  max-height: 100vh !important;
-  max-width: 100vw !important;
-  position: relative !important;
+@keyframes ios-toast-slide-out-top {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0) scale(0.95);
+  }
+}
+
+/* Override Radix animations with iOS-style */
+[data-state="open"][data-radix-toast-root] {
+  animation: ios-toast-slide-in-top 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+[data-state="closed"][data-radix-toast-root] {
+  animation: ios-toast-slide-out-top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Toast swipe gestures */
+[data-swipe="move"][data-radix-toast-root] {
+  transition: none;
+  transform: translateX(var(--radix-toast-swipe-move-x));
+}
+
+[data-swipe="end"][data-radix-toast-root] {
+  animation: ios-toast-slide-out-top 0.2s ease-out;
+}
+
+/* ===================================================================
+   ENHANCED SAFE AREA SUPPORT - Complete iOS Integration
+   =================================================================== */
+
+/* Enhanced safe area utilities */
+.pt-safe-top-enhanced {
+  padding-top: max(1.5rem, env(safe-area-inset-top, 0));
+}
+
+.pb-safe-bottom-enhanced {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0));
+}
+
+.pl-safe-left-enhanced {
+  padding-left: max(1rem, env(safe-area-inset-left, 0));
+}
+
+.pr-safe-right-enhanced {
+  padding-right: max(1rem, env(safe-area-inset-right, 0));
+}
+
+/* Full safe area padding */
+.p-safe-all {
+  padding-top: max(1rem, env(safe-area-inset-top, 0));
+  padding-right: max(1rem, env(safe-area-inset-right, 0));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0));
+  padding-left: max(1rem, env(safe-area-inset-left, 0));
+}
+
+/* Navigation safe areas */
+.nav-safe-top {
+  top: env(safe-area-inset-top, 0);
+}
+
+.nav-safe-bottom {
+  bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Dashboard content with safe areas */
+.dashboard-safe-content {
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: max(6rem, env(safe-area-inset-bottom) + 5rem); /* Bottom nav + safe area */
+  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+
+/* ===================================================================
+   COMPLETE DARK MODE ENFORCEMENT - Always Dark
+   =================================================================== */
+
+/* Force dark mode on all elements */
+:root {
+  color-scheme: dark;
+  --background: 213 27% 8%;
+  --foreground: 210 20% 98%;
+  --card: 213 27% 10%;
+  --card-foreground: 210 20% 98%;
+  --popover: 213 27% 9%;
+  --popover-foreground: 210 20% 98%;
+  --primary: 210 20% 98%;
+  --primary-foreground: 220 14.3% 95.9%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 20% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 20% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 20% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+}
+
+/* Force dark on html and body */
+html {
+  color-scheme: dark !important;
+  background-color: hsl(213, 27%, 8%) !important;
+}
+
+body {
+  background-color: hsl(213, 27%, 8%) !important;
+  color: hsl(210, 20%, 98%) !important;
+}
+
+/* Dark mode for system UI elements */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: dark !important;
+  }
+  
+  html {
+    color-scheme: dark !important;
+    background-color: hsl(213, 27%, 8%) !important;
+  }
+  
+  body {
+    background-color: hsl(213, 27%, 8%) !important;
+    color: hsl(210, 20%, 98%) !important;
+  }
+}
+
+/* Override any light mode attempts */
+.light,
+[data-theme="light"] {
+  color-scheme: dark !important;
+  --background: 213 27% 8% !important;
+  --foreground: 210 20% 98% !important;
+}
+
+/* iOS status bar and meta theme colors */
+meta[name="theme-color"] {
+  content: "#0F1419" !important;
+}
+
+meta[name="msapplication-TileColor"] {
+  content: "#0F1419" !important;
+}
+
+/* ===================================================================
+   PULL-TO-REFRESH ENHANCEMENTS
+   =================================================================== */
+
+/* Smooth pull-to-refresh indicator */
+.pull-to-refresh-indicator {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Pull-to-refresh backdrop */
+.pull-to-refresh-backdrop {
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ===================================================================
+   ENHANCED MOBILE OPTIMIZATION
+   =================================================================== */
+
+/* Better mobile touch targets */
+@media (max-width: 768px) {
+  /* Ensure all interactive elements meet iOS guidelines */
+  button, 
+  [role="button"], 
+  [role="tab"], 
+  [role="menuitem"],
+  .ios-touch-target {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  
+  /* Prevent zoom on inputs */
+  input, 
+  textarea, 
+  select {
+    font-size: 16px !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+  
+  /* Better scrolling */
+  * {
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+  }
+}
+
+/* iPhone X and newer specific optimizations */
+@supports (padding: max(0px)) and (-webkit-touch-callout: none) {
+  /* Enhanced safe area support for notched devices */
+  .ios-full-height {
+    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+  
+  /* Status bar considerations */
+  .ios-status-bar-height {
+    padding-top: max(20px, env(safe-area-inset-top));
+  }
+  
+  /* Home indicator considerations */
+  .ios-home-indicator-height {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Performance optimizations for all iOS features */
+.ios-optimized {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }

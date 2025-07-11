@@ -8,7 +8,6 @@ import {db} from "@/lib/firebase";
 import {collection, query, where, onSnapshot, orderBy} from "firebase/firestore";
 import CloserCard from "./closer-card";
 import { Users, Loader2, Settings } from "lucide-react";
-import {ScrollArea} from "@/components/ui/scroll-area";
 import ManageClosersModal from "./off-duty-closers-modal";
 import Image from "next/image";
 
@@ -217,46 +216,40 @@ export default function CloserLineup() {
             <Loader2 className="w-8 h-8 animate-spin text-[var(--text-secondary)]" />
           </div>
         ) : closers.length > 0 ? (
-          <div className="relative overflow-hidden">
-            <ScrollArea className="w-full h-32 closer-lineup-scroll">
-              <div className="flex gap-6 py-6 px-8 w-max min-w-full items-center"
-                   style={{ 
-                     blockSize: 'fit-content',
-                     maxBlockSize: '100px' 
-                   }}>
-                {closers.map((closer, index) => (
-                  <div key={closer.uid} className="flex flex-col items-center flex-shrink-0">
-                    <div className="relative mb-2 closer-lineup-avatar-container">
-                      {/* Hardware-accelerated animation using CSS transforms */}
-                      <div
-                        className="relative animate-fadeInUp"
-                        style={{ 
-                          animationDelay: `${Math.min(index * 0.1, 0.8)}s`,
-                          animationFillMode: 'both',
-                          transform: 'translateZ(0)', // Hardware acceleration
-                          willChange: 'transform, opacity'
-                        }}
-                      >
-                        <Image
-                          src={closer.avatarUrl || `https://api.dicebear.com/8.x/initials/svg?seed=${closer.name}`}
-                          alt={closer.name}
-                          width={64}
-                          height={64}
-                          className="w-16 h-16 rounded-full shadow-md object-cover"
-                          title={closer.name}
-                        />
-                        <div className="closer-lineup-bubble w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
-                          <span className="text-sm font-bold text-black">{index + 1}</span>
-                        </div>
+          <div className="relative">
+            <div className="flex gap-6 py-4 px-8 w-max min-w-full items-center h-24 overflow-x-auto overflow-y-hidden">
+              {closers.map((closer, index) => (
+                <div key={closer.uid} className="flex flex-col items-center flex-shrink-0">
+                  <div className="relative closer-lineup-avatar-container">
+                    {/* Hardware-accelerated animation using CSS transforms */}
+                    <div
+                      className="relative animate-fadeInUp"
+                      style={{ 
+                        animationDelay: `${Math.min(index * 0.1, 0.8)}s`,
+                        animationFillMode: 'both',
+                        transform: 'translateZ(0)', // Hardware acceleration
+                        willChange: 'transform, opacity'
+                      }}
+                    >
+                      <Image
+                        src={closer.avatarUrl || `https://api.dicebear.com/8.x/initials/svg?seed=${closer.name}`}
+                        alt={closer.name}
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 rounded-full shadow-md object-cover"
+                        title={closer.name}
+                      />
+                      <div className="closer-lineup-bubble w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200 absolute -top-1 -right-1">
+                        <span className="text-xs font-bold text-black">{index + 1}</span>
                       </div>
                     </div>
-                    <p className="text-sm font-medium text-[var(--text-primary)] text-center whitespace-nowrap">
-                      {closer.name}
-                    </p>
                   </div>
-                ))}
-              </div>
-            </ScrollArea>
+                  <p className="text-xs font-medium text-[var(--text-primary)] text-center break-words max-w-[60px] leading-tight mt-1">
+                    {closer.name}
+                  </p>
+                </div>
+              ))}
+            </div>
             
             {/* Scroll Indicator - only show if there are more than 3 closers */}
             {closers.length > 3 && (

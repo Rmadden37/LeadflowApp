@@ -9,6 +9,7 @@ function setBadge(count: number) {
     navigator.setAppBadge(count);
   }
 }
+
 function clearBadge() {
   if ("clearAppBadge" in navigator) {
     // @ts-ignore
@@ -32,31 +33,38 @@ export function usePushNotifications() {
     }
     if (!messaging) return;
 
-    // Request permission and get token
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        getToken(messaging, { vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY })
-          .then((currentToken) => {
-            if (currentToken) {
-              // TODO: send token to backend if needed
-              console.log("FCM token:", currentToken);
-            }
-          })
-          .catch((err) => {
-            if (err.code === 'messaging/unsupported-browser') {
-              console.warn('Firebase Messaging not supported in this browser.');
-            } else {
-              console.error("An error occurred while retrieving token. ", err);
-            }
+    // Only request permission on user gesture, not automatically
+    const requestNotificationPermission = async () => {
+      try {
+        if (Notification.permission === 'default') {
+          // Don't auto-request, wait for user interaction
+          console.log('Notification permission not yet requested');
+          return;
+        }
+        
+        if (Notification.permission === "granted") {
+          const currentToken = await getToken(messaging, { 
+            vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY 
           });
+          if (currentToken) {
+            console.log("FCM token:", currentToken);
+          }
+        }
+      } catch (err: any) {
+        if (err.code === 'messaging/unsupported-browser') {
+          console.warn('Firebase Messaging not supported in this browser.');
+        } else {
+          console.warn("Notification setup skipped:", err.message);
+        }
       }
-    });
+    };
+    
+    requestNotificationPermission();
 
     // Foreground notification handler
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Push notification received:", payload);
-      // Show a toast or notification UI here if desired
-      setBadge(1); // Set badge to 1 (or increment if you track unread count)
+      setBadge(1);
     });
 
     // Optionally clear badge on focus

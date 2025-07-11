@@ -111,16 +111,6 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-md">
-      {/* iOS-Native Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-semibold text-foreground mb-2 tracking-tight">
-          Sign In
-        </h1>
-        <p className="text-base text-muted-foreground font-medium">
-          Welcome back to LeadFlow
-        </p>
-      </div>
-
       {/* Premium iOS-Style Form Container with Enhanced Glassmorphism */}
       <div className="relative mb-6">
         {/* Subtle glow effect */}
@@ -218,17 +208,17 @@ export default function LoginForm() {
       {/* iOS-Native Secondary Actions */}
       <div className="mt-8 space-y-6">
         {/* Forgot Password Link */}
-        <div className="text-center h-8">
+        <div className="text-center">
           <button
             type="button"
             onClick={handlePasswordReset}
             disabled={isResettingPassword}
-            className="text-base font-medium text-primary 
+            className="text-base font-medium text-white 
                      transition-all duration-200 disabled:opacity-50 
-                     bg-transparent border-0 outline-none p-0 m-0
-                     cursor-pointer
-                     hover:opacity-70 focus:outline-none focus:ring-0
-                     disabled:cursor-not-allowed"
+                     bg-black hover:bg-black/90 border-0 outline-none
+                     cursor-pointer rounded-xl px-6 py-3
+                     hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/20
+                     disabled:cursor-not-allowed shadow-lg"
           >
             {isResettingPassword ? (
               <span className="inline-flex items-center text-muted-foreground">
@@ -242,17 +232,13 @@ export default function LoginForm() {
         </div>
 
         {/* Sign Up Link */}
-        <div className="text-center text-base text-muted-foreground/80 h-8 mt-6">
+        <div className="text-center text-base text-muted-foreground/80 mt-6">
           Don't have an account?{" "}
           <a 
             href="/signup" 
             className="font-semibold text-primary hover:text-primary/80 
                      transition-all duration-200
                      underline-offset-4 hover:underline"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href = '/signup';
-            }}
           >
             Sign up
           </a>

@@ -26,6 +26,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {useToast} from "@/hooks/use-toast";
 import {useState} from "react";
 import {Loader2} from "lucide-react";
+import {useHapticFeedback} from "@/utils/haptic";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {message: "Full name must be at least 2 characters."}),
@@ -40,6 +41,7 @@ const formSchema = z.object({
 export default function SignupForm() {
   const {toast} = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const haptic = useHapticFeedback();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,7 +60,8 @@ export default function SignupForm() {
     // First validate the form
     const isValid = await form.trigger();
     if (!isValid) {
-      // Don't proceed if the form is invalid
+      // Haptic feedback for validation error
+      haptic.formError();
       return;
     }
     
@@ -70,6 +73,9 @@ export default function SignupForm() {
       // Save user data to Firestore with pending approval status
       await savePendingUserData(userCredential.user.uid, values);
       
+      // Success haptic feedback
+      haptic.formSubmit();
+      
       toast({
         title: "Account Created Successfully!",
         description: "Your account is pending manager approval. You'll receive an email once approved and can then log in.",
@@ -79,6 +85,9 @@ export default function SignupForm() {
       window.location.href = '/login';
     } catch (error: any) {
       let errorMessage = "An unexpected error occurred.";
+      
+      // Error haptic feedback
+      haptic.formError();
       
       // Handle common Firebase auth errors
       if (error.code === 'auth/email-already-in-use') {
@@ -146,7 +155,7 @@ export default function SignupForm() {
   // Helper function to convert team name to team ID
   function getTeamId(teamName: string): string {
     const teamMappings = {
-      "empire": "empire",
+      "empire": "empire-team",  // Fixed: Map Empire to "Empire (Team)" where Ricky Niger is manager
       "takeover-pros": "takeoverpros", 
       "revolution": "revolution"
     };
@@ -294,10 +303,13 @@ export default function SignupForm() {
               type="submit" 
               className="w-full mt-6" 
               disabled={isLoading}
+              hapticFeedback="heavy"
+              ios={true}
               onClick={() => {
                 if (!form.formState.isValid) {
                   // Make sure all errors are displayed
                   form.trigger();
+                  haptic.formError();
                 }
               }}
             >
@@ -315,6 +327,7 @@ export default function SignupForm() {
               className="font-medium text-primary hover:underline"
               onClick={(e) => {
                 e.preventDefault();
+                haptic.pageChange();
                 window.location.href = '/login';
               }}
             >
