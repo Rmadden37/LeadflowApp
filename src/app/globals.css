@@ -256,23 +256,23 @@ body {
   contain: layout style paint; /* Optimize rendering */
 }
 
-/* Professional spotlight animation - subtle and elegant */
+/* Professional spotlight animation - very subtle and elegant */
 @keyframes subtle-glow {
   0%, 100% {
     transform: scale(1) translateX(0) translateY(0);
     opacity: 1;
   }
   25% {
-    transform: scale(1.02) translateX(-0.5%) translateY(0.5%);
-    opacity: 0.95;
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
   }
   50% {
-    transform: scale(1.01) translateX(-1%) translateY(1%);
-    opacity: 0.98;
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
   }
   75% {
-    transform: scale(1.015) translateX(-0.5%) translateY(0.5%);
-    opacity: 0.96;
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
   }
 }
 
@@ -349,11 +349,11 @@ body:has([data-auth-page])::before {
   z-index: 0;
   pointer-events: none;
   background: 
-    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.25) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.3) 0%, transparent 65%),
-    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.15) 0%, transparent 40%);
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.06) 0%, transparent 75%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.075) 0%, transparent 80%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.04) 0%, transparent 60%);
   background-size: 180% 180%, 160% 160%, 120% 120%;
-  animation: auth-atmospheric-flow 30s ease-in-out infinite;
+  animation: auth-atmospheric-flow 40s ease-in-out infinite;
   transform: translateZ(0);
   will-change: transform;
   contain: layout style paint;
@@ -367,12 +367,12 @@ body:has([data-auth-page])::before {
     opacity: 1;
   }
   33% {
-    transform: translateX(3%) translateY(-2%) scale(1.02);
-    opacity: 0.9;
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
   }
   66% {
-    transform: translateX(-1%) translateY(1%) scale(1.01);
-    opacity: 0.95;
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
   }
 }
 
@@ -526,24 +526,24 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background: 
-    /* PROFESSIONAL TOP-RIGHT SPOTLIGHT - Creates depth and focus - MOVED HIGHER */
-    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 30%, transparent 60%),
+    /* SOFT TOP-RIGHT SPOTLIGHT - Very gentle atmospheric glow */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.015) 30%, transparent 75%),
     /* Secondary subtle gradients for depth */
-    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
-    radial-gradient(ellipse at 75% 8%, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.02) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 8%, rgba(255, 255, 255, 0.01) 0%, transparent 70%);
   background-size: 100% 100%, 150% 150%, 120% 120%;
-  animation: subtle-glow 30s ease-in-out infinite;
+  animation: subtle-glow 40s ease-in-out infinite;
 }
 
 /* Enhanced spotlight for mobile - maintains top-right focus */
 @media (max-width: 768px) {
   body::before {
     background: 
-      /* MOBILE TOP-RIGHT SPOTLIGHT - Adjusted for smaller screens - MOVED HIGHER */
-      radial-gradient(ellipse 600px 450px at 80% 8%, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 25%, transparent 55%),
+      /* MOBILE TOP-RIGHT SPOTLIGHT - Very gentle and refined */
+      radial-gradient(ellipse 600px 450px at 80% 8%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 25%, transparent 70%),
       /* Supporting mobile gradients */
-      radial-gradient(ellipse at 85% 5%, rgba(255, 255, 255, 0.10) 0%, transparent 35%),
-      radial-gradient(ellipse at 70% 12%, rgba(255, 255, 255, 0.05) 0%, transparent 45%);
+      radial-gradient(ellipse at 85% 5%, rgba(255, 255, 255, 0.025) 0%, transparent 55%),
+      radial-gradient(ellipse at 70% 12%, rgba(255, 255, 255, 0.015) 0%, transparent 65%);
     background-size: 100% 100%, 140% 140%, 110% 110%;
   }
 }
