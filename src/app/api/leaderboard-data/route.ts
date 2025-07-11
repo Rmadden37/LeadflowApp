@@ -4,11 +4,21 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-static';
 
 export async function GET(request: NextRequest) {
+  // For static export mode, return empty data
+  if (process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true') {
+    return NextResponse.json({ data: [] });
+  }
+  
   const url = process.env.GOOGLE_SHEETS_OVERALL_CSV_URL;
   if (!url) return NextResponse.json({ error: 'CSV URL not set' }, { status: 500 });
 
-  const res = await fetch(url);
-  if (!res.ok) return NextResponse.json({ error: 'Failed to fetch CSV' }, { status: 500 });
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return NextResponse.json({ error: 'Failed to fetch CSV' }, { status: 500 });
+  } catch (error) {
+    console.error('Failed to fetch CSV:', error);
+    return NextResponse.json({ error: 'Failed to fetch CSV', details: error }, { status: 500 });
+  }
 
   const csv = await res.text();
   

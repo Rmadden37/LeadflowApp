@@ -10,9 +10,23 @@ export async function GET() {
     // This endpoint requires authentication, so we'll simulate what the client side does
     // In a real scenario, this would be called from an authenticated context
 
-    // Get leaderboard data
-    const leaderboardResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002'}/api/leaderboard-data`);
-    const leaderboardData = await leaderboardResponse.json();
+    // In static export mode, we can't fetch from local APIs
+    // Instead, we'll use static data or fetch directly from the source
+    // For static export, we'll use predefined data
+    const leaderboardData = { data: [] };
+    
+    // Only in development mode, try to fetch from local API
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        const leaderboardResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002'}/api/leaderboard-data`);
+        const fetchedData = await leaderboardResponse.json();
+        if (fetchedData && fetchedData.data) {
+          leaderboardData.data = fetchedData.data;
+        }
+      } catch (error) {
+        console.log('Could not fetch leaderboard data in development, using empty data');
+      }
+    }
     
     // Extract unique names from leaderboard
     const leaderboardNames = new Set<string>();

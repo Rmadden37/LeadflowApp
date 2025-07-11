@@ -8,6 +8,16 @@ echo "🚀 Running CI-specific build script..."
 # Set NODE_OPTIONS to increase memory limit if needed
 export NODE_OPTIONS="--max-old-space-size=4096"
 
+# Set environment variables for static export
+echo "Setting up environment variables for static build..."
+export NEXT_PUBLIC_CI_BUILD=true
+export NODE_ENV=production
+
+# Skip API calls during build
+echo "Setting up environment to prevent API calls during build..."
+export NEXT_PUBLIC_STATIC_EXPORT=true
+export NEXT_PUBLIC_SKIP_API_CALLS=true
+
 # Run next build without prebuild checks
 echo "Building Next.js application..."
 npx next build
