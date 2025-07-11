@@ -216,12 +216,12 @@ export default function CloserLineup() {
             <Loader2 className="w-8 h-8 animate-spin text-[var(--text-secondary)]" />
           </div>
         ) : closers.length > 0 ? (
-          <div className="relative">
-            {/* iOS-native grid layout - no horizontal scrolling */}
-            <div className="grid grid-cols-3 gap-3 py-3 px-2 items-center justify-items-center min-h-[90px]">
+          <div className="relative overflow-visible">
+            {/* iOS-native grid layout - proper padding to prevent badge clipping */}
+            <div className="grid grid-cols-3 gap-4 py-6 px-4 items-start justify-items-center min-h-[120px] overflow-visible">
               {closers.slice(0, 6).map((closer, index) => (
-                <div key={closer.uid} className="flex flex-col items-center w-full max-w-[80px]">
-                  <div className="relative closer-lineup-avatar-container">
+                <div key={closer.uid} className="flex flex-col items-center w-full max-w-[85px] overflow-visible">
+                  <div className="relative closer-lineup-avatar-container mb-3 overflow-visible">
                     {/* Hardware-accelerated animation using CSS transforms */}
                     <div
                       className="relative animate-fadeInUp"
@@ -240,13 +240,13 @@ export default function CloserLineup() {
                         className="w-12 h-12 rounded-full shadow-md object-cover"
                         title={closer.name}
                       />
-                      <div className="closer-lineup-bubble w-6 h-6 bg-[var(--accent-green)] rounded-full flex items-center justify-center shadow-lg absolute -top-2 -right-2 z-30">
-                        <span className="text-xs font-bold text-white">{index + 1}</span>
+                      <div className="closer-lineup-bubble w-6 h-6 bg-[#CDCCC8] rounded-full flex items-center justify-center shadow-lg absolute -top-2 -right-2 z-30">
+                        <span className="text-xs font-bold text-[#0E0E0E]">{index + 1}</span>
                       </div>
                     </div>
                   </div>
                   <p 
-                    className="text-xs font-medium text-[var(--text-primary)] text-center leading-tight mt-2 px-1"
+                    className="text-xs font-medium text-[var(--text-primary)] text-center leading-tight px-1"
                     style={{
                       fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
                       fontSize: '11px',

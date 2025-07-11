@@ -3148,14 +3148,15 @@ padding-right: 2rem;
 
 /* Ensure proper containment for closer lineup cards */
 .frosted-glass-card[data-testid="closer-lineup-card"] {
-  overflow: hidden !important;
+  overflow: visible !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
 }
 
-/* Prevent any unexpected scrolling on mobile */
+/* Prevent horizontal scrolling but allow vertical space for badges */
 .frosted-glass-card[data-testid="closer-lineup-card"] * {
   overflow-x: hidden !important;
+  overflow-y: visible !important;
 }
 
 /* iOS-native animation for staggered fade-in */
@@ -3178,11 +3179,12 @@ padding-right: 2rem;
 .closer-lineup-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-  padding: 0.75rem 0.5rem;
-  min-height: 90px;
-  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1rem;
+  min-height: 120px;
+  align-items: start;
   justify-items: center;
+  overflow: visible;
 }
 
 /* Closer lineup avatar sizing consistency */
@@ -3199,8 +3201,8 @@ padding-right: 2rem;
   top: -8px;
   right: -8px;
   z-index: 30;
-  background-color: var(--accent-green, #2EEA9A);
-  color: white;
+  background-color: #CDCCC8;
+  color: #0E0E0E;
   font-weight: 700;
   font-size: 11px;
 }
@@ -3208,9 +3210,10 @@ padding-right: 2rem;
 /* Closer lineup avatar containers */
 .closer-lineup-avatar-container {
   position: relative;
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
   overflow: visible;
+  margin-bottom: 0.75rem;
 }
 
 /* Position badges with proper visibility */
@@ -3220,7 +3223,7 @@ padding-right: 2rem;
   right: -0.375rem;
   width: 1.5rem;
   height: 1.5rem;
-  background: var(--accent-green, #30D158);
+  background: #CDCCC8;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -3233,7 +3236,7 @@ padding-right: 2rem;
 }
 
 .closer-lineup-position-badge span {
-  color: white;
+  color: #0E0E0E;
   font-size: 0.625rem;
   font-weight: 700;
   line-height: 1;
@@ -3257,13 +3260,15 @@ padding-right: 2rem;
 /* Mobile-specific enhancements */
 @media (max-width: 768px) {
   .closer-lineup-grid {
-    gap: 0.75rem;
-    padding: 0.75rem 0.25rem;
+    gap: 1rem;
+    padding: 1.25rem 0.75rem;
+    min-height: 110px;
   }
   
   .closer-lineup-avatar-container {
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.625rem;
   }
   
   .closer-lineup-position-badge {
