@@ -68,9 +68,9 @@ else
   echo "✅ Build successful!"
 fi
 
-# Deploy to Firebase
-echo "🚀 Deploying to Firebase..."
-firebase deploy
+# Deploy to Firebase App Hosting
+echo "🚀 Deploying to Firebase App Hosting..."
+firebase deploy --only hosting:apphosting
 
 if [ $? -ne 0 ]; then
   echo "❌ Deployment failed. Check Firebase CLI errors."

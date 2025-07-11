@@ -2,6 +2,22 @@
 
 This guide provides step-by-step instructions for successfully deploying your LeadFlow application to Firebase App Hosting.
 
+## 🔍 Firebase App Hosting vs Regular Hosting
+
+Firebase offers two hosting services:
+
+1. **Firebase Hosting**: The standard web hosting service for static content
+2. **Firebase App Hosting**: An enhanced hosting service that allows dynamic content execution
+
+The LeadFlow app is configured to use **Firebase App Hosting** for better performance and capabilities.
+
+## 🎯 App Hosting Configuration
+
+The configuration includes:
+- Targeting the `apphosting` target in `.firebaserc`
+- Special configuration in `apphosting.yaml`
+- CI/CD setup in GitHub Actions workflow
+
 ## 📋 Pre-Deployment Checklist
 
 ### 1. 🧹 Clean Up Unused Files
@@ -52,10 +68,14 @@ git commit -m "Pre-deployment cleanup and optimization"
 git push origin main
 ```
 
-### 2. 🚀 Deploy to Firebase
-Use the provided deployment script:
+### 2. 🚀 Deploy to Firebase App Hosting
+Use the provided deployment script for App Hosting:
 
 ```bash
+# Set up App Hosting targets first (only needed once)
+./setup-app-hosting.sh
+
+# Deploy with checks
 ./deploy-with-checks.sh
 ```
 
@@ -65,7 +85,13 @@ This script will:
 3. Run linting
 4. Check for environment variables
 5. Build the application
-6. Deploy to Firebase
+6. Deploy to Firebase App Hosting using the `apphosting` target
+
+You can also use the direct deploy script for faster deployment:
+
+```bash
+./deploy.sh
+```
 
 ## 🔍 Post-Deployment Verification
 
