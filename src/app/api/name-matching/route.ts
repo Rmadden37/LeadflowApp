@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
+// Required for static export
+export const dynamic = 'force-static';
+
 export async function GET() {
   try {
     // This endpoint requires authentication, so we'll simulate what the client side does

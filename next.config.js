@@ -1,5 +1,5 @@
 const withPWA = require('next-pwa')({
-  dest: 'public',
+  dest: 'dist', // Match with Firebase hosting public directory
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
@@ -9,13 +9,13 @@ const withPWA = require('next-pwa')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Firebase App Hosting configuration (dynamic Next.js app)
+  // Firebase App Hosting configuration (static export for Firebase Hosting)
   output: 'export', // Optimized for Firebase Hosting
   distDir: 'dist',  // Firebase Hosting looks for static files in this directory
   images: {
     unoptimized: true, // Required for 'export' output
   },
-  trailingSlash: true, // For better Firebase Hosting compatibility
+  trailingSlash: false, // Consistent with the setting at the bottom of the file
   turbopack: {
     rules: {
       '*.svg': {
@@ -132,6 +132,7 @@ const nextConfig = {
   },
   // Enhanced image optimization
   images: {
+    unoptimized: true, // Required for 'export' output mode
     remotePatterns: [
       {
         protocol: 'https',
@@ -171,8 +172,7 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // Output configuration for Firebase
-  output: 'standalone',
+  // Consistent trailingSlash setting
   trailingSlash: false,
   
   // Environment variables

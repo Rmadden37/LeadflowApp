@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Required for static export
+export const dynamic = 'force-static';
+
 export async function GET(request: NextRequest) {
   const url = process.env.GOOGLE_SHEETS_OVERALL_CSV_URL;
   if (!url) return NextResponse.json({ error: 'CSV URL not set' }, { status: 500 });

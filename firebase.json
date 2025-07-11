@@ -23,7 +23,6 @@
       "**/test-*.js",
       "**/debug-*.js",
       "**/simple-*.js",
-      "**/*.html",
       "**/.git/**"
     ],
     "headers": [
