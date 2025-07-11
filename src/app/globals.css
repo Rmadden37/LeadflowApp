@@ -10,6 +10,9 @@
 /* Import Aurelian Saloman's Scheduled Leads Enhancements */
 @import '../styles/aurelian-scheduled-leads.css';
 
+/* Import Mobile-First Scheduled Leads Enhancements */
+@import '../styles/mobile-scheduled-leads.css';
+
 /* Import iOS Native Design System - CRITICAL UI/UX FIXES */
 @import '../styles/ios-native-design-system.css';
 

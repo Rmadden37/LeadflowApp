@@ -14,6 +14,7 @@ import {
   ChevronLeft, 
   ChevronRight,
   Phone,
+  MessageSquare,
   RotateCcw,
   CheckCircle2,
   Clock,
@@ -21,7 +22,7 @@ import {
   MapPin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { format, isSameDay, addDays, subDays, isToday, isTomorrow, differenceInMinutes } from "date-fns";
+import { format, isSameDay, addDays, subDays, isToday, isTomorrow, isPast, differenceInMinutes } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -32,13 +33,12 @@ import {
   DialogTitle,
   DialogDescription
 } from "@/components/ui/dialog";
-import LeadCard from "./lead-card";
 import VerifiedCheckbox from "./verified-checkbox";
 import LeadDispositionModal from "./lead-disposition-modal";
 import { cn } from "@/lib/utils";
 
-// Enhanced Lead Card with mobile optimizations and swipe actions
-const EnhancedLeadCard = ({ 
+// Mobile-optimized lead card component
+const MobileLeadCard = ({ 
   lead, 
   onLeadClick, 
   onCall, 
@@ -52,96 +52,85 @@ const EnhancedLeadCard = ({
   onComplete: (lead: Lead) => void;
 }) => {
   const [isSwipeOpen, setIsSwipeOpen] = useState(false);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [startX, setStartX] = useState(0);
+  const [currentX, setCurrentX] = useState(0);
   
   const appointmentTime = lead.scheduledAppointmentTime?.toDate();
   const now = new Date();
   const minutesUntil = appointmentTime ? differenceInMinutes(appointmentTime, now) : null;
   
-  // Determine urgency without aggressive badges
+  // Determine urgency
   const isUrgent = minutesUntil !== null && minutesUntil <= 60 && minutesUntil > 0;
   const isCritical = minutesUntil !== null && minutesUntil <= 15 && minutesUntil > 0;
   const isOverdue = minutesUntil !== null && minutesUntil < 0;
   
-  // Subtle status indicators
+  // Status indicators
   const getTimeStatus = () => {
-    if (!appointmentTime) return { color: 'text-white/40', bg: 'bg-white/5', label: 'No time' };
+    if (!appointmentTime) return { color: 'text-gray-400', label: 'No time set' };
     
-    if (isOverdue) return { color: 'text-red-400', bg: 'bg-red-500/10', label: 'Overdue' };
-    if (isCritical) return { color: 'text-red-500', bg: 'bg-red-500/15', label: 'Critical' };
-    if (isUrgent) return { color: 'text-orange-400', bg: 'bg-orange-500/10', label: 'Soon' };
+    if (isOverdue) return { color: 'text-red-400', label: 'Overdue' };
+    if (isCritical) return { color: 'text-red-500', label: 'Critical' };
+    if (isUrgent) return { color: 'text-orange-400', label: 'Soon' };
     
-    return { color: 'text-blue-400', bg: 'bg-blue-500/10', label: 'Scheduled' };
+    return { color: 'text-blue-400', label: 'Scheduled' };
   };
   
   const timeStatus = getTimeStatus();
   
-  // Touch handlers for iOS-native swipe gestures
+  // Touch handlers for swipe actions
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.touches[0].clientX);
+    setStartX(e.touches[0].clientX);
+    setCurrentX(e.touches[0].clientX);
   };
   
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchStart) return;
+    if (!startX) return;
+    setCurrentX(e.touches[0].clientX);
+    const diffX = e.touches[0].clientX - startX;
     
-    const currentTouch = e.touches[0].clientX;
-    const diff = touchStart - currentTouch;
-    
-    // Show actions if swiped left significantly
-    if (diff > 60) {
+    // Show actions if swiped left enough
+    if (diffX < -60) {
       setIsSwipeOpen(true);
-    } else if (diff < -20) {
+    } else if (diffX > 20) {
       setIsSwipeOpen(false);
     }
   };
   
   const handleTouchEnd = () => {
-    setTouchStart(null);
+    setStartX(0);
+    setCurrentX(0);
   };
   
   return (
-    <div className="relative overflow-hidden group">
-      {/* Main card with iOS-native styling */}
+    <div className="relative overflow-hidden">
+      {/* Main card */}
       <div 
         className={cn(
-          // Base glassmorphism styling
-          "bg-white/8 backdrop-blur-xl border border-white/10 rounded-2xl p-4",
-          "transition-all duration-300 cursor-pointer",
-          // iOS-native hover and active states
-          "hover:bg-white/12 hover:border-white/20 hover:shadow-lg hover:shadow-black/25",
-          "active:scale-[0.98] active:bg-white/6 active:transition-all active:duration-150",
-          // Enhanced touch targets for mobile (minimum 44px)
-          "min-h-[88px]",
-          // Verification status styling
-          lead.setterVerified && "border-green-400/30 bg-green-500/5",
-          // Time-based styling without aggressive badges
-          isUrgent && "border-orange-400/20",
-          isCritical && "border-red-400/20",
-          isOverdue && "border-red-500/20 bg-red-500/5",
-          // Swipe animation
-          isSwipeOpen && "transform -translate-x-24 md:-translate-x-20"
+          "bg-white/8 backdrop-blur-xl border border-white/10 rounded-2xl p-4 transition-all duration-300",
+          "hover:bg-white/12 hover:border-white/20 hover:shadow-lg",
+          "active:scale-[0.98] active:bg-white/6",
+          lead.setterVerified && "border-green-400/30",
+          isUrgent && "border-orange-400/40",
+          isCritical && "border-red-400/40",
+          isOverdue && "border-red-500/40 bg-red-500/5",
+          isSwipeOpen && "transform -translate-x-20"
         )}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onClick={() => onLeadClick(lead)}
       >
-        {/* Subtle status indicators in top right */}
+        {/* Status indicator dot */}
         <div className="absolute top-3 right-3 flex items-center gap-2">
-          <div className={cn(
-            "w-2 h-2 rounded-full transition-all duration-300",
-            timeStatus.color.replace('text-', 'bg-')
-          )} />
+          <div className={cn("w-2 h-2 rounded-full", timeStatus.color.replace('text-', 'bg-'))} />
           {lead.setterVerified && (
-            <div className="w-3 h-3 rounded-full bg-green-400/20 flex items-center justify-center">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-            </div>
+            <CheckCircle2 className="w-4 h-4 text-green-400" />
           )}
         </div>
         
-        {/* Customer information */}
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400/20 to-purple-400/20 flex items-center justify-center flex-shrink-0">
+        {/* Customer info */}
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-400/20 flex items-center justify-center">
             <User className="w-6 h-6 text-white/80" />
           </div>
           
@@ -153,51 +142,42 @@ const EnhancedLeadCard = ({
               {lead.customerPhone}
             </p>
             {lead.address && (
-              <p className="text-white/50 text-xs truncate mt-0.5 flex items-center gap-1">
-                <MapPin className="w-3 h-3 flex-shrink-0" />
+              <p className="text-white/50 text-xs truncate mt-1">
                 {lead.address}
               </p>
             )}
           </div>
         </div>
         
-        {/* Consolidated time display - single elegant format */}
+        {/* Consolidated time display */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-xl",
-              timeStatus.bg
-            )}>
-              <Clock className={cn("w-4 h-4", timeStatus.color)} />
-              <div>
-                <div className={cn("text-sm font-medium", timeStatus.color)}>
-                  {appointmentTime ? format(appointmentTime, "h:mm a") : "No time"}
-                </div>
-                <div className="text-xs text-white/50">
-                  {appointmentTime ? format(appointmentTime, "MMM d") : "Not scheduled"}
-                </div>
+          <div className="flex items-center gap-2">
+            <Clock className={cn("w-4 h-4", timeStatus.color)} />
+            <div>
+              <div className={cn("text-sm font-medium", timeStatus.color)}>
+                {appointmentTime ? format(appointmentTime, "h:mm a") : "No time"}
+              </div>
+              <div className="text-xs text-white/50">
+                {appointmentTime ? format(appointmentTime, "MMM d") : "Not scheduled"}
               </div>
             </div>
           </div>
           
-          {/* Verification with contextual actions */}
+          {/* Verification status */}
           <div className="flex items-center gap-2">
             <VerifiedCheckbox 
               leadId={lead.id}
               className="scale-90"
             />
-            <span className={cn(
-              "text-xs font-medium",
-              lead.setterVerified ? "text-green-400" : "text-orange-400"
-            )}>
+            <span className="text-xs text-white/60">
               {lead.setterVerified ? "Verified" : "Verify"}
             </span>
           </div>
         </div>
         
-        {/* Setter information */}
+        {/* Setter info */}
         {lead.setterName && (
-          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
+          <div className="flex items-center gap-1 mt-2 pt-2 border-t border-white/10">
             <User className="w-3 h-3 text-white/40" />
             <span className="text-xs text-white/60">
               Set by: {lead.setterName}
@@ -206,22 +186,15 @@ const EnhancedLeadCard = ({
         )}
       </div>
       
-      {/* iOS-native swipe actions */}
+      {/* Swipe actions */}
       <div className={cn(
-        "absolute right-0 top-0 bottom-0 flex items-center gap-2 px-3",
-        "transition-all duration-300",
-        isSwipeOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"
+        "absolute right-0 top-0 bottom-0 flex items-center gap-2 px-3 transition-all duration-300",
+        isSwipeOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       )}>
-        {/* Call action */}
         <Button
           size="sm"
           variant="ghost"
-          className={cn(
-            "w-12 h-12 rounded-2xl p-0 transition-all duration-200",
-            "bg-green-500/20 hover:bg-green-500/40 border border-green-500/30",
-            "text-green-400 hover:text-green-300",
-            "active:scale-95"
-          )}
+          className="w-12 h-12 rounded-full bg-green-500/20 hover:bg-green-500/40 text-green-400 p-0"
           onClick={(e) => {
             e.stopPropagation();
             onCall(lead);
@@ -231,16 +204,10 @@ const EnhancedLeadCard = ({
           <Phone className="w-5 h-5" />
         </Button>
         
-        {/* Reschedule action */}
         <Button
           size="sm"
           variant="ghost"
-          className={cn(
-            "w-12 h-12 rounded-2xl p-0 transition-all duration-200",
-            "bg-orange-500/20 hover:bg-orange-500/40 border border-orange-500/30",
-            "text-orange-400 hover:text-orange-300",
-            "active:scale-95"
-          )}
+          className="w-12 h-12 rounded-full bg-orange-500/20 hover:bg-orange-500/40 text-orange-400 p-0"
           onClick={(e) => {
             e.stopPropagation();
             onReschedule(lead);
@@ -250,16 +217,10 @@ const EnhancedLeadCard = ({
           <RotateCcw className="w-5 h-5" />
         </Button>
         
-        {/* Complete action */}
         <Button
           size="sm"
           variant="ghost"
-          className={cn(
-            "w-12 h-12 rounded-2xl p-0 transition-all duration-200",
-            "bg-blue-500/20 hover:bg-blue-500/40 border border-blue-500/30",
-            "text-blue-400 hover:text-blue-300",
-            "active:scale-95"
-          )}
+          className="w-12 h-12 rounded-full bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 p-0"
           onClick={(e) => {
             e.stopPropagation();
             onComplete(lead);
@@ -273,7 +234,7 @@ const EnhancedLeadCard = ({
   );
 };
 
-export default function ScheduledLeadsSection() {
+export default function MobileScheduledLeads() {
   const { user } = useAuth();
   const { toast } = useToast();
   
@@ -349,7 +310,7 @@ export default function ScheduledLeadsSection() {
 
     return () => unsubscribe();
   }, [user?.teamId, toast]);
-  
+
   // Filter leads for the selected date
   const filteredLeads = allScheduledLeads.filter(lead => {
     if (!lead.scheduledAppointmentTime) {
@@ -376,14 +337,13 @@ export default function ScheduledLeadsSection() {
     return format(date, "MMM d");
   };
 
-  // Action handlers with iOS-native patterns
+  // Action handlers
   const handleLeadClick = useCallback((lead: Lead) => {
     setSelectedLead(lead);
     setShowLeadDetails(true);
   }, []);
 
   const handleCall = useCallback((lead: Lead) => {
-    // iOS-native tel: scheme
     window.open(`tel:${lead.customerPhone}`);
     toast({
       title: "Calling",
@@ -408,43 +368,41 @@ export default function ScheduledLeadsSection() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-48">
-        <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-        <span className="ml-2 text-gray-400">Loading scheduled leads...</span>
+        <Loader2 className="w-8 h-8 animate-spin text-white/60" />
+        <span className="ml-2 text-white/60">Loading scheduled leads...</span>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Enhanced Header with iOS-native styling */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-            <CalendarClock className="w-6 h-6 text-blue-400" />
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+            <CalendarClock className="w-5 h-5 text-blue-400" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">Scheduled Leads</h2>
             <p className="text-sm text-white/60">
-              {filteredLeads.length} appointment{filteredLeads.length !== 1 ? 's' : ''} for {getDateLabel(selectedDate)}
+              {filteredLeads.length} appointment{filteredLeads.length !== 1 ? 's' : ''}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Mobile-first Date Navigation */}
+      {/* Date Navigation */}
       <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10">
         <div className="flex items-center justify-between mb-4">
-          {/* Previous day */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigateDate('prev')}
-            className="w-10 h-10 rounded-full p-0 hover:bg-white/10 active:scale-95 transition-all"
+            className="w-10 h-10 rounded-full p-0 hover:bg-white/10"
           >
             <ChevronLeft className="w-5 h-5 text-white/80" />
           </Button>
           
-          {/* Current date display */}
           <div className="flex items-center gap-3">
             <div className="text-center">
               <div className="text-lg font-semibold text-white">
@@ -455,13 +413,12 @@ export default function ScheduledLeadsSection() {
               </div>
             </div>
             
-            {/* Calendar picker */}
             <Popover open={showCalendar} onOpenChange={setShowCalendar}>
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="w-10 h-10 rounded-full p-0 hover:bg-white/10 active:scale-95 transition-all"
+                  className="w-10 h-10 rounded-full p-0 hover:bg-white/10"
                 >
                   <CalendarDays className="w-5 h-5 text-white/80" />
                 </Button>
@@ -482,24 +439,23 @@ export default function ScheduledLeadsSection() {
             </Popover>
           </div>
           
-          {/* Next day */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigateDate('next')}
-            className="w-10 h-10 rounded-full p-0 hover:bg-white/10 active:scale-95 transition-all"
+            className="w-10 h-10 rounded-full p-0 hover:bg-white/10"
           >
             <ChevronRight className="w-5 h-5 text-white/80" />
           </Button>
         </div>
         
-        {/* Quick date navigation */}
-        <div className="flex gap-2 mb-4">
+        {/* Quick date buttons */}
+        <div className="flex gap-2">
           <Button
             variant={isToday(selectedDate) ? "default" : "ghost"}
             size="sm"
             onClick={() => setSelectedDate(new Date())}
-            className="rounded-full text-xs px-4 h-8 active:scale-95 transition-all"
+            className="rounded-full text-xs px-4"
           >
             Today
           </Button>
@@ -507,22 +463,20 @@ export default function ScheduledLeadsSection() {
             variant={isTomorrow(selectedDate) ? "default" : "ghost"}
             size="sm"
             onClick={() => setSelectedDate(addDays(new Date(), 1))}
-            className="rounded-full text-xs px-4 h-8 active:scale-95 transition-all"
+            className="rounded-full text-xs px-4"
           >
             Tomorrow
           </Button>
         </div>
         
-        {/* Verification stats with better visual hierarchy */}
-        <div className="flex items-center justify-center gap-6 pt-4 border-t border-white/10">
+        {/* Stats */}
+        <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-white/10">
           <div className="text-center">
             <div className="text-lg font-semibold text-green-400">
               {verifiedLeads.length}
             </div>
             <div className="text-xs text-white/60">Verified</div>
           </div>
-          
-          <div className="w-px h-6 bg-white/10" />
           
           <div className="text-center">
             <div className="text-lg font-semibold text-orange-400">
@@ -533,12 +487,12 @@ export default function ScheduledLeadsSection() {
         </div>
       </div>
 
-      {/* Enhanced Leads List */}
+      {/* Leads List */}
       <ScrollArea className="h-[500px]">
         <div className="space-y-4">
           {filteredLeads.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
                 <Calendar className="w-8 h-8 text-white/40" />
               </div>
               <p className="text-white/60 text-lg font-medium">No appointments</p>
@@ -548,7 +502,7 @@ export default function ScheduledLeadsSection() {
             </div>
           ) : (
             <>
-              {/* Unverified Leads Section - Higher priority */}
+              {/* Unverified leads first */}
               {unverifiedLeads.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 px-1">
@@ -558,7 +512,7 @@ export default function ScheduledLeadsSection() {
                     </h3>
                   </div>
                   {unverifiedLeads.map((lead) => (
-                    <EnhancedLeadCard
+                    <MobileLeadCard
                       key={lead.id}
                       lead={lead}
                       onLeadClick={handleLeadClick}
@@ -570,7 +524,7 @@ export default function ScheduledLeadsSection() {
                 </div>
               )}
 
-              {/* Verified Leads Section */}
+              {/* Verified leads */}
               {verifiedLeads.length > 0 && (
                 <div className="space-y-3">
                   {unverifiedLeads.length > 0 && (
@@ -582,7 +536,7 @@ export default function ScheduledLeadsSection() {
                     </div>
                   )}
                   {verifiedLeads.map((lead) => (
-                    <EnhancedLeadCard
+                    <MobileLeadCard
                       key={lead.id}
                       lead={lead}
                       onLeadClick={handleLeadClick}
@@ -598,7 +552,7 @@ export default function ScheduledLeadsSection() {
         </div>
       </ScrollArea>
 
-      {/* Enhanced Lead Details Dialog */}
+      {/* Lead Details Dialog */}
       {selectedLead && showLeadDetails && (
         <Dialog open={showLeadDetails} onOpenChange={setShowLeadDetails}>
           <DialogContent className="sm:max-w-[600px] bg-black/80 backdrop-blur-xl border border-white/20 text-white shadow-2xl">
@@ -626,7 +580,7 @@ export default function ScheduledLeadsSection() {
                       size="sm"
                       variant="ghost"
                       onClick={() => handleCall(selectedLead)}
-                      className="w-8 h-8 p-0 rounded-full hover:bg-green-500/20 active:scale-95 transition-all"
+                      className="w-8 h-8 p-0 rounded-full hover:bg-green-500/20"
                     >
                       <Phone className="w-4 h-4 text-green-400" />
                     </Button>
@@ -665,11 +619,11 @@ export default function ScheduledLeadsSection() {
                 </div>
               </div>
               
-              {/* iOS-native action buttons */}
+              {/* Action buttons */}
               <div className="flex gap-2 pt-4">
                 <Button
                   onClick={() => handleCall(selectedLead)}
-                  className="flex-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 active:scale-95 transition-all"
+                  className="flex-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30"
                 >
                   <Phone className="w-4 h-4 mr-2" />
                   Call
@@ -679,7 +633,7 @@ export default function ScheduledLeadsSection() {
                     setShowLeadDetails(false);
                     handleReschedule(selectedLead);
                   }}
-                  className="flex-1 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30 active:scale-95 transition-all"
+                  className="flex-1 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
                   Reschedule
@@ -690,7 +644,7 @@ export default function ScheduledLeadsSection() {
         </Dialog>
       )}
       
-      {/* Lead Disposition Modal */}
+      {/* Disposition Modal */}
       {selectedLead && showDispositionModal && (
         <LeadDispositionModal
           lead={selectedLead}

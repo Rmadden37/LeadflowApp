@@ -10,7 +10,7 @@ import { Loader2, Users, CalendarClock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import LeadCard from "./lead-card";
-import ScheduledLeadsSection from "./scheduled-leads-clean";
+import ScheduledLeadsSection from "./scheduled-leads-enhanced";
 
 type Tab = "waiting" | "scheduled";
 
