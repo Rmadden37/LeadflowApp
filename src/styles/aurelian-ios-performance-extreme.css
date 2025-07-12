@@ -1,0 +1,446 @@
+/* ===================================================================
+   AURELIAN SALOMAN'S EXTREME iOS PERFORMANCE OPTIMIZATIONS
+   Taking LeadFlow from "smooth" to "buttery-smooth perfection"
+   =================================================================== */
+
+/* ===================================================================
+   1. AGGRESSIVE MOMENTUM SCROLLING OPTIMIZATION
+   =================================================================== */
+
+/* CRITICAL: Force momentum scrolling on ALL scrollable containers */
+.scroll-container,
+[data-radix-scroll-area-viewport],
+.lead-queue-scroll,
+.scheduled-leads-scroll,
+.mobile-lead-list {
+  /* iOS momentum scrolling with hardware acceleration */
+  -webkit-overflow-scrolling: touch !important;
+  overflow-anchor: none !important;
+  overscroll-behavior: contain !important;
+  
+  /* Force GPU layer creation */
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
+  
+  /* Optimize compositing */
+  will-change: scroll-position !important;
+  contain: layout style paint !important;
+  
+  /* Prevent scroll chaining */
+  overscroll-behavior-y: contain !important;
+  overscroll-behavior-x: none !important;
+}
+
+/* Enhanced ScrollArea optimization for Radix components */
+[data-radix-scroll-area-viewport] {
+  /* CRITICAL: Prevent scroll lag on iOS */
+  -webkit-overflow-scrolling: touch !important;
+  scroll-behavior: auto !important; /* Disable smooth scrolling for better performance */
+  
+  /* Force hardware acceleration with 3D transforms */
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  
+  /* Aggressive containment */
+  contain: strict !important;
+  isolation: isolate !important;
+}
+
+/* ===================================================================
+   2. TOUCH ACTION OPTIMIZATION - PREVENT IOS DELAYS
+   =================================================================== */
+
+/* CRITICAL: Eliminate 300ms tap delay on iOS */
+.mobile-lead-card,
+.swipe-action-btn,
+.ios-button-base,
+.closer-lineup-avatar-container,
+.date-nav-btn,
+[data-testid="lead-card"],
+button,
+[role="button"] {
+  /* Eliminate tap delays and enable smooth gestures */
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  
+  /* Immediate response transforms */
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Swipe-specific touch optimization */
+.mobile-lead-card,
+.enhanced-lead-card {
+  /* Allow horizontal panning for swipe gestures */
+  touch-action: pan-y !important;
+  
+  /* Prevent iOS rubber-band effect during swipe */
+  overscroll-behavior-x: none !important;
+  overscroll-behavior-y: auto !important;
+}
+
+/* ===================================================================
+   3. MEMORY OPTIMIZATION - REDUCE GPU PRESSURE
+   =================================================================== */
+
+/* SMART: Only apply expensive effects to visible elements */
+.frosted-glass-card:not(.in-viewport) {
+  /* Disable expensive effects for off-screen cards */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Optimize backdrop filters for better performance */
+.frosted-glass-card.in-viewport,
+.mobile-lead-card,
+.date-nav-container {
+  /* Use optimized blur values */
+  backdrop-filter: blur(8px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(120%) !important;
+  
+  /* Force efficient compositing */
+  will-change: auto !important;
+  contain: layout style paint !important;
+  transform: translateZ(0) !important;
+}
+
+/* ===================================================================
+   4. BATCH ANIMATIONS FOR 60FPS CONSISTENCY
+   =================================================================== */
+
+/* CRITICAL: Hardware-accelerated list animations */
+.animate-list-enter {
+  animation: listEnter 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+@keyframes listEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Staggered entrance for better perceived performance */
+.animate-list-enter:nth-child(1) { animation-delay: 0ms; }
+.animate-list-enter:nth-child(2) { animation-delay: 40ms; }
+.animate-list-enter:nth-child(3) { animation-delay: 80ms; }
+.animate-list-enter:nth-child(4) { animation-delay: 120ms; }
+.animate-list-enter:nth-child(5) { animation-delay: 160ms; }
+.animate-list-enter:nth-child(n+6) { animation-delay: 200ms; }
+
+/* ===================================================================
+   5. ENHANCED SWIPE GESTURE PERFORMANCE
+   =================================================================== */
+
+/* Ultra-smooth swipe animations */
+.swipe-transform {
+  /* Use transform instead of position changes */
+  transform: translateX(var(--swipe-offset, 0px)) translateZ(0);
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* Optimize for gesture handling */
+  will-change: transform;
+  contain: layout style paint;
+  
+  /* Prevent layout shifts during swipe */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Swipe actions with proper z-indexing */
+.swipe-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  
+  /* Force GPU layer */
+  transform: translateZ(1px);
+  will-change: opacity;
+  contain: layout style paint;
+  
+  /* Smooth reveal animation */
+  opacity: var(--swipe-opacity, 0);
+  transition: opacity 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ===================================================================
+   6. CRITICAL VIEWPORT OPTIMIZATION
+   =================================================================== */
+
+/* SMART: Only animate elements in viewport */
+@media (max-width: 768px) {
+  /* Reduce animations when not in focus */
+  body:not(.page-visible) .animate-fadeInUp,
+  body:not(.page-visible) .ios-button-interactive {
+    animation-play-state: paused !important;
+    transition: none !important;
+  }
+  
+  /* Optimize for iOS Safari */
+  .mobile-optimized {
+    /* Prevent zoom on input focus */
+    font-size: 16px !important;
+    
+    /* Optimize touch targets */
+    min-height: 44px !important;
+    min-width: 44px !important;
+    
+    /* Hardware acceleration */
+    transform: translateZ(0) !important;
+    -webkit-transform: translateZ(0) !important;
+  }
+}
+
+/* ===================================================================
+   7. BATTERY OPTIMIZATION - REDUCE POWER CONSUMPTION
+   =================================================================== */
+
+/* Pause non-critical animations when battery is low */
+@media (prefers-reduced-motion: reduce) {
+  .atmospheric-animation,
+  .subtle-glow,
+  .gradientShift {
+    animation-play-state: paused !important;
+  }
+  
+  /* Keep essential animations running */
+  .animate-spin,
+  .ios-ripple,
+  .swipe-transform {
+    animation-play-state: running !important;
+  }
+}
+
+/* Optimize for battery saver mode */
+@media (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce) {
+  /* Reduce expensive effects */
+  .frosted-glass-card {
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+}
+
+/* ===================================================================
+   8. NETWORK-AWARE PERFORMANCE
+   =================================================================== */
+
+/* Reduce effects on slow connections */
+@media (prefers-reduced-data: reduce) {
+  /* Disable expensive visual effects */
+  .atmospheric-animation,
+  body::before {
+    display: none !important;
+  }
+  
+  /* Simplify glassmorphism */
+  .frosted-glass-card {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* ===================================================================
+   9. HAPTIC FEEDBACK OPTIMIZATION
+   =================================================================== */
+
+/* Optimize for haptic feedback timing */
+.haptic-button {
+  /* Immediate response for haptic triggers */
+  transition: transform 0.05s ease-out !important;
+}
+
+.haptic-button:active {
+  /* Quick scale for haptic feedback */
+  transform: scale(0.96) translateZ(0) !important;
+}
+
+/* ===================================================================
+   10. ADVANCED iOS SAFARI FIXES
+   =================================================================== */
+
+/* Fix iOS Safari viewport issues */
+@supports (-webkit-touch-callout: none) {
+  /* iOS-specific optimizations */
+  .ios-fix {
+    /* Prevent viewport jumping */
+    -webkit-transform: translateZ(0) !important;
+    -webkit-backface-visibility: hidden !important;
+    
+    /* Optimize rendering */
+    -webkit-perspective: 1000px !important;
+    perspective: 1000px !important;
+  }
+  
+  /* Fix iOS momentum scrolling bugs */
+  .scroll-container {
+    /* Force momentum scrolling */
+    -webkit-overflow-scrolling: touch !important;
+    
+    /* Prevent scroll chaining */
+    overscroll-behavior: contain !important;
+    
+    /* Fix bounce issues */
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* ===================================================================
+   11. INTERSECTION OBSERVER OPTIMIZATIONS
+   =================================================================== */
+
+/* Optimize elements entering/leaving viewport */
+.intersection-observed {
+  /* Prepare for efficient observation */
+  contain: layout style paint !important;
+  transform: translateZ(0) !important;
+  will-change: auto !important;
+}
+
+.intersection-observed.entering {
+  /* Smooth entrance animation */
+  animation: intersectionEnter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.intersection-observed.leaving {
+  /* Efficient exit */
+  opacity: 0.8;
+  transform: translateZ(0) scale(0.98);
+  transition: all 0.2s ease-out;
+}
+
+@keyframes intersectionEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* ===================================================================
+   12. CRITICAL RENDERING PATH OPTIMIZATION
+   =================================================================== */
+
+/* Above-the-fold optimization */
+.above-fold {
+  /* Prioritize critical content */
+  contain: strict !important;
+  content-visibility: auto !important;
+  
+  /* Immediate rendering */
+  will-change: auto !important;
+  transform: translateZ(0) !important;
+}
+
+/* Below-the-fold lazy optimization */
+.below-fold {
+  /* Defer non-critical rendering */
+  content-visibility: auto !important;
+  contain-intrinsic-size: 1px 200px !important;
+}
+
+/* ===================================================================
+   13. MEMORY LEAK PREVENTION
+   =================================================================== */
+
+/* Prevent animation memory leaks */
+.component-unmounting * {
+  /* Stop all animations on unmount */
+  animation-play-state: paused !important;
+  animation-fill-mode: none !important;
+  transition: none !important;
+  
+  /* Clear will-change */
+  will-change: auto !important;
+}
+
+/* ===================================================================
+   14. ULTRA-RESPONSIVE TOUCH FEEDBACK
+   =================================================================== */
+
+/* Instant visual feedback */
+.ultra-responsive {
+  /* Zero-delay touch response */
+  transition: transform 0.05s ease-out !important;
+}
+
+.ultra-responsive:active {
+  /* Immediate scale feedback */
+  transform: scale(0.97) translateZ(0) !important;
+}
+
+/* Enhanced ripple effect for iOS */
+.ios-ripple-enhanced {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ios-ripple-enhanced::after {
+  content: '';
+  position: absolute;
+  top: var(--ripple-y, 50%);
+  left: var(--ripple-x, 50%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: rippleExpand 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleExpand {
+  0% {
+    width: 0;
+    height: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+    width: 200px;
+    height: 200px;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+/* ===================================================================
+   15. PERFORMANCE MONITORING HOOKS
+   =================================================================== */
+
+/* Debug performance issues in development */
+.performance-debug {
+  /* Highlight performance bottlenecks */
+  outline: 2px solid red !important;
+  outline-offset: -2px !important;
+}
+
+.performance-debug::before {
+  content: 'PERF ISSUE';
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: red;
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px;
+  z-index: 9999;
+  pointer-events: none;
+}

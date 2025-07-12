@@ -1,0 +1,81 @@
+/* AURELIAN'S iOS SAFARI PWA AVATAR FIX */
+/* Prevents iOS Safari from showing video controls over avatars */
+
+.closer-lineup-avatar-container,
+.closer-lineup-avatar-container * {
+  /* Prevent iOS from treating images as videos */
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  pointer-events: auto !important;
+  
+  /* Prevent iOS video overlay */
+  -webkit-appearance: none !important;
+  -webkit-video-controls: none !important;
+}
+
+.closer-lineup-avatar-container img {
+  /* Force iOS to treat as static image */
+  -webkit-playsinline: false !important;
+  -webkit-video-controls: none !important;
+  
+  /* Prevent fullscreen video mode */
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  
+  /* Ensure proper image rendering */
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: optimizeQuality !important;
+  
+  /* Prevent iOS from adding video overlays */
+  content-visibility: auto !important;
+  contain: layout style paint !important;
+}
+
+/* Specific fix for iOS Safari PWA video controls bug */
+@supports (-webkit-touch-callout: none) {
+  .closer-lineup-avatar-container {
+    /* Create isolated stacking context */
+    isolation: isolate !important;
+    
+    /* Prevent iOS from intercepting touch events for video */
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+  }
+  
+  .closer-lineup-avatar-container img {
+    /* Force static image treatment on iOS */
+    -webkit-appearance: none !important;
+    background-image: none !important;
+    
+    /* Prevent iOS Safari from adding video controls */
+    -webkit-media-controls-panel: none !important;
+    -webkit-media-controls-play-button: none !important;
+    -webkit-media-controls-start-playback-button: none !important;
+  }
+}
+
+/* Additional iOS 15+ specific fixes */
+@media (hover: none) and (pointer: coarse) {
+  .closer-lineup-avatar-container {
+    /* Mobile-specific isolation */
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+    
+    /* Prevent iOS Safari video detection */
+    -webkit-user-modify: read-only !important;
+  }
+}
+
+/* iOS Safari 16+ PWA specific fixes */
+@media (display-mode: standalone) {
+  .closer-lineup-avatar-container img {
+    /* PWA-specific image rendering */
+    -webkit-optimize-contrast: auto !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    
+    /* Prevent video overlay in PWA mode */
+    -webkit-video-controls: none !important;
+    -webkit-fullscreen: none !important;
+  }
+}

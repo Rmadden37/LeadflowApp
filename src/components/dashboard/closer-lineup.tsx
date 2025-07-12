@@ -9,7 +9,6 @@ import {collection, query, where, onSnapshot, orderBy} from "firebase/firestore"
 import CloserCard from "./closer-card";
 import { Users, Loader2, Settings } from "lucide-react";
 import ManageClosersModal from "./off-duty-closers-modal";
-import Image from "next/image";
 
 export default function CloserLineup() {
   const {user} = useAuth();
@@ -217,31 +216,133 @@ export default function CloserLineup() {
           </div>
         ) : closers.length > 0 ? (
           <div className="relative overflow-visible">
-            {/* iOS-native grid layout - proper padding to prevent badge clipping */}
-            <div className="grid grid-cols-3 gap-4 py-6 px-4 items-start justify-items-center min-h-[120px] overflow-visible">
+            {/* AURELIAN'S iOS-OPTIMIZED CLOSER LINEUP GRID */}
+            <div 
+              className="grid grid-cols-3 gap-4 py-6 px-4 items-start justify-items-center min-h-[120px]"
+              style={{
+                // iOS Safari PWA optimization
+                WebkitUserSelect: 'none',
+                WebkitTouchCallout: 'none',
+                WebkitTapHighlightColor: 'transparent',
+                isolation: 'isolate', // Create new stacking context
+              }}
+            >
               {closers.slice(0, 6).map((closer, index) => (
-                <div key={closer.uid} className="flex flex-col items-center w-full max-w-[85px] overflow-visible">
-                  <div className="relative closer-lineup-avatar-container mb-3 overflow-visible">
-                    {/* Hardware-accelerated animation using CSS transforms */}
+                <div 
+                  key={closer.uid} 
+                  className="flex flex-col items-center w-full max-w-[85px]"
+                  style={{
+                    // Prevent iOS Safari from adding video controls
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none',
+                    isolation: 'isolate'
+                  }}
+                >
+                  {/* AURELIAN'S iOS-SAFE AVATAR CONTAINER */}
+                  <div 
+                    className="relative mb-3 closer-lineup-avatar-container"
+                    style={{
+                      width: '48px',
+                      height: '48px',
+                      isolation: 'isolate', // Create new stacking context for iOS
+                      position: 'relative',
+                      zIndex: 1
+                    }}
+                  >
+                    {/* Hardware-accelerated animation container */}
                     <div
-                      className="relative animate-fadeInUp"
                       style={{ 
                         animationDelay: `${Math.min(index * 0.1, 0.8)}s`,
                         animationFillMode: 'both',
                         transform: 'translateZ(0)', // Hardware acceleration
-                        willChange: 'transform, opacity'
+                        willChange: 'transform, opacity',
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%'
                       }}
                     >
-                      <Image
-                        src={closer.avatarUrl || `https://api.dicebear.com/8.x/initials/svg?seed=${closer.name}`}
-                        alt={closer.name}
-                        width={48}
-                        height={48}
-                        className="w-12 h-12 rounded-full shadow-md object-cover"
-                        title={closer.name}
-                      />
-                      <div className="closer-lineup-bubble w-6 h-6 bg-[#CDCCC8] rounded-full flex items-center justify-center shadow-lg absolute -top-2 -right-2 z-30">
-                        <span className="text-xs font-bold text-[#0E0E0E]">{index + 1}</span>
+                      {/* iOS-optimized avatar with proper containment */}
+                      <div 
+                        className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center shadow-md border-2 border-white/20"
+                        style={{
+                          overflow: 'hidden',
+                          position: 'relative',
+                          zIndex: 2,
+                          // Prevent iOS from treating as video
+                          WebkitUserSelect: 'none',
+                          WebkitTouchCallout: 'none',
+                          contain: 'layout style paint',
+                          isolation: 'isolate'
+                        }}
+                      >
+                        {closer.avatarUrl ? (
+                          <img 
+                            src={closer.avatarUrl}
+                            alt={closer.name}
+                            className="w-full h-full object-cover"
+                            style={{
+                              // iOS Safari PWA image optimization
+                              WebkitUserSelect: 'none',
+                              WebkitTouchCallout: 'none',
+                              pointerEvents: 'none', // Prevent interaction
+                              display: 'block',
+                              contain: 'layout style paint'
+                            }}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(closer.name)}&background=4F46E5&color=fff&size=48&format=png`;
+                            }}
+                          />
+                        ) : (
+                          <img 
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(closer.name)}&background=4F46E5&color=fff&size=48&format=png`}
+                            alt={closer.name}
+                            className="w-full h-full object-cover"
+                            style={{
+                              WebkitUserSelect: 'none',
+                              WebkitTouchCallout: 'none',
+                              pointerEvents: 'none',
+                              display: 'block',
+                              contain: 'layout style paint'
+                            }}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent) {
+                                parent.innerHTML = `<span class="text-white text-sm font-bold" style="pointer-events: none; user-select: none; -webkit-user-select: none;">${closer.name?.substring(0, 2).toUpperCase() || "??"}</span>`;
+                              }
+                            }}
+                          />
+                        )}
+                      </div>
+                      
+                      {/* iOS-optimized position badge */}
+                      <div 
+                        className="w-6 h-6 bg-[#CDCCC8] rounded-full flex items-center justify-center shadow-lg"
+                        style={{
+                          position: 'absolute',
+                          top: '-8px',
+                          right: '-8px',
+                          zIndex: 10, // Higher than avatar
+                          // Prevent iOS Safari from adding controls
+                          WebkitUserSelect: 'none',
+                          WebkitTouchCallout: 'none',
+                          pointerEvents: 'none',
+                          contain: 'layout style paint',
+                          isolation: 'isolate'
+                        }}
+                      >
+                        <span 
+                          className="text-xs font-bold text-[#0E0E0E]"
+                          style={{
+                            WebkitUserSelect: 'none',
+                            userSelect: 'none',
+                            pointerEvents: 'none'
+                          }}
+                        >
+                          {index + 1}
+                        </span>
                       </div>
                     </div>
                   </div>

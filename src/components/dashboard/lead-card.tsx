@@ -189,57 +189,61 @@ export default function LeadCard({lead, context = "in-process", onLeadClick}: Le
     );
   }
 
-  // Minimal display for waiting leads in the queue - now clickable for disposition
-  if (context === "queue-waiting") {
-    const timeAgo = lead.createdAt ? formatDistanceToNow(lead.createdAt.toDate(), { addSuffix: false }) : null;
-    
-    return (
-      <>
-        <div 
-          className={`frosted-glass-card p-3 transition-all duration-200 ${canUpdateDisposition ? 'cursor-pointer hover:bg-white/5' : ''}`}
-          onClick={canUpdateDisposition ? () => {
-            console.log('🔥 LeadCard - Card clicked for lead details:', { 
-              leadId: lead.id, 
-              customerName: lead.customerName,
-              context: context,
-              userRole: user?.role 
-            });
-            onLeadClick?.(lead);
-          } : undefined}
-        >
-          <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-              <UserIcon className="w-4 h-4 text-gray-600" />
-            </div>
-            
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-[var(--text-primary)] text-sm leading-tight truncate">
-                {lead.customerName}
-              </h3>
-              <p className="text-xs text-[var(--text-secondary)] truncate">
-                Source: {lead.setterName ? `${lead.setterName}` : 'Web Inquiry'}
-              </p>
-            </div>
-            
-            {/* Time */}
-            <div className="text-xs text-[var(--text-tertiary)] flex-shrink-0">
-              {timeAgo}
-            </div>
+// In your LeadCard component, update the queue-waiting section:
+
+// Minimal display for waiting leads in the queue - now clickable for lead details
+if (context === "queue-waiting") {
+  const timeAgo = lead.createdAt ? formatDistanceToNow(lead.createdAt.toDate(), { addSuffix: false }) : null;
+  
+  return (
+    <>
+      <div 
+        className="p-3 transition-all duration-200 cursor-pointer hover:bg-white/5"
+        onClick={() => {
+          console.log('🔥 LeadCard - Card clicked for lead details:', { 
+            leadId: lead.id, 
+            customerName: lead.customerName,
+            context: context,
+            userRole: user?.role 
+          });
+          // Always call onLeadClick for details, regardless of disposition permissions
+          onLeadClick?.(lead);
+        }}
+      >
+        <div className="flex items-center gap-3">
+          {/* Avatar */}
+          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+            <UserIcon className="w-4 h-4 text-gray-600" />
+          </div>
+          
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-[var(--text-primary)] text-sm leading-tight truncate">
+              {lead.customerName}
+            </h3>
+            <p className="text-xs text-[var(--text-secondary)] truncate">
+              Source: {lead.setterName ? `${lead.setterName}` : 'Web Inquiry'}
+            </p>
+          </div>
+          
+          {/* Time */}
+          <div className="text-xs text-[var(--text-tertiary)] flex-shrink-0">
+            {timeAgo}
           </div>
         </div>
-        
-        {canUpdateDisposition && (
-          <LeadDispositionModal
-            lead={lead}
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          />
-        )}
-      </>
-    );
-  }
+      </div>
+      
+      {/* Keep the disposition modal only for users who can update */}
+      {canUpdateDisposition && (
+        <LeadDispositionModal
+          lead={lead}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+    </>
+  );
+}
 
   return (
     <>

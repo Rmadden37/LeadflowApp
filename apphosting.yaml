@@ -2,20 +2,36 @@
 # https://firebase.google.com/docs/app-hosting/configure
 
 runConfig:
-  # Increase this value if you'd like to automatically spin up
-  # more instances in response to increased traffic.
-  maxInstances: 1
-  # Add memory configuration
-  memory: 1Gi
-  # Specify the runtime
+  # Auto-scaling configuration for production load
+  minInstances: 0
+  maxInstances: 10
+  # Memory allocation for optimal performance
+  memory: 2Gi
+  # CPU allocation
+  cpu: 1
+  # Timeout for requests
+  timeoutSeconds: 300
+  # Node.js 20 runtime for best performance
   runtime: nodejs20
 
-# Exclude functions directory from App Hosting build
+# Environment variables (set in Firebase console)
+env:
+  - name: NODE_ENV
+    value: production
+
+# Exclude unnecessary files from App Hosting build
 build:
   ignore:
     - "functions/**"
     - "functions"
+    - ".git/**"
+    - ".github/**"
+    - ".vscode/**"
+    - "node_modules/**"
+    - "docs/**"
+    - "*.md"
+    - "*.log"
     
-# Build command for App Hosting (Next.js server-side rendering)
-buildCommand: "npm run build"
+# Build and start commands optimized for Next.js SSR
+buildCommand: "npm ci && npm run build"
 startCommand: "npm start"

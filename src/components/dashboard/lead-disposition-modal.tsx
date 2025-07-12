@@ -25,6 +25,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker } from "@/components/ui/time-picker";
 import { cn } from "@/lib/utils";
 import { LeadNotifications } from "@/lib/notification-service";
+import {useRouter} from "next/navigation";
 
 interface LeadDispositionModalProps {
   lead: Lead;
@@ -37,7 +38,6 @@ const dispositionOptions: LeadStatus[] = [
   "no_sale", 
   "canceled",
   "rescheduled",
-  "scheduled", // Added for testing scheduled leads
   "credit_fail",
   "waiting_assignment", // Allow managers to reassign leads - Reassign Closer option
 ];
@@ -74,6 +74,7 @@ export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispos
   const {toast} = useToast();
   const {user} = useAuth();
   const haptic = useHapticFeedback();
+  const router = useRouter();
 
   const [appointmentDate, setAppointmentDate] = useState<Date | undefined>(undefined);
   const [appointmentTime, setAppointmentTime] = useState<string>("17:00"); // Default to 5:00 PM
@@ -260,7 +261,11 @@ export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispos
         title: "Disposition Updated",
         description: successMessage,
       });
+      
       onClose();
+      
+      // Navigate to dashboard after successful disposition save
+      router.push("/dashboard");
     } catch {
       haptic.formError();
       toast({

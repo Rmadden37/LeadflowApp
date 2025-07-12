@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { Lead, Closer } from "@/types";
+import type { Lead } from "@/types"; // Removed: Closer type - no longer needed
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot, orderBy, Timestamp as FirestoreTimestamp, doc, serverTimestamp, writeBatch } from "firebase/firestore";
@@ -46,9 +46,7 @@ export default function LeadQueue() {
   const [loadingWaiting, setLoadingWaiting] = useState(true);
   const [loadingScheduled, setLoadingScheduled] = useState(true);
   const [processedScheduledLeadIds, setProcessedScheduledLeadIds] = useState<Set<string>>(new Set());
-  const [availableClosers, setAvailableClosers] = useState<Closer[]>([]);
-  const [loadingClosers, setLoadingClosers] = useState(true);
-  const [assignedLeadCloserIds, setAssignedLeadCloserIds] = useState<Set<string>>(new Set());
+  // Removed: availableClosers, loadingClosers, assignedLeadCloserIds state - no longer needed for client-side backup assignment
   const [activeTab, setActiveTab] = useState<"waiting" | "scheduled">("waiting");
   // Initialize with today's date at start of day for consistent filtering
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
@@ -60,6 +58,12 @@ export default function LeadQueue() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   const handleLeadClick = (lead: Lead) => {
+    console.log('🔥 LeadQueue - Lead clicked:', { 
+      leadId: lead.id, 
+      customerName: lead.customerName,
+      context: activeTab === "waiting" ? "queue-waiting" : "queue-scheduled",
+      userRole: user?.role 
+    });
     setSelectedLead(lead);
   };
 
@@ -67,7 +71,7 @@ export default function LeadQueue() {
     setSelectedLead(null);
   };
 
-  // --- All existing useEffect hooks for data fetching remain unchanged ---
+  // Fetch waiting leads
   useEffect(() => {
     if (!user || !user.teamId) {
       setLoadingWaiting(false);
@@ -75,6 +79,8 @@ export default function LeadQueue() {
       return;
     }
     setLoadingWaiting(true);
+
+    console.log('🔄 Setting up waiting leads listener for team:', user.teamId);
 
     const qWaiting = query(
       collection(db, "leads"),
@@ -84,6 +90,8 @@ export default function LeadQueue() {
     );
 
     const unsubscribeWaiting = onSnapshot(qWaiting, (querySnapshot) => {
+      console.log('📊 Waiting leads snapshot received:', querySnapshot.size, 'documents');
+      
       const leadsData = querySnapshot.docs.map((docSnapshot) => {
         const data = docSnapshot.data();
         let createdAtTimestamp: FirestoreTimestamp | null = null;
@@ -125,10 +133,27 @@ export default function LeadQueue() {
         } as Lead;
       });
       
-      const unassignedLeads = leadsData.filter(lead => !lead.assignedCloserId);
+      // Filter for truly unassigned leads
+      const unassignedLeads = leadsData.filter(lead => {
+        const isUnassigned = !lead.assignedCloserId;
+        const isWaiting = lead.status === "waiting_assignment";
+        
+        console.log(`📋 Lead ${lead.customerName}:`, {
+          id: lead.id,
+          assignedCloserId: lead.assignedCloserId,
+          status: lead.status,
+          isUnassigned,
+          isWaiting
+        });
+        
+        return isUnassigned && isWaiting;
+      });
+      
+      console.log('✅ Filtered unassigned waiting leads:', unassignedLeads.length);
       setWaitingLeads(unassignedLeads);
       setLoadingWaiting(false);
-    }, (_error) => {
+    }, (error) => {
+      console.error('❌ Error loading waiting leads:', error);
       toast({
         title: "Error",
         description: "Failed to load waiting leads. Please refresh the page.",
@@ -140,6 +165,7 @@ export default function LeadQueue() {
     return () => unsubscribeWaiting();
   }, [user, toast]);
 
+  // Fetch scheduled leads
   useEffect(() => {
     if (!user || !user.teamId) {
       setLoadingScheduled(false);
@@ -200,6 +226,7 @@ export default function LeadQueue() {
       setScheduledLeads(leadsData);
       setLoadingScheduled(false);
 
+      // Process scheduled leads for automatic transitions
       const now = new Date();
       const leadsToMoveBatch = writeBatch(db);
       const leadsToRemoveBatch = writeBatch(db);
@@ -220,8 +247,6 @@ export default function LeadQueue() {
           // Check lead age to prevent processing newly created leads
           const leadAge = lead.createdAt ? now.getTime() - lead.createdAt.toDate().getTime() : Infinity;
           
-          // Skip further processing - normal operation
-
           // Skip processing if lead is too new (less than 2 minutes old)
           if (leadAge < MIN_LEAD_AGE_MS) {
             console.log('⏸️ Skipping newly created lead:', lead.customerName, 'Age:', Math.round(leadAge / 1000), 'seconds');
@@ -300,23 +325,6 @@ export default function LeadQueue() {
             description: "Could not move verified leads automatically.",
             variant: "destructive",
           });
-          const failedLeadIds = querySnapshot.docs
-            .filter((docSnapshot) => {
-              const leadData = docSnapshot.data();
-              const leadSchedTime = leadData.scheduledAppointmentTime;
-              return leadSchedTime instanceof FirestoreTimestamp &&
-                       (leadData.status === "rescheduled" || leadData.status === "scheduled") &&
-                       (leadSchedTime.toDate().getTime() - now.getTime() <= FORTY_FIVE_MINUTES_MS) &&
-                       leadData.setterVerified === true &&
-                       processedScheduledLeadIds.has(docSnapshot.id);
-            })
-            .map((l) => l.id);
-
-          setProcessedScheduledLeadIds((prev) => {
-            const newSet = new Set(prev);
-            failedLeadIds.forEach((id) => newSet.delete(id));
-            return newSet;
-          });
         }
       }
     }, (_error) => {
@@ -331,158 +339,11 @@ export default function LeadQueue() {
     return () => unsubscribeScheduled();
   }, [user, toast, processedScheduledLeadIds]);
 
-  useEffect(() => {
-    if (!user?.teamId) {
-      setAssignedLeadCloserIds(new Set());
-      setLoadingClosers(false);
-      return;
-    }
-
-    setLoadingClosers(true);
-    const leadsQuery = query(
-      collection(db, "leads"),
-      where("teamId", "==", user.teamId),
-      where("status", "in", ["waiting_assignment", "scheduled", "accepted", "in_process"])
-    );
-
-    const unsubscribeLeads = onSnapshot(
-      leadsQuery,
-      (querySnapshot) => {
-        const assignedCloserIds = new Set<string>();
-        querySnapshot.forEach((doc) => {
-          const lead = doc.data() as Lead;
-          if (lead.assignedCloserId) {
-            assignedCloserIds.add(lead.assignedCloserId);
-          }
-        });
-        setAssignedLeadCloserIds(assignedCloserIds);
-      },
-      (_error) => {
-        console.error("Failed to load assigned closers for auto-assignment:", _error);
-      }
-    );
-    return () => unsubscribeLeads();
-  }, [user?.teamId]);
-
-  useEffect(() => {
-    if (!user?.teamId) {
-      setAvailableClosers([]);
-      setLoadingClosers(false);
-      return;
-    }
-
-    const closersCollectionQuery = query(
-      collection(db, "closers"),
-      where("teamId", "==", user.teamId),
-      where("status", "==", "On Duty"),
-      orderBy("name", "asc")
-    );
-
-    const unsubscribeClosers = onSnapshot(
-      closersCollectionQuery,
-      (querySnapshot) => {
-        const allOnDutyClosers = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            uid: doc.id,
-            name: data.name,
-            status: data.status as "On Duty" | "Off Duty",
-            teamId: data.teamId,
-            role: data.role,
-            avatarUrl: data.avatarUrl,
-            phone: data.phone,
-            lineupOrder: data.lineupOrder,
-          } as Closer;
-        });
-
-        const filteredAvailableClosers = allOnDutyClosers.filter(
-          (closer) => !assignedLeadCloserIds.has(closer.uid)
-        );
-
-        const sortedAvailableClosers = filteredAvailableClosers
-          .map((closer, index) => ({
-            ...closer,
-            lineupOrder:
-              typeof closer.lineupOrder === "number" ?
-                closer.lineupOrder :
-                (index + 1) * 100000,
-          }))
-          .sort((a, b) => {
-            const orderA = a.lineupOrder ?? ((a.lineupOrder || 0) + 1) * 100000;
-            const orderB = b.lineupOrder ?? ((b.lineupOrder || 0) + 1) * 100000;
-            if (orderA !== orderB) {
-              return orderA - orderB;
-            }
-            return a.name.localeCompare(b.name);
-          });
-
-        setAvailableClosers(sortedAvailableClosers);
-        setLoadingClosers(false);
-      },
-      (_error) => {
-        console.error("Failed to load available closers for auto-assignment:", _error);
-        setAvailableClosers([]);
-        setLoadingClosers(false);
-      }
-    );
-
-    return () => unsubscribeClosers();
-  }, [user?.teamId, assignedLeadCloserIds]);
-
-  useEffect(() => {
-    if (loadingWaiting || loadingClosers || !user?.teamId) return;
-    if (waitingLeads.length === 0 || availableClosers.length === 0) return;
-
-    const assignLeadsToClosers = async () => {
-      try {
-        const batch = writeBatch(db);
-        let assignmentsCount = 0;
-
-        const sortedWaitingLeads = [...waitingLeads]
-          .filter(lead => !lead.assignedCloserId && lead.status === "waiting_assignment")
-          .sort((a, b) => {
-            if (!a.createdAt || !b.createdAt) return 0;
-            return a.createdAt.toMillis() - b.createdAt.toMillis();
-          });
-
-        const assignmentsToMake = Math.min(sortedWaitingLeads.length, availableClosers.length);
-        
-        for (let i = 0; i < assignmentsToMake; i++) {
-          const lead = sortedWaitingLeads[i];
-          const closer = availableClosers[i];
-
-          if (lead && closer) {
-            const leadRef = doc(db, "leads", lead.id);
-            batch.update(leadRef, {
-              status: "waiting_assignment",
-              assignedCloserId: closer.uid,
-              assignedCloserName: closer.name,
-              updatedAt: serverTimestamp(),
-            });
-            assignmentsCount++;
-          }
-        }
-
-        if (assignmentsCount > 0) {
-          await batch.commit();
-          toast({
-            title: "Leads Assigned",
-            description: `${assignmentsCount} lead(s) automatically assigned to available closers.`,
-          });
-        }
-      } catch (_error) {
-        console.error("Failed to auto-assign leads:", _error);
-        toast({
-          title: "Assignment Failed",
-          description: "Could not automatically assign leads to closers.",
-          variant: "destructive",
-        });
-      }
-    };
-    
-    const assignmentTimer = setTimeout(assignLeadsToClosers, 1000);
-    return () => clearTimeout(assignmentTimer);
-  }, [waitingLeads, availableClosers, loadingWaiting, loadingClosers, user?.teamId, toast]);
+  // Removed: Client-side backup auto-assignment logic (Firebase Functions now handle this)
+  // The following useEffect hooks have been removed:
+  // 1. Track assigned closer IDs for auto-assignment logic  
+  // 2. Track available closers for auto-assignment
+  // 3. Client-side backup auto-assignment with 3-second delay
 
   const renderLeadsList = (leads: Lead[], isLoading: boolean, type: Tab) => {
     if (isLoading) {
@@ -634,10 +495,10 @@ export default function LeadQueue() {
               );
             }
             
-            // For waiting leads, use the standard card
+            // For waiting leads, use the standard card with click handler
             return (
-              <div key={lead.id} className="frosted-glass-card mb-2 overflow-hidden cursor-pointer hover:bg-white/5 transition-colors" onClick={() => handleLeadClick(lead)}>
-                {lead && <LeadCard lead={lead} context="queue-waiting" />}
+              <div key={lead.id} className="frosted-glass-card mb-2 overflow-hidden">
+                <LeadCard lead={lead} context="queue-waiting" onLeadClick={handleLeadClick} />
               </div>
             );
           })}
@@ -712,7 +573,7 @@ export default function LeadQueue() {
         </button>
       </div>
 
-      {/* Date Navigator for Scheduled Tab - Simplified */}
+      {/* Date Navigator for Scheduled Tab */}
       {activeTab === "scheduled" && (
         <div className="flex items-center justify-center mb-4">
           <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>

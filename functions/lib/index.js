@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateChatChannelOnTeamUpdate = exports.initializeChatChannelsOnTeamCreate = exports.cleanupOldChatMessages = exports.updateAdminRoles = exports.generateAnalyticsReport = exports.getDetailedAnalytics = exports.updateUserRole = exports.inviteUser = exports.selfAssignLead = exports.processAppointmentReminders = exports.scheduleAppointmentReminder = exports.handleLeadDispositionUpdate = exports.getTeamStats = exports.acceptJob = exports.manualAssignLead = exports.handleCloserStatusChange = exports.assignLeadOnCreate = void 0;
+exports.manualAssignLead = exports.handleCloserStatusChange = exports.assignLeadOnUpdate = exports.updateChatChannelOnTeamUpdate = exports.initializeChatChannelsOnTeamCreate = exports.cleanupOldChatMessages = exports.updateUserRole = exports.inviteUser = exports.selfAssignLead = exports.processAppointmentReminders = exports.scheduleAppointmentReminder = exports.handleLeadDispositionUpdate = exports.getTeamStats = exports.acceptJob = exports.assignLeadOnCreate = void 0;
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 // Initialize Firebase Admin
@@ -158,6 +158,7 @@ function getStatusEmoji(status) {
  */
 async function getNextAvailableCloser(teamId) {
     try {
+        functions.logger.info(`🔍 Finding next available closer for team ${teamId}`);
         // Get all on-duty closers for the team
         const closersSnapshot = await db
             .collection("closers")
@@ -166,13 +167,14 @@ async function getNextAvailableCloser(teamId) {
             .orderBy("lineupOrder", "asc")
             .get();
         if (closersSnapshot.empty) {
-            functions.logger.warn(`No on-duty closers found for team ${teamId}`);
+            functions.logger.warn(`❌ No on-duty closers found for team ${teamId}`);
             return null;
         }
         const availableClosers = [];
         closersSnapshot.forEach((doc) => {
             availableClosers.push(Object.assign({ uid: doc.id }, doc.data()));
         });
+        functions.logger.info(`👥 Found ${availableClosers.length} on-duty closers for team ${teamId}`);
         // Get current lead assignments for each closer
         const closerAssignments = new Map();
         for (const closer of availableClosers) {
@@ -192,11 +194,18 @@ async function getNextAvailableCloser(teamId) {
                 validAssignmentCount++;
             });
             closerAssignments.set(closer.uid, validAssignmentCount);
+            functions.logger.info(`📊 Closer ${closer.name}: ${validAssignmentCount} active assignments`);
+        }
+        // Filter out closers who already have assignments
+        const availableUnassignedClosers = availableClosers.filter(closer => (closerAssignments.get(closer.uid) || 0) === 0);
+        if (availableUnassignedClosers.length === 0) {
+            functions.logger.warn(`⚠️ All closers are assigned for team ${teamId}`);
+            return null;
         }
         // Sort by lineup order first, then by current assignments
-        availableClosers.sort((a, b) => {
-            const orderA = a.lineupOrder || 999;
-            const orderB = b.lineupOrder || 999;
+        availableUnassignedClosers.sort((a, b) => {
+            const orderA = a.lineupOrder || 999999;
+            const orderB = b.lineupOrder || 999999;
             if (orderA !== orderB) {
                 return orderA - orderB;
             }
@@ -205,11 +214,12 @@ async function getNextAvailableCloser(teamId) {
             const assignmentsB = closerAssignments.get(b.uid) || 0;
             return assignmentsA - assignmentsB;
         });
-        functions.logger.info(`Selected closer ${availableClosers[0].name} for team ${teamId}`);
-        return availableClosers[0];
+        const selectedCloser = availableUnassignedClosers[0];
+        functions.logger.info(`✅ Selected closer ${selectedCloser.name} (order: ${selectedCloser.lineupOrder}) for team ${teamId}`);
+        return selectedCloser;
     }
     catch (error) {
-        functions.logger.error("Error getting next available closer:", error);
+        functions.logger.error("❌ Error getting next available closer:", error);
         return null;
     }
 }
@@ -231,13 +241,13 @@ async function assignLeadToCloser(leadId, lead, closer) {
             status: targetStatus,
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
-        functions.logger.info(`Lead ${leadId} assigned to closer ${closer.name} (${closer.uid}) with status ${targetStatus}`);
+        functions.logger.info(`✅ Lead ${leadId} assigned to closer ${closer.name} (${closer.uid}) with status ${targetStatus}`);
         // Send lead assignment notification
         try {
             await LeadNotifications.leadAssigned(Object.assign(Object.assign({}, lead), { id: leadId, assignedCloserId: closer.uid, assignedCloserName: closer.name }), closer.uid);
         }
         catch (notificationError) {
-            functions.logger.error(`Error sending lead assignment notification:`, notificationError);
+            functions.logger.error(`❌ Error sending lead assignment notification:`, notificationError);
         }
         // Optional: Create a notification or activity log
         await db.collection("activities").add({
@@ -251,7 +261,7 @@ async function assignLeadToCloser(leadId, lead, closer) {
         });
     }
     catch (error) {
-        functions.logger.error(`Error assigning lead ${leadId} to closer ${closer.uid}:`, error);
+        functions.logger.error(`❌ Error assigning lead ${leadId} to closer ${closer.uid}:`, error);
         throw error;
     }
 }
@@ -264,187 +274,31 @@ exports.assignLeadOnCreate = functions.firestore
     .onCreate(async (snap, context) => {
     const leadId = context.params.leadId;
     const leadData = snap.data();
-    functions.logger.info(`New lead created: ${leadId} for team ${leadData.teamId}`);
+    functions.logger.info(`🚀 New lead created: ${leadId} (${leadData.customerName}) for team ${leadData.teamId}`);
     // Only auto-assign leads that don't already have a closer assigned
     if (leadData.assignedCloserId) {
-        functions.logger.info(`Lead ${leadId} already has a closer assigned`);
+        functions.logger.info(`⏸️ Lead ${leadId} already has a closer assigned: ${leadData.assignedCloserName}`);
         return null;
     }
     // Only auto-assign leads in waiting_assignment status
     if (leadData.status !== "waiting_assignment") {
-        functions.logger.info(`Lead ${leadId} status is ${leadData.status}, not auto-assigning`);
+        functions.logger.info(`⏸️ Lead ${leadId} status is ${leadData.status}, not auto-assigning`);
         return null;
     }
     try {
         const availableCloser = await getNextAvailableCloser(leadData.teamId);
         if (!availableCloser) {
-            functions.logger.warn(`No available closers for lead ${leadId} in team ${leadData.teamId}`);
-            // Optional: Send notification to managers about unassigned lead
-            await db.collection("notifications").add({
-                type: "no_available_closers",
-                leadId: leadId,
-                teamId: leadData.teamId,
-                customerName: leadData.customerName,
-                message: `Lead ${leadData.customerName} could not be assigned - no closers available`,
-                timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                read: false,
-            });
+            functions.logger.warn(`⚠️ No available closers for new lead ${leadId} in team ${leadData.teamId}`);
+            // Optionally, you could create a notification for managers here
             return null;
         }
         await assignLeadToCloser(leadId, leadData, availableCloser);
-        functions.logger.info(`Successfully assigned lead ${leadId} to closer ${availableCloser.name}`);
+        functions.logger.info(`✅ Successfully assigned new lead ${leadId} to closer ${availableCloser.name}`);
         return null;
     }
     catch (error) {
-        functions.logger.error(`Error in assignLeadOnCreate for lead ${leadId}:`, error);
-        // Log the error for debugging but don't throw to avoid retries
-        await db.collection("function_errors").add({
-            function: "assignLeadOnCreate",
-            leadId: leadId,
-            error: error instanceof Error ? error.message : String(error),
-            timestamp: admin.firestore.FieldValue.serverTimestamp(),
-        });
-        return null;
-    }
-});
-/**
- * Cloud Function triggered when a closer's status changes
- * Reassigns leads if a closer goes off duty and auto-adds them to lineup if they come on duty
- */
-exports.handleCloserStatusChange = functions.firestore
-    .document("closers/{closerId}")
-    .onUpdate(async (change, context) => {
-    const closerId = context.params.closerId;
-    const beforeData = change.before.data();
-    const afterData = change.after.data();
-    // Check if status changed from Off Duty to On Duty - auto-add to lineup at bottom
-    if (beforeData.status === "Off Duty" && afterData.status === "On Duty") {
-        functions.logger.info(`Closer ${closerId} came on duty, adding to lineup at bottom`);
-        try {
-            const teamId = afterData.teamId;
-            // Get all closers in the team to find the maximum lineup order
-            const teamClosersSnapshot = await db
-                .collection("closers")
-                .where("teamId", "==", teamId)
-                .orderBy("lineupOrder", "desc")
-                .limit(1)
-                .get();
-            let newLineupOrder = 100000; // Default if no other closers exist
-            if (!teamClosersSnapshot.empty) {
-                const maxCloser = teamClosersSnapshot.docs[0].data();
-                const maxLineupOrder = maxCloser.lineupOrder || 0;
-                newLineupOrder = maxLineupOrder + 1000; // Place at bottom with buffer
-            }
-            // Update the closer's lineup order to add them to the bottom of the rotation
-            await db.collection("closers").doc(closerId).update({
-                lineupOrder: newLineupOrder,
-                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-            });
-            functions.logger.info(`Added closer ${closerId} to lineup at bottom (order: ${newLineupOrder})`);
-            // Optional: Create an activity log
-            await db.collection("activities").add({
-                type: "closer_added_to_lineup",
-                closerId: closerId,
-                closerName: afterData.name,
-                newLineupOrder: newLineupOrder,
-                teamId: teamId,
-                timestamp: admin.firestore.FieldValue.serverTimestamp(),
-            });
-        }
-        catch (error) {
-            functions.logger.error(`Error adding closer ${closerId} to lineup:`, error);
-        }
-    }
-    // Check if status changed from On Duty to Off Duty
-    if (beforeData.status === "On Duty" && afterData.status === "Off Duty") {
-        functions.logger.info(`Closer ${closerId} went off duty, checking for reassignment`);
-        try {
-            // Find all in-process and scheduled leads assigned to this closer
-            const assignedLeadsSnapshot = await db
-                .collection("leads")
-                .where("assignedCloserId", "==", closerId)
-                .where("status", "in", ["in_process", "scheduled"])
-                .get();
-            if (assignedLeadsSnapshot.empty) {
-                functions.logger.info(`No active leads found for off-duty closer ${closerId}`);
-                return null;
-            }
-            // Reassign each lead to another available closer
-            const reassignmentPromises = assignedLeadsSnapshot.docs.map(async (leadDoc) => {
-                const leadData = leadDoc.data();
-                const newCloser = await getNextAvailableCloser(leadData.teamId);
-                if (newCloser && newCloser.uid !== closerId) {
-                    await assignLeadToCloser(leadDoc.id, leadData, newCloser);
-                    functions.logger.info(`Reassigned lead ${leadDoc.id} from ${closerId} to ${newCloser.uid}`);
-                }
-                else {
-                    // No available closer, put lead back to waiting assignment
-                    await leadDoc.ref.update({
-                        assignedCloserId: null,
-                        assignedCloserName: null,
-                        status: "waiting_assignment",
-                        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-                    });
-                    functions.logger.warn(`No available closer for reassignment, lead ${leadDoc.id} set to waiting_assignment`);
-                }
-            });
-            await Promise.all(reassignmentPromises);
-            functions.logger.info(`Completed reassignment process for closer ${closerId}`);
-        }
-        catch (error) {
-            functions.logger.error(`Error in handleCloserStatusChange for closer ${closerId}:`, error);
-        }
-    }
-    return null;
-});
-/**
- * Manually trigger lead assignment (callable function)
- * Useful for reassigning specific leads or batch operations
- */
-exports.manualAssignLead = functions.https.onCall(async (data, context) => {
-    // Verify authentication
-    if (!context.auth) {
-        throw new functions.https.HttpsError("unauthenticated", "User must be authenticated");
-    }
-    const { leadId } = data;
-    if (!leadId) {
-        throw new functions.https.HttpsError("invalid-argument", "Lead ID is required");
-    }
-    try {
-        const leadDoc = await db.collection("leads").doc(leadId).get();
-        if (!leadDoc.exists) {
-            throw new functions.https.HttpsError("not-found", "Lead not found");
-        }
-        const leadData = leadDoc.data();
-        // Verify user has permission (same team or manager/admin role)
-        const userDoc = await db.collection("users").doc(context.auth.uid).get();
-        const userData = userDoc.data();
-        if (!userData || (userData.teamId !== leadData.teamId && userData.role !== "manager" && userData.role !== "admin")) {
-            throw new functions.https.HttpsError("permission-denied", "Insufficient permissions");
-        }
-        // Check if lead requires verification before assignment
-        if (leadData.status === "scheduled" && !leadData.setterVerified) {
-            throw new functions.https.HttpsError("failed-precondition", "Cannot assign scheduled lead - setter verification required");
-        }
-        const availableCloser = await getNextAvailableCloser(leadData.teamId);
-        if (!availableCloser) {
-            throw new functions.https.HttpsError("unavailable", "No available closers for assignment");
-        }
-        await assignLeadToCloser(leadId, leadData, availableCloser);
-        return {
-            success: true,
-            assignedCloser: {
-                uid: availableCloser.uid,
-                name: availableCloser.name,
-            },
-        };
-    }
-    catch (error) {
-        functions.logger.error(`Error in manualAssignLead for lead ${leadId}:`, error);
-        if (error instanceof functions.https.HttpsError) {
-            throw error;
-        }
-        throw new functions.https.HttpsError("internal", "Internal server error");
+        functions.logger.error(`❌ Error in assignLeadOnCreate for lead ${leadId}:`, error);
+        return null; // Don't re-throw to prevent retries for now
     }
 });
 /**
@@ -614,9 +468,16 @@ exports.handleLeadDispositionUpdate = functions.firestore
     // Check if status changed for round robin logic
     const wasExceptionDisposition = (beforeData.status === "in_process" || beforeData.status === "accepted") &&
         (afterData.status === "canceled" || afterData.status === "rescheduled");
-    const wasCompletedDisposition = (beforeData.status === "in_process" || beforeData.status === "accepted") &&
-        (afterData.status === "sold" || afterData.status === "no_sale" || afterData.status === "credit_fail");
-    if (!wasExceptionDisposition && !wasCompletedDisposition) {
+    // Completed dispositions: Accept transitions from waiting_assignment, accepted, or in_process to final states
+    const wasCompletedDisposition = (beforeData.status === "in_process" ||
+        beforeData.status === "accepted" ||
+        beforeData.status === "waiting_assignment" // ← Added this to handle direct dispositions
+    ) && (afterData.status === "sold" || afterData.status === "no_sale" || afterData.status === "credit_fail");
+    // Check for any other disposition that should move closer to back of lineup
+    const wasOtherDisposition = (beforeData.status === "in_process" || beforeData.status === "accepted") &&
+        !wasExceptionDisposition &&
+        (afterData.status !== beforeData.status); // Any status change that's not an exception
+    if (!wasExceptionDisposition && !wasCompletedDisposition && !wasOtherDisposition) {
         return null; // No action needed for round robin
     }
     const assignedCloserId = beforeData.assignedCloserId || afterData.assignedCloserId;
@@ -658,7 +519,7 @@ exports.handleLeadDispositionUpdate = functions.firestore
             activityType = "round_robin_exception";
         }
         else {
-            // Move to bottom for completed jobs (sold/no_sale/credit_fail)
+            // Move to bottom for all other dispositions (sold/no_sale/credit_fail and any other disposition)
             const maxLineupOrder = allClosers[0].lineupOrder || 0;
             newLineupOrder = maxLineupOrder + 1000; // Place them at bottom with buffer
             logMessage = `Moved closer ${assignedCloserId} to bottom of lineup (order: ${newLineupOrder}) due to ${afterData.status} lead ${leadId}`;
@@ -1181,411 +1042,6 @@ exports.updateUserRole = functions.https.onCall(async (data, context) => {
     }
 });
 /**
- * Get detailed analytics data (callable function)
- * Returns comprehensive analytics including trends, performance metrics, and historical data
- */
-exports.getDetailedAnalytics = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
-        throw new functions.https.HttpsError("unauthenticated", "User must be authenticated");
-    }
-    const { teamId, dateRange = "30d", filterCloser } = data;
-    if (!teamId) {
-        throw new functions.https.HttpsError("invalid-argument", "Team ID is required");
-    }
-    try {
-        // Verify user has permission
-        const userDoc = await db.collection("users").doc(context.auth.uid).get();
-        const userData = userDoc.data();
-        if (!userData || (userData.teamId !== teamId && userData.role !== "manager" && userData.role !== "admin")) {
-            throw new functions.https.HttpsError("permission-denied", "Insufficient permissions");
-        }
-        // Calculate date range
-        const days = parseInt(dateRange.replace('d', ''));
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - days);
-        // Build query for leads within date range
-        let leadsQuery = db.collection("leads")
-            .where("teamId", "==", teamId)
-            .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(startDate))
-            .orderBy("createdAt", "desc");
-        // Get leads and closers data
-        const [leadsSnapshot, closersSnapshot] = await Promise.all([
-            leadsQuery.get(),
-            db.collection("closers").where("teamId", "==", teamId).get(),
-        ]);
-        const leads = leadsSnapshot.docs.map(doc => (Object.assign({ id: doc.id }, doc.data())));
-        const closers = closersSnapshot.docs.map(doc => (Object.assign({ uid: doc.id }, doc.data())));
-        // Filter by closer if specified
-        const filteredLeads = filterCloser && filterCloser !== "all"
-            ? leads.filter(lead => lead.assignedCloserId === filterCloser)
-            : leads;
-        // Calculate setter analytics
-        const setterAnalytics = calculateSetterMetrics(filteredLeads);
-        // Calculate closer analytics
-        const closerAnalytics = calculateCloserMetrics(filteredLeads);
-        // Calculate dispatch analytics
-        const dispatchAnalytics = calculateDispatchMetrics(filteredLeads);
-        // Calculate trend data
-        const trendData = generateTrendAnalysis(filteredLeads, days);
-        // Calculate performance insights
-        const performanceInsights = calculatePerformanceInsights(filteredLeads, closers);
-        return {
-            totalLeads: filteredLeads.length,
-            dateRange,
-            filterCloser,
-            setterAnalytics,
-            closerAnalytics,
-            dispatchAnalytics,
-            trendData,
-            performanceInsights,
-            timestamp: admin.firestore.FieldValue.serverTimestamp(),
-        };
-    }
-    catch (error) {
-        functions.logger.error(`Error in getDetailedAnalytics for team ${teamId}:`, error);
-        if (error instanceof functions.https.HttpsError) {
-            throw error;
-        }
-        throw new functions.https.HttpsError("internal", "Internal server error");
-    }
-});
-// Helper function to calculate setter metrics
-function calculateSetterMetrics(leads) {
-    const setterMap = new Map();
-    leads.forEach(lead => {
-        if (lead.setterId && lead.setterName) {
-            const existing = setterMap.get(lead.setterId) || {
-                uid: lead.setterId,
-                name: lead.setterName,
-                totalLeads: 0,
-                soldLeads: 0,
-                immediateLeads: 0,
-                scheduledLeads: 0,
-                avgLeadValue: 0,
-                totalValue: 0,
-            };
-            existing.totalLeads++;
-            if (lead.status === "sold") {
-                existing.soldLeads++;
-                // Note: saleAmount may not be available in current Lead interface
-                existing.totalValue += lead.saleAmount || 0;
-            }
-            if (lead.dispatchType === "immediate")
-                existing.immediateLeads++;
-            if (lead.dispatchType === "scheduled")
-                existing.scheduledLeads++;
-            setterMap.set(lead.setterId, existing);
-        }
-    });
-    return Array.from(setterMap.values()).map(setter => (Object.assign(Object.assign({}, setter), { conversionRate: setter.totalLeads > 0 ? (setter.soldLeads / setter.totalLeads) * 100 : 0, avgLeadValue: setter.soldLeads > 0 ? setter.totalValue / setter.soldLeads : 0 })));
-}
-// Helper function to calculate closer metrics
-function calculateCloserMetrics(leads) {
-    const closerMap = new Map();
-    leads.forEach(lead => {
-        if (lead.assignedCloserId && lead.assignedCloserName) {
-            const existing = closerMap.get(lead.assignedCloserId) || {
-                uid: lead.assignedCloserId,
-                name: lead.assignedCloserName,
-                totalAssigned: 0,
-                totalSold: 0,
-                totalNoSale: 0,
-                totalFailedCredits: 0,
-                totalValue: 0,
-                avgTimeToClose: 0,
-                totalCloseTime: 0,
-            };
-            // Only count leads that have reached final disposition
-            if (['sold', 'no_sale', 'credit_fail', 'canceled'].includes(lead.status)) {
-                existing.totalAssigned++;
-                if (lead.status === "sold") {
-                    existing.totalSold++;
-                    existing.totalValue += lead.saleAmount || 0;
-                    // Calculate time to close if timestamps available
-                    if (lead.acceptedAt && lead.soldAt) {
-                        const timeToClose = new Date(lead.soldAt).getTime() - new Date(lead.acceptedAt).getTime();
-                        existing.totalCloseTime += timeToClose;
-                    }
-                }
-                if (lead.status === "no_sale")
-                    existing.totalNoSale++;
-                if (lead.status === "credit_fail")
-                    existing.totalFailedCredits++;
-            }
-            closerMap.set(lead.assignedCloserId, existing);
-        }
-    });
-    return Array.from(closerMap.values()).map(closer => (Object.assign(Object.assign({}, closer), { closingRatio: closer.totalAssigned > 0 ? (closer.totalSold / closer.totalAssigned) * 100 : 0, avgSaleValue: closer.totalSold > 0 ? closer.totalValue / closer.totalSold : 0, avgTimeToClose: closer.totalSold > 0 ? closer.totalCloseTime / closer.totalSold / (1000 * 60 * 60) : 0 })));
-}
-// Helper function to calculate dispatch metrics
-function calculateDispatchMetrics(leads) {
-    const immediate = { total: 0, sold: 0, totalValue: 0, avgTimeToAssign: 0 };
-    const scheduled = { total: 0, sold: 0, totalValue: 0, avgTimeToAssign: 0 };
-    leads.forEach(lead => {
-        if (lead.dispatchType === "immediate") {
-            immediate.total++;
-            if (lead.status === "sold") {
-                immediate.sold++;
-                immediate.totalValue += lead.saleAmount || 0;
-            }
-        }
-        else if (lead.dispatchType === "scheduled") {
-            scheduled.total++;
-            if (lead.status === "sold") {
-                scheduled.sold++;
-                scheduled.totalValue += lead.saleAmount || 0;
-            }
-        }
-    });
-    return {
-        immediate: Object.assign(Object.assign({}, immediate), { conversionRate: immediate.total > 0 ? (immediate.sold / immediate.total) * 100 : 0, avgSaleValue: immediate.sold > 0 ? immediate.totalValue / immediate.sold : 0 }),
-        scheduled: Object.assign(Object.assign({}, scheduled), { conversionRate: scheduled.total > 0 ? (scheduled.sold / scheduled.total) * 100 : 0, avgSaleValue: scheduled.sold > 0 ? scheduled.totalValue / scheduled.sold : 0 }),
-    };
-}
-// Helper function to generate trend analysis
-function generateTrendAnalysis(leads, days) {
-    const trendData = [];
-    for (let i = days - 1; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
-        const dayLeads = leads.filter(lead => {
-            const leadDate = new Date(lead.createdAt.seconds * 1000);
-            return leadDate.toDateString() === date.toDateString();
-        });
-        const totalLeads = dayLeads.length;
-        const soldLeads = dayLeads.filter(lead => lead.status === 'sold').length;
-        const immediateLeads = dayLeads.filter(lead => lead.dispatchType === 'immediate');
-        const scheduledLeads = dayLeads.filter(lead => lead.dispatchType === 'scheduled');
-        trendData.push({
-            date: dateStr,
-            totalLeads,
-            soldLeads,
-            conversionRate: totalLeads > 0 ? (soldLeads / totalLeads) * 100 : 0,
-            immediateLeads: immediateLeads.length,
-            scheduledLeads: scheduledLeads.length,
-            totalValue: dayLeads.reduce((sum, lead) => sum + (lead.saleAmount || 0), 0),
-        });
-    }
-    return trendData;
-}
-// Helper function to calculate performance insights
-function calculatePerformanceInsights(leads, closers) {
-    const totalLeads = leads.length;
-    const soldLeads = leads.filter(lead => lead.status === 'sold').length;
-    const onDutyClosers = closers.filter(closer => closer.status === 'On Duty').length;
-    // Calculate weekly comparison
-    const now = new Date();
-    const oneWeekAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
-    const twoWeeksAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
-    const thisWeekLeads = leads.filter(lead => {
-        const leadDate = new Date(lead.createdAt.seconds * 1000);
-        return leadDate >= oneWeekAgo;
-    });
-    const lastWeekLeads = leads.filter(lead => {
-        const leadDate = new Date(lead.createdAt.seconds * 1000);
-        return leadDate >= twoWeeksAgo && leadDate < oneWeekAgo;
-    });
-    const weeklyGrowth = lastWeekLeads.length > 0
-        ? ((thisWeekLeads.length - lastWeekLeads.length) / lastWeekLeads.length) * 100
-        : 0;
-    // Find top performer
-    const closerPerformance = new Map();
-    leads.forEach(lead => {
-        if (lead.assignedCloserId && ['sold', 'no_sale', 'credit_fail'].includes(lead.status)) {
-            const existing = closerPerformance.get(lead.assignedCloserId) || { sold: 0, total: 0 };
-            existing.total++;
-            if (lead.status === 'sold')
-                existing.sold++;
-            closerPerformance.set(lead.assignedCloserId, existing);
-        }
-    });
-    let topPerformer = null;
-    let bestRatio = 0;
-    closerPerformance.forEach((stats, closerId) => {
-        if (stats.total >= 5) { // Minimum threshold
-            const ratio = (stats.sold / stats.total) * 100;
-            if (ratio > bestRatio) {
-                bestRatio = ratio;
-                const closer = closers.find(c => c.uid === closerId);
-                topPerformer = closer ? closer.name : 'Unknown';
-            }
-        }
-    });
-    return {
-        totalConversionRate: totalLeads > 0 ? (soldLeads / totalLeads) * 100 : 0,
-        weeklyGrowth,
-        topPerformer,
-        topPerformerRatio: bestRatio,
-        onDutyClosers,
-        avgLeadsPerCloser: onDutyClosers > 0 ? totalLeads / onDutyClosers : 0,
-        totalRevenue: leads.reduce((sum, lead) => sum + (lead.saleAmount || 0), 0),
-    };
-}
-/**
- * Generate analytics report (callable function)
- * Creates and returns a comprehensive analytics report for export
- */
-exports.generateAnalyticsReport = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
-        throw new functions.https.HttpsError("unauthenticated", "User must be authenticated");
-    }
-    const { teamId, dateRange = "30d", format = "json" } = data;
-    if (!teamId) {
-        throw new functions.https.HttpsError("invalid-argument", "Team ID is required");
-    }
-    try {
-        // Get detailed analytics data
-        const analyticsData = await exports.getDetailedAnalytics.run({ teamId, dateRange }, context);
-        // Format the report based on requested format
-        const report = {
-            generatedAt: new Date().toISOString(),
-            teamId,
-            dateRange,
-            summary: analyticsData.performanceInsights,
-            setterPerformance: analyticsData.setterAnalytics,
-            closerPerformance: analyticsData.closerAnalytics,
-            dispatchAnalysis: analyticsData.dispatchAnalytics,
-            trends: analyticsData.trendData,
-        };
-        return {
-            report,
-            format,
-            timestamp: admin.firestore.FieldValue.serverTimestamp(),
-        };
-    }
-    catch (error) {
-        functions.logger.error(`Error in generateAnalyticsReport for team ${teamId}:`, error);
-        if (error instanceof functions.https.HttpsError) {
-            throw error;
-        }
-        throw new functions.https.HttpsError("internal", "Internal server error");
-    }
-});
-// Temporary function to update admin roles
-exports.updateAdminRoles = functions.https.onCall(async (data, context) => {
-    console.log('🚀 Starting admin role updates...');
-    try {
-        // Get all users
-        const usersSnapshot = await db.collection('users').get();
-        const users = [];
-        usersSnapshot.forEach(doc => {
-            const userData = doc.data();
-            users.push(Object.assign({ id: doc.id }, userData));
-        });
-        console.log(`Found ${users.length} total users`);
-        // Find Ryan Madden
-        const ryan = users.find(user => {
-            const name = (user.displayName || '').toLowerCase();
-            const email = (user.email || '').toLowerCase();
-            return name.includes('ryan') || email.includes('ryan') || name.includes('madden');
-        });
-        // Find Rocky Niger
-        const rocky = users.find(user => {
-            const name = (user.displayName || '').toLowerCase();
-            const email = (user.email || '').toLowerCase();
-            return name.includes('rocky') || email.includes('niger');
-        });
-        const updates = [];
-        const results = {
-            ryan: { found: false, updated: false, alreadyAdmin: false },
-            rocky: { found: false, updated: false, alreadyAdmin: false }
-        };
-        if (ryan) {
-            results.ryan.found = true;
-            console.log(`Found Ryan: ${ryan.displayName || ryan.email} - Current role: ${ryan.role}`);
-            if (ryan.role !== 'admin') {
-                updates.push({ user: ryan, name: 'Ryan Madden', type: 'ryan' });
-            }
-            else {
-                results.ryan.alreadyAdmin = true;
-                console.log('✅ Ryan is already admin');
-            }
-        }
-        else {
-            console.log('❌ Could not find Ryan Madden');
-        }
-        if (rocky) {
-            results.rocky.found = true;
-            console.log(`Found Rocky: ${rocky.displayName || rocky.email} - Current role: ${rocky.role}`);
-            if (rocky.role !== 'admin') {
-                updates.push({ user: rocky, name: 'Rocky Niger', type: 'rocky' });
-            }
-            else {
-                results.rocky.alreadyAdmin = true;
-                console.log('✅ Rocky is already admin');
-            }
-        }
-        else {
-            console.log('❌ Could not find Rocky Niger');
-        }
-        if (updates.length === 0) {
-            console.log('✅ No updates needed - both users are already admins');
-            return { success: true, message: 'No updates needed', results };
-        }
-        console.log(`🔧 Updating ${updates.length} users...`);
-        for (const { user, name, type } of updates) {
-            try {
-                const batch = db.batch();
-                // Update user role
-                const userRef = db.collection('users').doc(user.id);
-                batch.update(userRef, {
-                    role: 'admin',
-                    updatedAt: admin.firestore.FieldValue.serverTimestamp()
-                });
-                // Update or create closer record
-                const closerRef = db.collection('closers').doc(user.id);
-                const closerDoc = await closerRef.get();
-                if (closerDoc.exists) {
-                    batch.update(closerRef, {
-                        role: 'admin',
-                        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-                else {
-                    batch.set(closerRef, {
-                        uid: user.id,
-                        name: user.displayName || user.email || name,
-                        status: 'Off Duty',
-                        teamId: user.teamId,
-                        role: 'admin',
-                        avatarUrl: user.avatarUrl || null,
-                        phone: user.phoneNumber || null,
-                        lineupOrder: 999,
-                        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-                await batch.commit();
-                console.log(`✅ Updated ${name} to admin role`);
-                if (type === 'ryan')
-                    results.ryan.updated = true;
-                if (type === 'rocky')
-                    results.rocky.updated = true;
-            }
-            catch (error) {
-                console.error(`❌ Error updating ${name}:`, error);
-                throw error;
-            }
-        }
-        console.log('🎉 Admin role updates complete!');
-        return {
-            success: true,
-            message: 'Admin roles updated successfully',
-            results,
-            updatedCount: updates.length
-        };
-    }
-    catch (error) {
-        console.error('❌ Error in updateAdminRoles:', error);
-        return {
-            success: false,
-            error: error instanceof Error ? error.message : String(error),
-            results: { ryan: { found: false, updated: false, alreadyAdmin: false }, rocky: { found: false, updated: false, alreadyAdmin: false } }
-        };
-    }
-});
-/**
  * Chat message cleanup function
  * Runs daily to delete messages older than 7 days
  * Updated for deployment
@@ -1678,6 +1134,180 @@ exports.updateChatChannelOnTeamUpdate = functions.firestore
     catch (error) {
         functions.logger.error("Error updating chat channel:", error);
         throw error;
+    }
+});
+/**
+ * Cloud Function triggered when a lead is updated to waiting_assignment
+ * Handles leads that become available for assignment after being updated
+ */
+exports.assignLeadOnUpdate = functions.firestore
+    .document("leads/{leadId}")
+    .onUpdate(async (change, context) => {
+    const leadId = context.params.leadId;
+    const beforeData = change.before.data();
+    const afterData = change.after.data();
+    // Only trigger if status changed TO waiting_assignment and no closer assigned
+    if (beforeData.status !== "waiting_assignment" &&
+        afterData.status === "waiting_assignment" &&
+        !afterData.assignedCloserId) {
+        functions.logger.info(`🔄 Lead ${leadId} (${afterData.customerName}) updated to waiting_assignment, attempting auto-assignment`);
+        try {
+            const availableCloser = await getNextAvailableCloser(afterData.teamId);
+            if (!availableCloser) {
+                functions.logger.warn(`⚠️ No available closers for updated lead ${leadId} in team ${afterData.teamId}`);
+                return null;
+            }
+            await assignLeadToCloser(leadId, afterData, availableCloser);
+            functions.logger.info(`🎉 Successfully assigned updated lead ${leadId} to closer ${availableCloser.name}`);
+            return null;
+        }
+        catch (error) {
+            functions.logger.error(`❌ Error in assignLeadOnUpdate for lead ${leadId}:`, error);
+            return null;
+        }
+    }
+    return null;
+});
+/**
+ * Cloud Function triggered when a closer's status changes
+ * Reassigns leads if a closer goes off duty and auto-adds them to lineup if they come on duty
+ */
+exports.handleCloserStatusChange = functions.firestore
+    .document("closers/{closerId}")
+    .onUpdate(async (change, context) => {
+    const closerId = context.params.closerId;
+    const beforeData = change.before.data();
+    const afterData = change.after.data();
+    // Check if status changed from Off Duty to On Duty - auto-add to lineup at bottom
+    if (beforeData.status === "Off Duty" && afterData.status === "On Duty") {
+        functions.logger.info(`🟢 Closer ${closerId} (${afterData.name}) came on duty, adding to lineup at bottom`);
+        try {
+            const teamId = afterData.teamId;
+            // Get all closers in the team to find the maximum lineup order
+            const teamClosersSnapshot = await db
+                .collection("closers")
+                .where("teamId", "==", teamId)
+                .orderBy("lineupOrder", "desc")
+                .limit(1)
+                .get();
+            let newLineupOrder = 100000; // Default if no other closers exist
+            if (!teamClosersSnapshot.empty) {
+                const maxCloser = teamClosersSnapshot.docs[0].data();
+                const maxLineupOrder = maxCloser.lineupOrder || 0;
+                newLineupOrder = maxLineupOrder + 1000; // Place at bottom with buffer
+            }
+            // Update the closer's lineup order to add them to the bottom of the rotation
+            await db.collection("closers").doc(closerId).update({
+                lineupOrder: newLineupOrder,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+            functions.logger.info(`✅ Added closer ${closerId} to lineup at bottom (order: ${newLineupOrder})`);
+            // Optional: Create an activity log
+            await db.collection("activities").add({
+                type: "closer_added_to_lineup",
+                closerId: closerId,
+                closerName: afterData.name,
+                newLineupOrder: newLineupOrder,
+                teamId: teamId,
+                timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            });
+        }
+        catch (error) {
+            functions.logger.error(`❌ Error adding closer ${closerId} to lineup:`, error);
+        }
+    }
+    // Check if status changed from On Duty to Off Duty
+    if (beforeData.status === "On Duty" && afterData.status === "Off Duty") {
+        functions.logger.info(`🔴 Closer ${closerId} (${afterData.name}) went off duty, checking for reassignment`);
+        try {
+            // Find all in-process and scheduled leads assigned to this closer
+            const assignedLeadsSnapshot = await db
+                .collection("leads")
+                .where("assignedCloserId", "==", closerId)
+                .where("status", "in", ["waiting_assignment", "in_process", "scheduled"])
+                .get();
+            if (assignedLeadsSnapshot.empty) {
+                functions.logger.info(`ℹ️ No active leads found for off-duty closer ${closerId}`);
+                return null;
+            }
+            // Reassign each lead to another available closer
+            const reassignmentPromises = assignedLeadsSnapshot.docs.map(async (leadDoc) => {
+                const leadData = leadDoc.data();
+                const newCloser = await getNextAvailableCloser(leadData.teamId);
+                if (newCloser && newCloser.uid !== closerId) {
+                    await assignLeadToCloser(leadDoc.id, leadData, newCloser);
+                    functions.logger.info(`🔄 Reassigned lead ${leadDoc.id} from ${closerId} to ${newCloser.uid}`);
+                }
+                else {
+                    // No available closer, put lead back to waiting assignment
+                    await leadDoc.ref.update({
+                        assignedCloserId: null,
+                        assignedCloserName: null,
+                        status: "waiting_assignment",
+                        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    });
+                    functions.logger.warn(`⚠️ No available closer for reassignment, lead ${leadDoc.id} set to waiting_assignment`);
+                }
+            });
+            await Promise.all(reassignmentPromises);
+            functions.logger.info(`✅ Completed reassignment process for closer ${closerId}`);
+        }
+        catch (error) {
+            functions.logger.error(`❌ Error in handleCloserStatusChange for closer ${closerId}:`, error);
+        }
+    }
+    return null;
+});
+/**
+ * Manually trigger lead assignment (callable function)
+ * Useful for reassigning specific leads or batch operations
+ */
+exports.manualAssignLead = functions.https.onCall(async (data, context) => {
+    // Verify authentication
+    if (!context.auth) {
+        throw new functions.https.HttpsError("unauthenticated", "User must be authenticated");
+    }
+    const { leadId } = data;
+    if (!leadId) {
+        throw new functions.https.HttpsError("invalid-argument", "Lead ID is required");
+    }
+    try {
+        const leadDoc = await db.collection("leads").doc(leadId).get();
+        if (!leadDoc.exists) {
+            throw new functions.https.HttpsError("not-found", "Lead not found");
+        }
+        const leadData = leadDoc.data();
+        // Verify user has permission (same team or manager/admin role)
+        const userDoc = await db.collection("users").doc(context.auth.uid).get();
+        const userData = userDoc.data();
+        if (!userData || (userData.teamId !== leadData.teamId && userData.role !== "manager" && userData.role !== "admin")) {
+            throw new functions.https.HttpsError("permission-denied", "Insufficient permissions");
+        }
+        // Check if lead requires verification before assignment
+        if (leadData.status === "scheduled" && !leadData.setterVerified) {
+            throw new functions.https.HttpsError("failed-precondition", "Cannot assign scheduled lead - setter verification required");
+        }
+        const availableCloser = await getNextAvailableCloser(leadData.teamId);
+        if (!availableCloser) {
+            throw new functions.https.HttpsError("not-found", "No available closers found for this team");
+        }
+        await assignLeadToCloser(leadId, leadData, availableCloser);
+        functions.logger.info(`✅ Manually assigned lead ${leadId} to closer ${availableCloser.name}`);
+        return {
+            success: true,
+            message: `Lead successfully assigned to ${availableCloser.name}`,
+            assignedCloser: {
+                uid: availableCloser.uid,
+                name: availableCloser.name,
+            },
+        };
+    }
+    catch (error) {
+        functions.logger.error(`Error in manualAssignLead for lead ${leadId}:`, error);
+        if (error instanceof functions.https.HttpsError) {
+            throw error;
+        }
+        throw new functions.https.HttpsError("internal", "Internal server error");
     }
 });
 //# sourceMappingURL=index.js.map

@@ -26,7 +26,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div data-auth-page className="fixed inset-0 flex flex-col items-center justify-center bg-background p-4 overflow-hidden relative">
+    <div data-auth-page className="fixed inset-0 flex flex-col items-center justify-center bg-background p-4 overflow-hidden">
       {/* Breathing Radial Gradient Spotlight */}
       <div 
         className="absolute top-0 right-0 w-96 h-96 opacity-30 pointer-events-none animate-[breathe_4s_ease-in-out_infinite]"
