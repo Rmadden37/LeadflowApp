@@ -3602,4 +3602,6 @@ body:has([data-auth-page])::before {
   }
   50% {
     transform: scale(1.1);
-    opacity: 0.5
+    opacity: 0.5;
+  }
+}
