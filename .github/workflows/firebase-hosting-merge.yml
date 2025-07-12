@@ -1,4 +1,4 @@
-name: Deploy to Firebase Hosting
+name: Deploy to Firebase App Hosting
 on:
   push:
     branches: [ main ]
@@ -15,21 +15,25 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
-      - name: Build
+      - name: Build for App Hosting
         run: |
           # Make CI build script executable
           chmod +x ./ci-build.sh
-          # Run CI-specific build script
+          # Run CI-specific build script for App Hosting
           ./ci-build.sh
           
-      - name: Verify App Hosting Configuration
+      - name: Verify App Hosting Build
         run: |
-          # Check that build directory exists
+          # Check that build directory exists for App Hosting
           if [ ! -d ".next" ]; then
-            echo "❌ .next directory not found! Build failed or incorrect configuration."
+            echo "❌ .next directory not found! Build failed."
             exit 1
           fi
-          echo "✅ Build directory verified"
+          # Verify Next.js standalone output for App Hosting
+          if [ ! -f ".next/standalone/server.js" ]; then
+            echo "⚠️  Standalone server not found, but .next exists"
+          fi
+          echo "✅ App Hosting build verified"
       - name: Deploy to Firebase App Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -37,4 +41,3 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
           projectId: leadflow-4lvrr
           channelId: live
-          target: apphosting

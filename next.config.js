@@ -9,11 +9,11 @@ const withPWA = require('next-pwa')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // App Hosting Configuration - Server-side rendering
-  // NOT using static export for App Hosting
-  distDir: ".next",  // Changed from 'dist' to '.next' for App Hosting
+  // Firebase App Hosting Configuration
+  output: 'standalone', // Required for Firebase App Hosting
+  distDir: ".next",
   
-  // Fix API routes that use static export mode
+  // Environment variables for App Hosting
   env: {
     NEXT_PUBLIC_STATIC_EXPORT: 'false',
     NEXT_PUBLIC_DEPLOY_TARGET: 'app-hosting',

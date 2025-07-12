@@ -1,37 +1,26 @@
-# Settings to manage and configure a Firebase App Hosting backend.
-# https://firebase.google.com/docs/app-hosting/configure
+# Firebase App Hosting Configuration
+# This configures Firebase App Hosting for the LeadFlow application
 
+# Runtime configuration
 runConfig:
-  # Auto-scaling configuration for production load
+  # Use Cloud Run for scalable hosting
   minInstances: 0
   maxInstances: 10
-  # Memory allocation for optimal performance
   memory: 2Gi
-  # CPU allocation
   cpu: 1
-  # Timeout for requests
   timeoutSeconds: 300
-  # Node.js 20 runtime for best performance
-  runtime: nodejs20
 
-# Environment variables (set in Firebase console)
-env:
-  - name: NODE_ENV
-    value: production
-
-# Exclude unnecessary files from App Hosting build
+# Build configuration for Next.js
 build:
-  ignore:
-    - "functions/**"
-    - "functions"
-    - ".git/**"
-    - ".github/**"
-    - ".vscode/**"
-    - "node_modules/**"
-    - "docs/**"
-    - "*.md"
-    - "*.log"
-    
-# Build and start commands optimized for Next.js SSR
-buildCommand: "npm ci && npm run build"
-startCommand: "npm start"
+  commands:
+    - npm ci
+    - npm run build
+  
+  # Output directory for Next.js standalone build
+  outputDir: .next
+
+# Environment variables for production
+env:
+  NODE_ENV: production
+  NEXT_PUBLIC_DEPLOY_TARGET: app-hosting
+  NEXT_PUBLIC_STATIC_EXPORT: false

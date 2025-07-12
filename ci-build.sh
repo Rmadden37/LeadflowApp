@@ -20,13 +20,9 @@ rm -rf .next out dist
 # Configure for App Hosting deployment
 echo "⚙️  Configuring for Firebase App Hosting..."
 
-# Use App Hosting specific Next.js configuration
-if [ -f "next.config.app-hosting.js" ]; then
-    echo "📝 Using App Hosting Next.js configuration..."
-    cp next.config.app-hosting.js next.config.js
-else
-    echo "⚠️  App Hosting config not found, using default..."
-fi
+# For Firebase App Hosting, we need server-side rendering enabled
+# The current next.config.js should already be configured for App Hosting
+echo "📝 Using current Next.js configuration for App Hosting..."
 
 # Set environment variables for App Hosting build
 export NEXT_PUBLIC_DEPLOY_TARGET=app-hosting
@@ -46,15 +42,24 @@ npm run typecheck
 echo "🧹 Running ESLint..."
 npm run lint:check
 
-# Build the application for production
+# Build the application for Firebase App Hosting (standalone mode)
 echo "🏗️  Building application for Firebase App Hosting..."
 npm run build
 
-# Verify build output
-echo "✅ Verifying build output..."
+# Verify build output for App Hosting
+echo "✅ Verifying App Hosting build output..."
 if [ ! -d ".next" ]; then
     echo "❌ Build failed: .next directory not found"
     exit 1
+fi
+
+# Check for standalone output (required for App Hosting)
+if [ -d ".next/standalone" ]; then
+    echo "✅ Standalone build found - ready for App Hosting"
+    echo "📊 Standalone build statistics:"
+    ls -la .next/standalone/ | head -5
+else
+    echo "⚠️  Standalone build not found - checking if Next.js config is correct"
 fi
 
 # Check for critical files
@@ -67,12 +72,9 @@ echo "✅ Build completed successfully!"
 echo "📊 Build statistics:"
 ls -la .next/ | head -10
 
-# Configure Firebase for App Hosting if config exists
-if [ -f "firebase.app-hosting.json" ]; then
-    echo "📝 Configuring Firebase for App Hosting..."
-    cp firebase.app-hosting.json firebase.json
-    echo "✅ Firebase configuration updated"
-fi
+# For Firebase App Hosting, we don't need to copy Firebase config
+# App Hosting uses the .next directory directly
+echo "✅ Firebase App Hosting will use .next directory"
 
 echo "🎉 CI build process completed successfully!"
 echo "📦 Ready for Firebase App Hosting deployment"
