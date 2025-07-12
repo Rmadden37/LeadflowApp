@@ -20,9 +20,13 @@ rm -rf .next out dist
 # Configure for App Hosting deployment
 echo "⚙️  Configuring for Firebase App Hosting..."
 
-# For Firebase App Hosting, we need server-side rendering enabled
-# The current next.config.js should already be configured for App Hosting
-echo "📝 Using current Next.js configuration for App Hosting..."
+# Use App Hosting specific Next.js configuration
+if [ -f "next.config.app-hosting.js" ]; then
+    echo "📝 Using App Hosting Next.js configuration..."
+    cp next.config.app-hosting.js next.config.js
+else
+    echo "📝 Using current Next.js configuration for App Hosting..."
+fi
 
 # Set environment variables for App Hosting build
 export NEXT_PUBLIC_DEPLOY_TARGET=app-hosting
@@ -72,9 +76,14 @@ echo "✅ Build completed successfully!"
 echo "📊 Build statistics:"
 ls -la .next/ | head -10
 
-# For Firebase App Hosting, we don't need to copy Firebase config
-# App Hosting uses the .next directory directly
-echo "✅ Firebase App Hosting will use .next directory"
+# For Firebase App Hosting, configure Firebase settings
+if [ -f "firebase.app-hosting.json" ]; then
+    echo "📝 Configuring Firebase for App Hosting..."
+    cp firebase.app-hosting.json firebase.json
+    echo "✅ Firebase configuration updated for App Hosting"
+else
+    echo "✅ Using existing Firebase configuration"
+fi
 
 echo "🎉 CI build process completed successfully!"
 echo "📦 Ready for Firebase App Hosting deployment"

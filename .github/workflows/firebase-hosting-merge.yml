@@ -15,6 +15,10 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+        
+      - name: Clean build directories
+        run: rm -rf .next out dist
+        
       - name: Build for App Hosting
         run: |
           # Make CI build script executable
@@ -34,10 +38,12 @@ jobs:
             echo "⚠️  Standalone server not found, but .next exists"
           fi
           echo "✅ App Hosting build verified"
+          
       - name: Deploy to Firebase App Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_LEADFLOW }}'
           projectId: leadflow-4lvrr
+          target: apphosting
           channelId: live

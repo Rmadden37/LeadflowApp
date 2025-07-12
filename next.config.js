@@ -20,12 +20,7 @@ const nextConfig = {
   },
   
   images: {
-    domains: [
-      'firebasestorage.googleapis.com', 
-      'lh3.googleusercontent.com',
-      'ui-avatars.com',
-      'api.dicebear.com'
-    ],
+    domains: ['firebasestorage.googleapis.com', 'lh3.googleusercontent.com'],
   },
   trailingSlash: false,
   turbopack: {

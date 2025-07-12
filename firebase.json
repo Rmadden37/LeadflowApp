@@ -12,22 +12,21 @@
   "storage": {
     "rules": "storage.rules"
   },
-  "hosting": [
-    {
-      "target": "apphosting",
-      "public": ".next",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**",
-        "**/*.js.map",
-        "**/check-*.js",
-        "**/test-*.js",
-        "**/debug-*.js",
-        "**/simple-*.js",
-        "**/.git/**"
-      ],
-      "headers": [
+  "hosting": {
+    "target": "apphosting",
+    "public": ".next",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/*.js.map",
+      "**/check-*.js",
+      "**/test-*.js",
+      "**/debug-*.js",
+      "**/simple-*.js",
+      "**/.git/**"
+    ],
+    "headers": [
       {
         "source": "**/*.@(js|css)",
         "headers": [
@@ -56,6 +55,5 @@
         ]
       }
     ]
-    }
-  ]
+  }
 }
