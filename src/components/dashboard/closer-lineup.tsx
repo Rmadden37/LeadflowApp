@@ -316,14 +316,14 @@ export default function CloserLineup() {
                         )}
                       </div>
                       
-                      {/* iOS-optimized position badge */}
+                      {/* iOS-optimized position badge with enhanced contrast */}
                       <div 
-                        className="w-6 h-6 bg-[#CDCCC8] rounded-full flex items-center justify-center shadow-lg"
+                        className="w-7 h-7 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white/80"
                         style={{
                           position: 'absolute',
-                          top: '-8px',
-                          right: '-8px',
-                          zIndex: 10, // Higher than avatar
+                          top: '-6px',
+                          right: '-6px',
+                          zIndex: 15, // Higher than avatar to ensure visibility
                           // Prevent iOS Safari from adding controls
                           WebkitUserSelect: 'none',
                           WebkitTouchCallout: 'none',
@@ -333,11 +333,14 @@ export default function CloserLineup() {
                         }}
                       >
                         <span 
-                          className="text-xs font-bold text-[#0E0E0E]"
+                          className="text-xs font-bold text-white"
                           style={{
                             WebkitUserSelect: 'none',
                             userSelect: 'none',
-                            pointerEvents: 'none'
+                            pointerEvents: 'none',
+                            fontSize: '12px',
+                            fontWeight: '700',
+                            textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
                           }}
                         >
                           {index + 1}

@@ -1,0 +1,219 @@
+/* ===================================================================
+   DASHBOARD VISUAL DEPTH ENHANCEMENTS - BY AURELIAN SALOMON
+   Enhanced gradient shadows and depth for modern mobile UI
+   =================================================================== */
+
+/* Enhanced frosted glass cards with deeper shadows and gradients */
+.frosted-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%, 
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  
+  /* Multi-layered shadow system for depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  
+  /* Enhanced hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  contain: layout style paint;
+}
+
+/* Hover states for enhanced depth perception */
+.frosted-glass-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Dashboard header with enhanced gradient */
+.dashboard-safe-content {
+  background: linear-gradient(135deg, 
+    rgba(13, 13, 13, 1) 0%,
+    rgba(20, 20, 20, 0.95) 30%,
+    rgba(13, 13, 13, 1) 100%);
+}
+
+/* Enhanced background depth layers */
+body::before {
+  background: 
+    /* Primary depth gradient */
+    radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 70%),
+    /* Secondary atmospheric layers */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 75%),
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0A0A0A 0%, #0D0D0D 50%, #0A0A0A 100%);
+  background-size: 100% 100%, 150% 150%, 120% 120%, 100% 100%;
+  animation: subtle-depth-glow 60s ease-in-out infinite;
+}
+
+@keyframes subtle-depth-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
+  }
+}
+
+/* ===================================================================
+   BOTTOM NAVIGATION HEIGHT FIX - BY AURELIAN SALOMON
+   Prevents title cutoff on mobile devices
+   =================================================================== */
+
+/* Enhanced bottom navigation with proper height for title visibility */
+.bottom-nav-container {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  height: 5rem !important; /* Increased from 4rem to prevent title cutoff */
+  min-height: calc(5rem + env(safe-area-inset-bottom, 0)) !important;
+  padding-bottom: env(safe-area-inset-bottom, 0) !important;
+  
+  /* Enhanced glass morphism for better depth */
+  background: rgba(0, 0, 0, 0.96) !important;
+  backdrop-filter: blur(25px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  
+  /* Enhanced shadow for floating effect */
+  box-shadow: 
+    0 -8px 32px rgba(0, 0, 0, 0.4),
+    0 -4px 16px rgba(0, 0, 0, 0.25),
+    0 -2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Adjust dashboard content padding to account for new nav height */
+.native-scroll-container {
+  height: calc(100vh - var(--header-height, 4rem) - 5rem) !important; /* Updated for new nav height */
+  max-height: calc(100vh - var(--header-height, 4rem) - 5rem) !important;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0) + 5rem) !important; /* Updated padding */
+}
+
+/* Enhanced tab button styling for better touch targets */
+.bottom-nav-container .flex > a {
+  padding: 0.75rem 0.5rem 1rem !important; /* Increased padding for better touch area */
+  min-height: 4.5rem !important; /* Ensure adequate touch target */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+}
+
+/* Enhanced icon and label spacing */
+.bottom-nav-container .flex > a > div:first-child {
+  margin-bottom: 0.375rem !important; /* Better spacing between icon and label */
+}
+
+.bottom-nav-container .flex > a > span {
+  font-size: 0.75rem !important; /* Slightly larger text for better readability */
+  line-height: 1.2 !important;
+  text-align: center !important;
+  max-width: 70px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* ===================================================================
+   POSITION BUBBLE CONTRAST FIX - BY AURELIAN SALOMON  
+   Enhanced contrast and visibility for closer position indicators
+   =================================================================== */
+
+/* Override global position badge styling with high contrast design */
+.closer-lineup-position-badge {
+  position: absolute;
+  top: -0.375rem;
+  right: -0.375rem;
+  width: 1.75rem !important; /* Increased size for better visibility */
+  height: 1.75rem !important;
+  background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%) !important; /* iOS blue gradient */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20 !important; /* Increased z-index to ensure visibility */
+  box-shadow: 
+    0 3px 12px rgba(0, 122, 255, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 1px 3px rgba(0, 0, 0, 0.15) !important;
+  border: 2px solid rgba(255, 255, 255, 0.95) !important;
+}
+
+.closer-lineup-position-badge span {
+  color: #FFFFFF !important; /* High contrast white text */
+  font-size: 0.75rem !important; /* Larger text for better readability */
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important; /* Text shadow for better contrast */
+}
+
+/* Ensure badges don't get cut off by container overflow */
+.closer-lineup-avatar-container {
+  position: relative;
+  width: 3.5rem;
+  height: 3.5rem;
+  overflow: visible !important; /* Critical: prevent badge cutoff */
+  margin-bottom: 0.875rem; /* Increased margin to accommodate larger badge */
+  z-index: 1;
+}
+
+/* Enhanced grid layout to prevent badge cutoff */
+.closer-lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem !important; /* Increased gap to prevent badge overlap */
+  padding: 1.75rem 1rem !important; /* Increased padding for badge space */
+  min-height: 140px !important; /* Increased height to accommodate badges */
+  align-items: start;
+  justify-items: center;
+  overflow: visible !important; /* Ensure badges are always visible */
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .closer-lineup-grid {
+    gap: 1rem !important;
+    padding: 1.5rem 0.75rem !important;
+    min-height: 130px !important;
+  }
+  
+  .closer-lineup-avatar-container {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .closer-lineup-position-badge {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    top: -0.25rem;
+    right: -0.25rem;
+  }
+  
+  .closer-lineup-position-badge span {
+    font-size: 0.625rem !important;
+  }
+}

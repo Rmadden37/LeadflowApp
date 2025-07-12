@@ -7,6 +7,9 @@
 /* Import mobile scroll fixes - CRITICAL MOBILE SCROLLING FIXES */
 @import '../styles/mobile-scroll-fixes.css';
 
+/* Import dashboard depth enhancements - VISUAL IMPROVEMENTS */
+@import '../styles/dashboard-depth-enhancements.css';
+
 /* Import anti-jump form styles */
 @import '../styles/form-anti-jump.css';
 
@@ -635,2726 +638,2968 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 /* ===================================================================
-   BASE STYLES & THEME VARIABLES
-   =================================================================== */
-/* EMERGENCY MOBILE FIX - ADD AT TOP OF globals.css */
-@media (max-width: 768px) {
-  /* Force full width containers */
-  [data-dashboard-card] {
-    inline-size: 100% !important;
-    max-inline-size: calc(100vw - 2rem) !important;
-    margin: 0 auto 1rem auto !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Fix dashboard grid */
-  .dashboard-page-grid,
-  .min-h-\[calc\(100vh-4rem\)\] {
-    padding: 1rem !important;
-    inline-size: 100% !important;
-    max-width: 100vw !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Ensure proper content width */
-  .dashboard-page-grid > div {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  /* Fix main container */
-  main {
-    width: 100% !important;
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-    padding: 0.5rem !important;
-  }
-}
-/* Mobile-optimized scrolling and touch targets */
-@layer base {
-  /* iOS Safe Area Support */
-  :root {
-    --safe-area-inset-top: env(safe-area-inset-top);
-    --safe-area-inset-right: env(safe-area-inset-right);
-    --safe-area-inset-bottom: env(safe-area-inset-bottom);
-    --safe-area-inset-left: env(safe-area-inset-left);
-  }
-
-  /* Mobile Dashboard Card Optimization - COMPLETE FIX FOR iOS CUTOFF */
-@media (max-width: 768px) {
-  /* Root container fixes - prevent all horizontal overflow */
-  html, body {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-    box-sizing: border-box !important;
-    margin: 0 !important;
-  }
-
-  /* Dashboard cards - COMPLETE POSITIONING FIX */
-  [data-dashboard-card] {
-    /* Container sizing */
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    box-sizing: border-box !important;
-    
-    /* Layout structure */
-    display: flex !important;
-    flex-direction: column !important;
-    
-    /* Height management */
-    height: auto !important;
-    min-height: 300px !important;
-    max-height: calc(100vh - 10rem) !important;
-    
-    /* Spacing */
-    margin: 0 0 1rem 0 !important;
-    padding: 0 !important;
-    
-    /* Overflow control */
-    overflow: hidden !important;
-    
-    /* Visual styling */
-    border-radius: 1rem !important;
-    background-color: white !important;
-    border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-    
-    /* Position */
-    position: relative !important;
-  }
-
-  /* Dark mode card fixes */
-  .dark [data-dashboard-card] {
-    background-color: #1e293b !important;
-    border-color: #334155 !important;
-  }
-
-  /* Card headers - consistent sizing */
-  [data-dashboard-card] > div:first-child,
-  [data-dashboard-card] .card-header {
-    flex-shrink: 0 !important;
-    padding: 1rem 1rem 0.5rem 1rem !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important;
-  }
-
-  /* Card content areas - proper scrolling */
-  [data-dashboard-card] > div:last-child,
-  [data-dashboard-card] .card-content {
-    flex: 1 !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    min-height: 0 !important;
-  }
-
-  /* Scroll areas within cards */
-  [data-dashboard-card] [data-radix-scroll-area-root] {
-    height: 100% !important;
-    width: 100% !important;
-  }
-
-  [data-dashboard-card] [data-radix-scroll-area-viewport] {
-    height: 100% !important;
-    width: 100% !important;
-    padding: 0 1rem 1rem 1rem !important;
-    box-sizing: border-box !important;
-  }
-}
-
-/* ===================================================================
-   MOBILE RESPONSIVE STYLES
+   DASHBOARD VISUAL DEPTH ENHANCEMENTS - BY AURELIAN SALOMON
+   Enhanced gradient shadows and depth for modern mobile UI
    =================================================================== */
 
-/* Typography adjustments */
-@media (max-width: 768px) {
-  [data-dashboard-card] h1,
-  [data-dashboard-card] h2,
-  [data-dashboard-card] h3 {
-    font-size: 1.125rem !important;
-    line-height: 1.3 !important;
-    margin-bottom: 0.25rem !important;
-  }
-
-  [data-dashboard-card] p {
-    font-size: 0.875rem !important;
-    line-height: 1.3 !important;
-    margin: 0 !important;
-  }
-
-  /* Button and interactive elements */
-  [data-dashboard-card] button {
-    min-height: 44px !important;
-    min-width: 44px !important;
-    touch-action: manipulation !important;
-    -webkit-tap-highlight-color: transparent !important;
-  }
-
-  /* Empty states */
-  [data-dashboard-card] .text-center {
-    padding: 2rem 1rem !important;
-  }
-
-  /* Loading states */
-  [data-dashboard-card] .animate-spin {
-    width: 1.5rem !important;
-    height: 1.5rem !important;
-  }
-}
-
-  /* Typography adjustments */
-  [data-dashboard-card] h1,
-  [data-dashboard-card] h2,
-  [data-dashboard-card] h3 {
-    font-size: 1.125rem !important;
-    line-height: 1.3 !important;
-    margin-bottom: 0.25rem !important;
-  }
-
-  [data-dashboard-card] p {
-    font-size: 0.875rem !important;
-    line-height: 1.3 !important;
-    margin: 0 !important;
-  }
-
-  /* Button and interactive elements */
-  [data-dashboard-card] button {
-    min-height: 44px !important;
-    min-width: 44px !important;
-    touch-action: manipulation !important;
-    -webkit-tap-highlight-color: transparent !important;
-  }
-
-  /* Empty states */
-  [data-dashboard-card] .text-center {
-    padding: 2rem 1rem !important;
-  }
-
-  /* Loading states */
-  [data-dashboard-card] .animate-spin {
-    width: 1.5rem !important;
-    height: 1.5rem !important;
-  }
-}
-
-/* Extra small mobile devices */
-@media (max-width: 480px) {
-  .dashboard-page-grid {
-    padding: 0.75rem !important;
-    gap: 0.75rem !important;
-  }
-
-  [data-dashboard-card] {
-    min-height: 250px !important;
-    max-height: calc(100vh - 8rem) !important;
-  }
-
-  [data-dashboard-card] > div:first-child {
-    padding: 0.75rem 0.75rem 0.25rem 0.75rem !important;
-  }
-
-  [data-dashboard-card] [data-radix-scroll-area-viewport] {
-    padding: 0 0.75rem 0.75rem 0.75rem !important;
-  }
-}
-
-/* iPhone landscape optimization */
-@media (max-width: 926px) and (orientation: landscape) and (max-height: 428px) {
-  [data-dashboard-card] {
-    max-height: calc(100vh - 4rem) !important;
-  }
-
-  [data-dashboard-card] > div:first-child {
-    padding: 0.5rem 1rem !important;
-  }
-}
-
-/* iOS Safari specific fixes */
-@supports (-webkit-touch-callout: none) {
-  [data-dashboard-card] {
-    max-height: calc(100vh - 10rem) !important;
-    max-height: calc(var(--vh, 1vh) * 100 - 10rem) !important;
-    transform: translateZ(0) !important; /* Hardware acceleration */
-  }
-
-  .dashboard-container {
-    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
-    padding-bottom: calc(env(safe-area-inset-bottom) + 1rem) !important;
-  }
-
-  [data-dashboard-card] [data-radix-scroll-area-viewport] {
-    -webkit-overflow-scrolling: touch !important;
-    overscroll-behavior: contain !important;
-  }
-}
-
-/* Additional global fixes for mobile overflow */
-@media (max-width: 768px) {
-  * {
-    max-width: 100vw !important;
-  }
-
-  body, html {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-  }
-
-  .container, main, section, article {
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-    width: 100% !important;
-  }
-
-  /* Prevent any flex items from overflowing */
-  .flex {
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-  }
-
-  /* Ensure all cards stay within bounds */
-  .card,
-  [class*="card"] {
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-    box-sizing: border-box !important;
-  }
-}
-
-/* Rest of your existing CSS... */
-/* [Keep all your existing CSS from the original globals.css here] */
-
-  /* Smooth scrolling for better mobile experience */
-  html {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    /* Prevent horizontal scrolling on mobile */
-    overflow-x: hidden;
-    /* Prevent zoom on iOS when focusing inputs */
-    -webkit-text-size-adjust: 100%;
-    /* Ensure full width */
-    width: 100%;
-    max-width: 100%;
-  }
-  
-  body {
-    /* Safe area padding for iPhone X and later */
-    padding-block-start: env(safe-area-inset-top);
-    padding-inline-start: env(safe-area-inset-left);
-    padding-inline-end: env(safe-area-inset-right);
-    padding-block-end: env(safe-area-inset-bottom);
-    
-    /* Prevent horizontal scrolling */
-    overflow-x: hidden;
-    inline-size: 100%;
-    min-inline-size: 320px; /* Minimum width for very small screens */
-    width: 100%;
-    max-width: 100%;
-  }
-
-  /* Global container constraints to prevent overflow */
-  * {
-    box-sizing: border-box;
-  }
-
-  *:not(html):not(body) {
-    max-width: 100%;
-  }
-
-  /* Ensure all containers respect viewport width */
-  .container, main, section, article, div {
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-  
-  /* Better touch targets for mobile */
-  button, [role="button"], [role="tab"], [role="menuitem"] {
-    min-block-size: 44px; /* iOS/Android recommended minimum touch target */
-    min-inline-size: 44px;
-    /* Better touch feedback */
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  /* Enhanced mobile-first responsive design */
-  @media (max-inline-size: 480px) {
-    /* iPhone and small mobile devices */
-    button, [role="button"], [role="tab"], [role="menuitem"] {
-      min-block-size: 48px;
-      min-inline-size: 48px;
-      padding: 0.75rem 1rem;
-    }
-    
-    /* Better text readability on mobile */
-    body {
-      font-size: 16px; /* Prevent zoom on iOS */
-      line-height: 1.5;
-    }
-    
-    /* Optimize spacing for mobile */
-    .container {
-      padding-inline-start: 1rem;
-      padding-inline-end: 1rem;
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-    
-    /* Make cards more mobile-friendly */
-    [class*="card"] {
-      margin: 0.5rem 0;
-      border-radius: 0.75rem;
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-    
-    /* Better input handling on mobile */
-    input, textarea, select {
-      font-size: 16px; /* Prevent zoom on iOS */
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-      max-width: 100%;
-    }
-  }
-  
-  @media (max-inline-size: 768px) {
-    /* Tablet and medium mobile devices */
-    .container {
-      padding-inline-start: 1.5rem;
-      padding-inline-end: 1.5rem;
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-    
-    /* Optimize navigation for tablet */
-    nav {
-      padding: 0.5rem 1rem;
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-    
-    /* Better modal sizing for tablets */
-    [role="dialog"] {
-      margin: 1rem;
-      max-inline-size: calc(100vw - 2rem);
-      max-width: calc(100vw - 2rem);
-    }
-
-    /* Sidebar optimizations for mobile */
-    [data-sidebar="sidebar"] {
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-
-    /* Main content area mobile optimization */
-    main {
-      max-width: 100%;
-      overflow-x: hidden;
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-
-    /* Header optimization */
-    header {
-      max-width: 100%;
-      overflow-x: hidden;
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-
-    /* Ensure sidebar trigger is always visible and accessible */
-    [data-sidebar="trigger"] {
-      min-height: 44px;
-      min-width: 44px;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      position: relative;
-      z-index: 1000;
-    }
-  }
-
-@layer base {
-  :root {
-    --background: 213 33% 95%;
-    --foreground: 215 25% 17%;
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 17%;
-    --popover: 213 33% 95%;
-    --popover-foreground: 215 25% 17%;
-    --primary: 185 85% 45%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 216 12% 90%;
-    --secondary-foreground: 215 25% 17%;
-    --muted: 216 12% 84%;
-    --muted-foreground: 216 12% 44%;
-    --accent: 200 80% 48%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 358 75% 58%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 216 12% 84%;
-    --input: 216 12% 84%;
-    --ring: 185 85% 45%;
-    --radius: 0.75rem;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-  }
-
-  .dark {
-    /* iOS-inspired dark mode with rich blacks and perfect contrast */
-    --background: 0 0% 0%;                    /* Pure black for OLED */
-    --foreground: 0 0% 98%;                   /* Near-white for text */
-    --card: 240 10% 3.9%;                     /* Very dark cards */
-    --card-foreground: 0 0% 98%;              /* High contrast text */
-    --popover: 240 10% 3.9%;                  /* Match cards */
-    --popover-foreground: 0 0% 98%;           /* High contrast text */
-    --primary: 213 93% 68%;                   /* iOS system blue */
-    --primary-foreground: 0 0% 100%;          /* Pure white on blue */
-    --secondary: 240 5.9% 10%;                /* Subtle gray */
-    --secondary-foreground: 0 0% 98%;         /* High contrast text */
-    --muted: 240 5.9% 10%;                    /* Subtle backgrounds */
-    --muted-foreground: 240 5% 65%;           /* Mid-gray text */
-    --accent: 213 93% 68%;                    /* Match primary */
-    --accent-foreground: 0 0% 100%;           /* Pure white */
-    --destructive: 0 84% 60%;                 /* iOS red */
-    --destructive-foreground: 0 0% 100%;      /* Pure white */
-    --border: 240 5.9% 15%;                   /* Subtle borders */
-    --input: 240 5.9% 10%;                    /* Input backgrounds */
-    --ring: 213 93% 68%;                      /* Focus rings */
-    --sidebar-background: 0 0% 0%;            /* Pure black sidebar */
-    --sidebar-foreground: 0 0% 98%;           /* High contrast text */
-  }
-
-  * {
-    border-color: hsl(var(--border));
-    box-sizing: border-box;
-  }
-
-  body {
-    color: hsl(var(--foreground));
-    background: hsl(var(--background));
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-}
-
-/* ===================================================================
-   iOS-STYLE DARK MODE ENHANCEMENTS
-   =================================================================== */
-
-/* Glass morphism effects for dark mode */
-.dark {
-  /* Beautiful glass card effects */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  
-  /* iOS-style blur effects */
-  --blur-strength: 20px;
-  --backdrop-opacity: 0.8;
-}
-
-/* Enhanced card styling for dark mode - PERFORMANCE OPTIMIZED */
-.dark [data-card], 
-.dark .card {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.08) 0%, 
-    rgba(255, 255, 255, 0.03) 100%);
-  backdrop-filter: blur(10px); /* Reduced from 20px */
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* PERFORMANCE OPTIMIZATIONS */
-  transform: translateZ(0);
-  will-change: auto;
-  contain: layout style paint;
-}
-
-.dark [data-card]:hover,
-.dark .card:hover {
+/* Enhanced frosted glass cards with deeper shadows and gradients */
+.frosted-glass-card {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.12) 0%, 
-    rgba(255, 255, 255, 0.06) 100%);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  transform: translateY(-2px);
-}
-
-/* Beautiful header styling - PERFORMANCE OPTIMIZED */
-.dark header {
-  background: rgba(0, 0, 0, var(--backdrop-opacity));
-  backdrop-filter: blur(10px); /* Reduced from 20px */
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.2);
-  /* PERFORMANCE OPTIMIZATIONS */
-  transform: translateZ(0);
-  will-change: auto;
-  contain: layout style paint;
-}
-
-/* Sidebar enhancements */
-.dark [data-sidebar="sidebar"] {
-  background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(var(--blur-strength));
-  -webkit-backdrop-filter: blur(var(--blur-strength));
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* Button enhancements - PERFORMANCE OPTIMIZED */
-.dark .btn-primary,
-.dark button[class*="primary"] {
-  background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
-  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
-  border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* PERFORMANCE OPTIMIZATIONS */
-  transform: translateZ(0);
-  will-change: transform;
-  contain: layout style paint;
-}
-
-.dark .btn-primary:hover,
-.dark button[class*="primary"]:hover {
-  background: linear-gradient(135deg, #0056CC 0%, #003D99 100%);
-  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
-  transform: translateY(-1px);
-}
-
-/* Input field enhancements */
-.dark input,
-.dark textarea,
-.dark select {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.dark input:focus,
-.dark textarea:focus,
-.dark select:focus {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: #007AFF;
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
-}
-
-/* Modal and dialog enhancements */
-.dark [role="dialog"],
-.dark .dialog {
-  background: rgba(10, 10, 10, 0.95);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-/* Navigation menu enhancements */
-.dark .nav-item {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.dark .nav-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  transform: translateX(4px);
-}
-
-.dark .nav-item.active {
-  background: linear-gradient(135deg, 
-    rgba(0, 122, 255, 0.2) 0%, 
-    rgba(0, 122, 255, 0.1) 100%);
-  border-left: 3px solid #007AFF;
-  border-radius: 0 12px 12px 0;
-}
-
-/* Toast and notification enhancements */
-.dark .toast,
-.dark [data-toast] {
-  background: rgba(30, 30, 30, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-}
-
-/* Dropdown menu enhancements */
-.dark [data-radix-dropdown-content],
-.dark .dropdown-content {
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
-  border-radius: 16px;
-}
-
-/* Badge and status enhancements */
-.dark .badge,
-.dark [class*="badge"] {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Loading states */
-.dark .loading,
-.dark [class*="loading"] {
-  background: linear-gradient(90deg, 
-    rgba(255, 255, 255, 0.05) 0%, 
-    rgba(255, 255, 255, 0.1) 50%, 
-    rgba(255, 255, 255, 0.05) 100%);
-}
-
-/* Scrollbar styling for dark mode */
-.dark ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.dark ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  border: 2px solid rgba(0, 0, 0, 0.1);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Selection styling */
-.dark ::selection {
-  background: rgba(0, 122, 255, 0.3);
-  color: white;
-}
-
-/* ===================================================================
-   iOS-STYLE GLOW UTILITIES
-   =================================================================== */
-
-/* iOS system blue glow effect */
-.dark .glow-ios-blue {
-  box-shadow: 0 0 20px rgba(0, 122, 255, 0.3), 
-              0 0 40px rgba(0, 122, 255, 0.1);
-}
-
-.dark .glow-ios-blue:hover {
-  box-shadow: 0 0 25px rgba(0, 122, 255, 0.4), 
-              0 0 50px rgba(0, 122, 255, 0.15);
-}
-
-/* Card glass effects with iOS blue accent */
-.dark .card-glass {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.08) 0%, 
-    rgba(255, 255, 255, 0.03) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-/* ===================================================================
-   CARD SPACING AND LAYOUT FIXES - PREVENTS JUMPING
-   =================================================================== */
-
-/* Ensure consistent spacing and minimum heights for all dashboard cards */
-[data-dashboard-card] .space-y-3 > *,
-[data-dashboard-card] .space-y-4 > * {
-  margin-bottom: 0 !important;
-  margin-top: 0 !important;
-}
-
-[data-dashboard-card] .space-y-3 {
-  gap: 0.75rem !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-[data-dashboard-card] .space-y-4 {
-  gap: 1rem !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* Prevent layout shifts by ensuring minimum heights */
-[data-dashboard-card] .closer-card,
-[data-dashboard-card] [data-testid="closer-card"] {
-  min-height: 120px !important;
-  transition: all 0.2s ease !important;
-}
-
-[data-dashboard-card] .lead-card,
-[data-dashboard-card] [data-testid="lead-card"] {
-  min-height: 100px !important;
-  transition: all 0.2s ease !important;
-}
-
-/* Stable content areas to prevent internal jumping */
-[data-dashboard-card] .closer-content,
-[data-dashboard-card] .lead-content {
-  min-height: 60px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: flex-start !important;
-}
-
-/* ===================================================================
-   CARD SPACING AND LAYOUT FIXES - PREVENTS JUMPING
-   =================================================================== */
-
-/* Use gap instead of space-y classes to prevent margin conflicts */
-[data-dashboard-card] .space-y-3,
-[data-dashboard-card] .space-y-4 {
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-[data-dashboard-card] .space-y-3 {
-  gap: 0.75rem !important;
-}
-
-[data-dashboard-card] .space-y-4 {
-  gap: 1rem !important;
-}
-
-/* Remove individual margins that cause jumping */
-[data-dashboard-card] .space-y-3 > *,
-[data-dashboard-card] .space-y-4 > * {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-/* Minimum heights to prevent layout shifts */
-[data-dashboard-card] .closer-card,
-[data-dashboard-card] [class*="Card"] {
-  transition: all 0.2s ease-in-out !important;
-}
-
-/* ===================================================================
-   CLOSER CARD CONTAINMENT FIXES - PREVENT OVERFLOW AND STRETCHING
-   =================================================================== */
-
-/* Ensure closer cards stay within container boundaries and maintain proportions */
-[data-dashboard-card] .closer-card,
-[data-dashboard-card] [data-testid="closer-card"],
-[data-dashboard-card] .transition-all {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-  flex-shrink: 0 !important;
-}
-
-/* Closer card content areas must respect container width */
-[data-dashboard-card] .closer-content {
-  flex: 1 !important;
-  min-width: 0 !important;
-  max-width: calc(100% - 6rem) !important; /* Account for avatar and spacing */
-  overflow: hidden !important;
-}
-
-/* Avatar sizing - prevent stretching */
-[data-dashboard-card] .closer-avatar {
-  flex-shrink: 0 !important;
-  width: 5rem !important;
-  height: 5rem !important;
-  min-width: 5rem !important;
-  min-height: 5rem !important;
-}
-
-/* Avatar image sizing - prevent stretching and distortion */
-[data-dashboard-card] .closer-avatar img,
-[data-dashboard-card] .closer-avatar [data-radix-avatar-image] {
-  object-fit: cover !important;
-  object-position: center !important;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* Ensure avatar fallback maintains aspect ratio */
-[data-dashboard-card] .closer-avatar [data-radix-avatar-fallback] {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* Working indicator text wrapping */
-[data-dashboard-card] .closer-working-indicator {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-  word-wrap: break-word !important;
-  word-break: break-word !important;
-  hyphens: auto !important;
-  line-height: 1.3 !important;
-}
-
-/* Closer name truncation */
-[data-dashboard-card] .closer-name {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-/* Position badge container */
-[data-dashboard-card] .closer-position-badge {
-  flex-shrink: 0 !important;
-  width: 1.5rem !important;
-  height: 1.5rem !important;
-  min-width: 1.5rem !important;
-  min-height: 1.5rem !important;
-}
-
-/* Specific fixes for In Process Leads section */
-[data-dashboard-card] .space-y-4 > div {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-}
-
-/* Card wrapper inside In Process Leads */
-[data-dashboard-card] .card,
-[data-dashboard-card] [class*="Card"] {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
-
-/* Card content areas */
-[data-dashboard-card] .card .p-3,
-[data-dashboard-card] [class*="Card"] .p-3 {
-  padding: 0.75rem !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
-
-/* Ensure flex containers don't overflow */
-[data-dashboard-card] .flex {
-  max-width: 100% !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
-
-/* Ensure buttons and actions don't cause overflow */
-[data-dashboard-card] .closer-actions {
-  flex-shrink: 0 !important;
-  overflow: hidden !important;
-}
-
-/* Mobile-specific containment fixes */
-@media (max-width: 768px) {
-  [data-dashboard-card] .closer-content {
-    max-width: calc(100% - 5rem) !important; /* Smaller avatar on mobile */
-  }
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   
-  [data-dashboard-card] .closer-avatar {
-    width: 4rem !important;
-    height: 4rem !important;
-    min-width: 4rem !important;
-    min-height: 4rem !important;
-  }
-}
-
-/* ===================================================================
-   MOBILE-FIRST LAYOUT SYSTEM
-   =================================================================== */
-
-.dashboard-page-grid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  min-height: 100vh;
-  padding: 1.5rem 1rem;
-  gap: 1.5rem;
-}
-
-/* FIX: This is the single source of truth for all dashboard card widths */
-[data-dashboard-card] {
-  width: 100%;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  max-height: 85vh;
-  overflow: hidden;
-}
-
-[data-dashboard-card] .card-header {
-  flex-shrink: 0;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid hsl(var(--border));
-}
-
-/* ===================================================================
-   COMPONENT-SPECIFIC STYLES
-   =================================================================== */
-
-[data-sidebar="sidebar"] {
-  background-color: hsl(var(--sidebar-background)) !important;
-}
-
-.lead-queue-container .card-content {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.lead-queue-split-layout {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  min-height: 0;
-}
-
-.queue-section {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  background-color: hsl(var(--background));
-  border-radius: calc(var(--radius) - 0.25rem);
-  padding: 0.75rem;
-  gap: 0.75rem;
-}
-
-.dark .queue-section {
-  background-color: hsl(var(--muted) / 0.2);
-  border: 1px solid hsl(var(--border) / 0.5);
-}
-
-.queue-section .scroll-area {
-  flex-grow: 1;
-  min-height: 0;
-}
-
-.queue-section .calendar-content {
-  flex-grow: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Mobile-specific fixes for scheduled leads flexing */
-@media (max-width: 1023px) {
-  .queue-section {
-    /* Ensure sections can shrink on mobile */
-    min-height: 200px;
-    max-height: 50vh;
-  }
+  /* Multi-layered shadow system for depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
   
-  .calendar-content {
-    /* Fix mobile flexing for scheduled leads */
-    flex: 1;
-    min-height: 150px;
-    max-height: 45vh;
-    overflow: hidden;
-    width: 100%;
-  }
-  
-  .calendar-content .scroll-area {
-    height: 100%;
-    width: 100%;
-  }
-  
-  .calendar-content [data-radix-scroll-area-viewport] {
-    width: 100%;
-    height: 100%;
-  }
-  
-  /* Ensure lead cards flex properly on mobile */
-  .calendar-content .space-y-3 {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
-  }
-  
-  .calendar-content .space-y-3 > div {
-    width: 100%;
-    flex-shrink: 0;
-  }
-  
-  /* Make sure LeadCard components fit within container */
-  .calendar-content .space-y-3 [data-testid="lead-card"],
-  .calendar-content .space-y-3 .shadow-md {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-}
-
-/* ===================================================================
-   MOBILE SCROLLING OPTIMIZATION - FIX JUMPING ON iOS
-   =================================================================== */
-@media (max-width: 768px) {
-  /* iOS Safari momentum scrolling optimization */
-  [data-dashboard-card] {
-    -webkit-overflow-scrolling: touch !important;
-    transform: translateZ(0) !important;
-    -webkit-transform: translateZ(0) !important;
-    backface-visibility: hidden !important;
-    -webkit-backface-visibility: hidden !important;
-    will-change: auto !important;
-  }
-  
-  /* Prevent reflow during scroll */
-  [data-dashboard-card] .space-y-3,
-  [data-dashboard-card] .space-y-4 {
-    contain: layout style !important;
-    transform: translateZ(0) !important;
-    -webkit-transform: translateZ(0) !important;
-  }
-  
-  /* Stable card dimensions to prevent layout shifting */
-  [data-dashboard-card] .closer-card,
-  [data-dashboard-card] .lead-card,
-  [data-dashboard-card] [data-testid="closer-card"],
-  [data-dashboard-card] [data-testid="lead-card"] {
-    contain: layout style paint !important;
-    transform: translateZ(0) !important;
-    -webkit-transform: translateZ(0) !important;
-    backface-visibility: hidden !important;
-    -webkit-backface-visibility: hidden !important;
-  }
-  
-  /* Scroll area optimizations */
-  [data-dashboard-card] [data-radix-scroll-area-viewport] {
-    -webkit-overflow-scrolling: touch !important;
-    overflow-anchor: none !important;
-    scroll-behavior: auto !important;
-    transform: translateZ(0) !important;
-    -webkit-transform: translateZ(0) !important;
-  }
-  
-  /* Prevent elastic bounce causing layout jumps */
-  [data-dashboard-card] [data-radix-scroll-area-root] {
-    overscroll-behavior: contain !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-}
-
-.queue-divider-horizontal {
-  height: 1px;
-  background-color: hsl(var(--border));
-  flex-shrink: 0;
-  margin: 0.5rem 0;
-}
-
-/* ===================================================================
-   DESKTOP & TABLET LAYOUT ADJUSTMENTS
-   =================================================================== */
-@media (min-width: 1024px) {
-  .dashboard-page-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-    align-items: flex-start;
-    padding: 2rem;
-  }
-
-  [data-dashboard-card] {
-    max-width: none;
-  }
-
-  .lead-queue-split-layout {
-    flex-direction: row;
-  }
-
-  .queue-divider-horizontal {
-    display: none;
-  }
-}
-/* ===================================================================
-   TEAM CHAT COMPONENT STYLES
-   =================================================================== */
-
-.chat-message {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.75rem; /* 12px */
-  max-width: 80%;
-}
-
-.chat-message.is-other {
-  /* Aligns messages from others to the left */
-}
-
-.chat-message.is-user {
-  margin-left: auto; /* Aligns user's messages to the right */
-  flex-direction: row-reverse; /* Flips the order for user messages */
-}
-
-.chat-message-bubble {
-  padding: 0.75rem 1rem; /* 12px 16px */
-  border-radius: 1.125rem; /* 18px */
-  line-height: 1.5;
-}
-
-.chat-message.is-other .chat-message-bubble {
-  background-color: hsl(var(--muted));
-  border-bottom-left-radius: 0.375rem; /* 6px */
-}
-
-.chat-message.is-user .chat-message-bubble {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  border-bottom-right-radius: 0.375rem; /* 6px */
-}
-
-.dark .chat-message.is-other .chat-message-bubble {
-  background-color: hsl(var(--muted) / 0.3);
-}
-
-.sender-name {
-  font-size: 0.75rem; /* 12px */
-  font-weight: 600;
-  margin-bottom: 0.25rem; /* 4px */
-  color: hsl(var(--foreground));
-  opacity: 0.9;
-}
-
-.message-text {
-  /* Styles for the main message text can go here if needed */
-  white-space: pre-wrap; /* Ensures line breaks are respected */
-}
-
-.message-timestamp {
-  font-size: 0.625rem; /* 10px */
-  color: hsl(var(--muted-foreground));
-  margin-top: 0.25rem; /* 4px */
-}
-
-.chat-message.is-other .message-timestamp {
-  text-align: left;
-  padding-left: 0.5rem;
-}
-
-.chat-message.is-user .message-timestamp {
-  text-align: right;
-  padding-right: 0.5rem;
-}
-/* ===================================================================
-   OPTIMIZED TEAM CHAT STYLES
-   =================================================================== */
-
-/* Main message container */
-.chat-message {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.75rem; /* 12px */
-  max-width: 85%;
-}
-
-/* Align other people's messages to the left */
-.chat-message.is-other {
-  align-self: flex-start;
-}
-
-/* Align the current user's messages to the right */
-.chat-message.is-user {
-  align-self: flex-end;
-  margin-left: auto;
-  flex-direction: row-reverse;
-}
-
-/* The message bubble itself */
-.chat-message-bubble {
-  padding: 0.75rem 1rem; /* 12px 16px */
-  border-radius: 1.25rem; /* 20px */
-  line-height: 1.5;
-  word-break: break-word;
-}
-
-/* Style for other people's bubbles */
-.chat-message.is-other .chat-message-bubble {
-  background-color: hsl(var(--muted));
-  border-bottom-left-radius: 0.375rem; /* 6px */
-}
-
-/* Style for the current user's bubbles */
-.chat-message.is-user .chat-message-bubble {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  border-bottom-right-radius: 0.375rem; /* 6px */
-}
-
-/* Dark mode adjustments */
-.dark .chat-message.is-other .chat-message-bubble {
-  background-color: hsl(var(--muted) / 0.3);
-}
-
-/* Sender's name styling */
-.sender-name {
-  font-size: 0.75rem; /* 12px */
-  font-weight: 600;
-  margin-bottom: 0.25rem; /* 4px */
-  color: hsl(var(--foreground));
-  opacity: 0.9;
-}
-
-/* Main message text */
-.message-text {
-  white-space: pre-wrap; /* Respects line breaks and spacing */
-}
-
-/* Timestamp styling */
-.message-timestamp {
-  font-size: 0.625rem; /* 10px */
-  color: hsl(var(--muted-foreground));
-  margin-top: 0.25rem; /* 4px */
-}
-
-.chat-message.is-other .message-timestamp {
-  text-align: left;
-}
-
-.chat-message.is-user .message-timestamp {
-  text-align: right;
-}
-/* Floating Chat Button Enhancements */
-.floating-chat-button {
-  z-index: 50;
-}
-
-/* Mobile optimizations for floating chat */
-@media (max-width: 768px) {
-  .floating-chat-button {
-    bottom: 5rem !important;
-    right: 1rem !important;
-  }
-
-  /* Ensure dropdown appears above everything on mobile */
-  .floating-chat-button [data-radix-dropdown-content] {
-    z-index: 60 !important;
-    max-width: calc(100vw - 2rem) !important;
-    margin-bottom: 1rem !important;
-  }
-
-  /* Make dropdown items more touch-friendly */
-  .floating-chat-button [data-radix-dropdown-item] {
-    min-height: 3.5rem !important;
-    padding: 1rem !important;
-    touch-action: manipulation !important;
-    -webkit-tap-highlight-color: transparent !important;
-  }
-
-  /* Ensure text is readable on mobile */
-  .floating-chat-button .font-medium {
-    font-size: 0.9rem !important;
-    line-height: 1.2 !important;
-  }
-
-  .floating-chat-button .text-xs {
-    font-size: 0.75rem !important;
-    line-height: 1.1 !important;
-  }
-}
-
-/* Extra small mobile devices */
-@media (max-width: 480px) {
-  .floating-chat-button {
-    bottom: 4rem !important;
-    right: 0.75rem !important;
-  }
-
-  /* Reduce button size slightly on very small screens */
-  .floating-chat-button button {
-    height: 3.25rem !important;
-    width: 3.25rem !important;
-  }
-
-  .floating-chat-button [data-radix-dropdown-content] {
-    width: calc(100vw - 1.5rem) !important;
-    margin-bottom: 0.75rem !important;
-  }
-}
-
-/* iOS Safe Area handling for floating button */
-@supports (-webkit-touch-callout: none) {
-  .floating-chat-button {
-    bottom: calc(1.5rem + env(safe-area-inset-bottom)) !important;
-    right: calc(1.5rem + env(safe-area-inset-right)) !important;
-  }
-
-  @media (max-width: 768px) {
-    .floating-chat-button {
-      bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
-      right: calc(1rem + env(safe-area-inset-right)) !important;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .floating-chat-button {
-      bottom: calc(4rem + env(safe-area-inset-bottom)) !important;
-      right: calc(0.75rem + env(safe-area-inset-right)) !important;
-    }
-  }
-}
-
-/* Dark mode enhancements for floating chat */
-.dark .floating-chat-button {
-  /* Enhanced glow effect */
-  filter: drop-shadow(0 0 10px rgba(3, 218, 198, 0.3));
-}
-
-.dark .floating-chat-button button:hover {
-  filter: drop-shadow(0 0 15px rgba(3, 218, 198, 0.5));
-  transform: scale(1.05);
-  transition: all 0.2s ease-in-out;
-}
-
-/* Pulse animation for unread indicator */
-@keyframes chat-pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-  }
-}
-
-.floating-chat-button .animate-pulse {
-  animation: chat-pulse 2s infinite;
-}
-
-/* Dropdown menu styling */
-.floating-chat-button [data-radix-dropdown-content] {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-}
-
-.dark .floating-chat-button [data-radix-dropdown-content] {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-}
-
-[data-card] *, 
-.rounded-xl *, 
-.card-glass * {
-  position: relative;
-  z-index: 1;
-}
-
-@layer base {
-.container {
-width: 100%;
-max-width: 1400px; /* Match your Tailwind 2xl breakpoint */
-margin-left: auto;
-margin-right: auto;
-padding-left: 1rem;
-padding-right: 1rem;
-}
-@media (min-width: 640px) {
-.container {
-padding-left: 1.5rem;
-padding-right: 1.5rem;
-}
-}
-@media (min-width: 1024px) {
-.container {
-padding-left: 2rem;
-padding-right: 2rem;
-}
-}
-}
-
-/* ===================================================================
-   LEAD CARD MOBILE OVERFLOW FIXES
-   =================================================================== */
-@media (max-width: 768px) {
-  /* Fix scheduled lead cards cutting off on mobile */
-  .calendar-content [data-radix-scroll-area-viewport],
-  .queue-section [data-radix-scroll-area-viewport] {
-    padding-left: 0.25rem !important;
-    padding-right: 0.25rem !important;
-    box-sizing: border-box !important;
-  }
-  
-  /* Ensure lead cards fit within container and match closer card width */
-  .calendar-content .space-y-3 > div,
-  .queue-section .space-y-3 > div {
-    width: calc(100% - 0.5rem) !important;
-    max-width: calc(100% - 0.5rem) !important;
-    margin: 0 auto !important;
-    box-sizing: border-box !important;
-  }
-  
-  /* Fix card headers and content for both sections */
-  .calendar-content .card,
-  .queue-section .card {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
-  
-  /* Compact card headers - support both classes and React components */
-  .calendar-content .card .card-header,
-  .queue-section .card .card-header,
-  .calendar-content .card [class*="CardHeader"],
-  .queue-section .card [class*="CardHeader"] {
-    padding: 0.5rem 0.625rem !important;
-    box-sizing: border-box !important;
-  }
-  
-  /* Compact card footers - support both classes and React components */
-  .calendar-content .card .card-footer,
-  .queue-section .card .card-footer,
-  .calendar-content .card [class*="CardFooter"],
-  .queue-section .card [class*="CardFooter"] {
-    padding: 0.25rem 0.625rem 0.5rem 0.625rem !important;
-    box-sizing: border-box !important;
-  }
-  
-  /* Ensure proper text truncation and flex layout */
-  .calendar-content .card .truncate,
-  .queue-section .card .truncate {
-    max-width: 100% !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-  
-  /* Fix flex container that holds the customer name and details */
-  .calendar-content .card .flex.items-center.flex-1,
-  .queue-section .card .flex.items-center.flex-1 {
-    min-width: 0 !important;
-    max-width: calc(100% - 3rem) !important;
-    overflow: hidden !important;
-  }
-  
-  /* Fix the main flex container */
-  .calendar-content .card .flex.justify-between,
-  .queue-section .card .flex.justify-between {
-    gap: 0.125rem !important;
-    align-items: flex-start !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-  
-  /* Right side controls (checkbox and badge) */
-  .calendar-content .card .flex.items-center.gap-0\.5,
-  .queue-section .card .flex.items-center.gap-0\.5 {
-    gap: 0.125rem !important;
-    flex-shrink: 0 !important;
-    min-width: 0 !important;
-    max-width: 3rem !important;
-  }
-  
-  /* Compact spacing for all lead cards */
-  .calendar-content .card,
-  .queue-section .card {
-    margin-bottom: 0.5rem !important;
-  }
-  
-  /* Make verification checkbox smaller on mobile */
-  .calendar-content .card [data-testid="verified-checkbox"],
-  .calendar-content .card .flex.items-center:has(.h-3),
-  .queue-section .card [data-testid="verified-checkbox"],
-  .queue-section .card .flex.items-center:has(.h-3) {
-    min-width: auto !important;
-    width: auto !important;
-  }
-  
-  /* Reduce badge size on mobile - support both classes and React components */
-  .calendar-content .card .badge,
-  .queue-section .card .badge,
-  .calendar-content .card [class*="Badge"],
-  .queue-section .card [class*="Badge"] {
-    padding: 0.125rem 0.375rem !important;
-    font-size: 0.625rem !important;
-    min-height: auto !important;
-    max-width: 2.5rem !important;
-  }
-  
-  /* Override checkbox size specifically for mobile lead cards */
-  .calendar-content .card [data-radix-checkbox-root],
-  .queue-section .card [data-radix-checkbox-root] {
-    height: 0.75rem !important;
-    width: 0.75rem !important;
-  }
-  
-  .calendar-content .card [data-radix-checkbox-indicator] svg,
-  .queue-section .card [data-radix-checkbox-indicator] svg {
-    height: 0.625rem !important;
-    width: 0.625rem !important;
-  }
-  
-  /* Force text content to fit properly */
-  .calendar-content .card .min-w-0.flex-1,
-  .queue-section .card .min-w-0.flex-1 {
-    max-width: calc(100% - 0.5rem) !important;
-    overflow: hidden !important;
-  }
-  
-  /* Customer name title - support both classes and React components */
-  .calendar-content .card h3,
-  .queue-section .card h3,
-  .calendar-content .card [class*="CardTitle"],
-  .queue-section .card [class*="CardTitle"] {
-    font-size: 0.75rem !important;
-    line-height: 1.2 !important;
-    max-width: 100% !important;
-  }
-  
-  /* Setter info */
-  .calendar-content .card .text-muted-foreground,
-  .queue-section .card .text-muted-foreground {
-    font-size: 0.625rem !important;
-    line-height: 1.1 !important;
-    max-width: 100% !important;
-  }
-}
-
-/* ===================================================================
-   DESKTOP LAYOUT - MATCH CLOSER CARD WIDTHS
-   =================================================================== */
-@media (min-width: 769px) {
-  /* Ensure scheduled leads section matches closer cards width */
-  .calendar-content,
-  .queue-section {
-    width: 100% !important;
-    max-width: none !important;
-  }
-  
-  .calendar-content .space-y-3,
-  .queue-section .space-y-3 {
-    width: 100% !important;
-    max-width: none !important;
-  }
-  
-  .calendar-content .space-y-3 > div,
-  .queue-section .space-y-3 > div {
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-  }
-}
-
-/* ===================================================================
-   iOS-STYLE LOADING ANIMATIONS
-   =================================================================== */
-
-/* iOS-style spinner with native feel */
-@keyframes ios-spinner {
-  0% {
-    transform: rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: rotate(360deg);
-    opacity: 0.3;
-  }
-}
-
-.ios-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid transparent;
-  border-top: 2px solid #007AFF;
-  border-radius: 50%;
-  animation: ios-spinner 1s cubic-bezier(0.42, 0, 0.58, 1) infinite;
-}
-
-/* Skeleton loading with iOS-style pulse */
-@keyframes ios-skeleton-pulse {
-  0%, 100% {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-  50% {
-    background-color: rgba(255, 255, 255, 0.15);
-  }
-}
-
-.dark .ios-skeleton {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.12) 50%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  background-size: 200% 100%;
-  animation: ios-skeleton-pulse 1.5s ease-in-out infinite;
-  border-radius: 8px;
-}
-
-/* Button loading state with iOS feel */
-.button-loading {
-  position: relative;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.button-loading::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  animation: button-loading-shine 1.5s ease-in-out infinite;
-}
-
-@keyframes button-loading-shine {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-/* iOS-style progress indicators */
-.ios-progress {
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-  overflow: hidden;
-  position: relative;
-}
-
-.ios-progress::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: linear-gradient(90deg, #007AFF, #0056CC);
-  border-radius: 2px;
-  transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Pull-to-refresh indicator */
-@keyframes pull-to-refresh {
-  0% {
-    transform: rotate(0deg) scale(0.8);
-    opacity: 0.6;
-  }
-  50% {
-    transform: rotate(180deg) scale(1);
-    opacity: 1;
-  }
-   100% {
-    transform: rotate(360deg) scale(0.8);
-    opacity: 0.6;
-  }
-}
-
-.pull-to-refresh {
-  animation: pull-to-refresh 2s ease-in-out infinite;
-}
-
-/* ===================================================================
-   iOS BUTTON ENHANCEMENTS - WORLD-CLASS INTERACTIONS
-   =================================================================== */
-
-/* Base iOS button styles */
-.ios-button-base {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-  transform-origin: center;
-  will-change: transform, opacity;
-}
-
-/* iOS button interactive states */
-.ios-button-interactive {
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.ios-button-pressed {
-  transform: scale(0.97);
-  transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* iOS-specific button variants */
-.ios-button-system {
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.ios-button-fill {
-  font-weight: 500;
-  border:     1px solid rgba(255, 255, 255, 0.08);
-}
-
-.ios-button-plain {
-  font-weight: 500;
-  background: transparent !important;
-  border: none;
-  box-shadow: none !important;
-}
-
-.ios-button-tinted {
-  font-weight: 500;
-  border: 1px solid rgba(0, 122, 255, 0.2);
-}
-
-/* iOS button loading state */
-.ios-button-loading {
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.ios-button-loading .ios-spinner {
-  margin-inline-end: 8px;
-}
-
-/* iOS ripple effect animation */
-@keyframes ios-ripple {
-  0% {
-    transform: scale(0);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
-.animate-ios-ripple {
-  animation: ios-ripple 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* iOS shine effect for premium feel */
-@keyframes ios-shine {
-  0% {
-    transform: translateX(-100%) skewX(-12deg);
-  }
-  100% {
-    transform: translateX(300%) skewX(-12deg);
-  }
-}
-
-.animate-ios-shine {
-  animation: ios-shine 2s ease-in-out infinite;
-  animation-delay: 1s;
-}
-
-/* iOS button hover states (for desktop) */
-@media (hover: hover) {
-  .ios-button-system:hover {
-    background: #0056CC;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.4);
-  }
-  
-  .ios-button-fill:hover {
-    background: rgba(120, 120, 128, 0.24);
-    border-color: rgba(255, 255, 255, 0.12);
-  }
-  
-  .ios-button-plain:hover {
-    background: rgba(0, 122, 255, 0.15) !important;
-  }
-  
-  .ios-button-tinted:hover {
-    background: rgba(0, 122, 255, 0.25);
-    border-color: rgba(0,  122, 255, 0.3);
-  }
-}
-
-/* iOS button focus states for accessibility */
-.ios-button-base:focus-visible {
-  outline: 2px solid #007AFF;
-  outline-offset: 2px;
-  border-radius: inherit;
-}
-
-/* iOS button disabled states */
-.ios-button-base:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-/* iOS button group spacing */
-.ios-button-group {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.ios-button-group.vertical {
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* iOS button with icon optimizations */
-.ios-button-base [data-icon] {
-  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.ios-button-pressed [data-icon] {
-  transform: scale(0.95);
-}
-
-/* iOS-style destructive button enhancements */
-.ios-button-destructive {
-  background: #FF3B30;
-  color: white;
-  font-weight: 600;
-}
-
-.ios-button-destructive:hover {
-  background: #D70015;
-  box-shadow: 0 4px 20px rgba(255, 59, 48, 0.4);
-}
-
-/* iOS button size variants with proper spacing */
-.ios-button-compact {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.2;
-}
-
-.ios-button-regular {
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-}
-
-.ios-button-prominent {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-}
-
-/* Dark mode optimizations for iOS buttons */
-@media (prefers-color-scheme: dark) {
-  .ios-button-fill {
-    background: rgba(120, 120, 128, 0.24);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .ios-button-tinted {
-    background: rgba(0, 122, 255, 0.2);
-    color: #0A84FF;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .ios-button-base {
-    border: 2px solid currentColor;
-  }
-  
-  .ios-button-fill {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .ios-button-base,
-  .ios-button-interactive,
-  .ios-button-pressed,
-  .animate-ios-ripple,
-  .animate-ios-shine {
-    transition: none !important;
-    animation: none !important;
-  }
-}
-
-/* iOS button performance optimizations - HARDWARE ACCELERATED */
-.ios-button-base {
-  contain: layout style paint;
-  transform: translateZ(0);
-}
-
-/* Enhanced iOS-specific utilities for bottom navigation */
-.pb-safe-bottom {
-  padding-block-end: env(safe-area-inset-bottom);
-}
-
-.mb-safe-bottom {
-  margin-block-end: env(safe-area-inset-bottom);
-}
-
-.tap-highlight-transparent {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* iOS-style spring animations */
-.ios-spring-animation {
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Enhanced bottom navigation styling */
-@media (max-width: 768px) {
-  /* Bottom navigation is handled by mobile-scroll-fixes.css */
-  
-  /* Prevent content from being hidden behind bottom nav */
-  .main-content-with-bottom-nav {
-    padding-block-end: calc(5rem + env(safe-area-inset-bottom) + 2rem);
-    min-block-size: 100vh;
-    box-sizing: border-box;
-  }
-
-  /* Ensure forms have proper spacing at bottom on mobile */
-  .main-content-with-bottom-nav form {
-    margin-bottom: 2rem;
-  }
-
-  /* Create lead form specific adjustments */
-  .create-lead-form {
-    padding-bottom: 1rem;
-  }
-
-  /* Ensure form submit buttons are always visible */
-  .main-content-with-bottom-nav form > div:last-child,
-  .main-content-with-bottom-nav .create-lead-form > div:last-child {
-    margin-bottom: 3rem !important;
-    padding-bottom: 1rem !important;
-  }
-
-  /* Card content with forms */
-  .main-content-with-bottom-nav .card .create-lead-form {
-    padding-bottom: 3rem;
-  }
-
-  /* Ensure cards with forms have extra bottom margin on mobile */
-  .main-content-with-bottom-nav .max-w-2xl {
-    margin-bottom: 4rem !important;
-  }
-
-  /* Create lead page specific */
-  .main-content-with-bottom-nav .container {
-    padding-bottom: 2rem;
-  }
-  
-  /* iOS-style backdrop blur support */
-  @supports (backdrop-filter: blur(40px)) {
-    .ios-backdrop-blur {
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-    }
-  }
-  
-  /* Fallback for older browsers */
-  @supports not (backdrop-filter: blur(40px)) {
-    .ios-backdrop-blur {
-      background-color: rgba(255, 255, 255, 0.95);
-    }
-    
-    .dark .ios-backdrop-blur {
-      background-color: rgba(15, 20, 25, 0.95);
-    }
-  }
-}
-
-/* Enhanced mobile input handling to prevent keyboard issues */
-@media screen and (max-width: 768px) {
-  /* Prevent zoom on input focus */
-  input[type="text"],
-  input[type="email"], 
-  input[type="tel"],
-  input[type="date"],
-  input[type="time"],
-  textarea,
-  select {
-    font-size: 16px !important;
-    transform: none !important;
-  }
-
-  /* Improve input focus behavior */
-  .create-lead-form input {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /* Prevent autocomplete dropdown from interfering */
-  .create-lead-form .relative {
-    isolation: isolate;
-  }
-  
-  /* Ensure proper z-index for dropdowns */
-  .create-lead-form [role="combobox"] + div {
-    z-index: 1000;
-  }
-}
-
-/* ===================================================================
-   iOS-STYLE MANAGE CLOSERS MODAL ENHANCEMENTS
-   =================================================================== */
-
-/* Enhanced dialog styling with iOS feel */
-[data-testid="manage-closers-modal"] .dialog-content {
-  background: rgba(28, 28, 30, 0.95);
-  backdrop-filter: blur(40px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-}
-
-/* Section headers with proper iOS styling */
-.manage-closers-section-header {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.manage-closers-section-header h3 {
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-/* Status indicators with better visibility */
-.manage-closers-card[data-status="On Duty"] {
-  border-left: 3px solid #30D158;
-  background: rgba(48, 209, 88, 0.05);
-}
-
-.manage-closers-card[data-status="Off Duty"] {
-  border-left: 3px solid #8E8E93;
-  background: rgba(142, 142, 147, 0.05);
-}
-
-/* Enhanced instructions panel */
-.lineup-instructions {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-}
-
-/* Improved stats header */
-.team-stats-header {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 12px 16px;
-}
-
-.team-stats-header h3 {
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-/* Better visual separation for move controls */
-.manage-closers-card .move-controls {
-  gap: 4px;
-}
-
-.manage-closers-card .move-control-btn {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.manage-closers-card .move-control-btn svg {
-  width: 14px;
-  height: 14px;
-}
-
-/* Status toggle enhanced styling */
-.manage-closers-card .status-toggle-container {
-  padding: 4px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Responsive adjustments for unified list */
-@media (max-width: 640px) {
-  .team-stats-header {
-    padding: 8px 12px;
-  }
-  
-  .manage-closers-card .move-control-btn {
-    width: 24px;
-    height: 24px;
-  }
-  
-  .manage-closers-card .move-control-btn svg {
-    width: 12px;
-    height: 12px;
-  }
-}
-
-/* ===================================================================
-   CREATE LEAD FORM - iOS FIXES BY AURELIAN SALOMON
-   =================================================================== */
-
-/* Fix icon overflow and clipping issues */
-.create-lead-form .form-item {
-  position: relative;
-  z-index: 1;
-}
-
-.create-lead-form .form-control {
-  position: relative;
-  overflow: visible;
-}
-
-/* Ensure input icons are properly contained */
-.create-lead-form .relative input {
+  border-radius: 1rem !important;
   position: relative;
   z-index: 2;
+  
+  /* Enhanced hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  contain: layout style paint;
 }
 
-.create-lead-form .absolute {
-  z-index: 3;
+/* Hover states for enhanced depth perception */
+.frosted-glass-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* iOS-style address autocomplete dropdown */
-.create-lead-form .address-dropdown {
-  background: rgba(28, 28, 30, 0.95);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+/* Dashboard header with enhanced gradient */
+.dashboard-safe-content {
+  background: linear-gradient(135deg, 
+    rgba(13, 13, 13, 1) 0%,
+    rgba(20, 20, 20, 0.95) 30%,
+    rgba(13, 13, 13, 1) 100%);
 }
 
-/* Prevent viewport jumping on iOS */
-.create-lead-form input:focus {
-  transform: none !important;
-  scroll-margin: 8rem;
+/* Enhanced background depth layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: 
+    /* Primary depth gradient */
+    radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 70%),
+    /* Secondary atmospheric layers */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 75%),
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0A0A0A 0%, #0D0D0D 50%, #0A0A0A 100%);
+  background-size: 100% 100%, 150% 150%, 120% 120%, 100% 100%;
+  animation: subtle-depth-glow 60s ease-in-out infinite;
 }
 
-/* Enhanced form button styling */
-.create-lead-form .submit-button {
-  background: linear-gradient(135deg, #007AFF, #0056CC);
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.create-lead-form .submit-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 25px rgba(0, 122, 255, 0.4);
-}
-
-.create-lead-form .submit-button:active {
-  transform: translateY(0);
-}
-
-/* Photo upload area enhancements */
-.create-lead-form .photo-upload {
-  border: 2px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  transition: all 0.2s ease;
-}
-
-.create-lead-form .photo-upload:hover {
-  border-color: rgba(0, 122, 255, 0.4);
-  background: rgba(0, 122, 255, 0.05);
-}
-
-/* Enhanced form field focus states */
-.create-lead-form input:focus,
-.create-lead-form textarea:focus,
-.create-lead-form select:focus {
-  border-color: #007AFF;
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
-  outline: none;
-}
-
-/* Smooth transitions for form elements */
-.create-lead-form input,
-.create-lead-form textarea,
-.create-lead-form select {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Better error message styling */
-.create-lead-form .text-destructive {
-  color: #FF3B30;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-/* Success states */
-.create-lead-form .form-field-success {
-  border-color: #30D158;
-  background: rgba(48, 209, 88, 0.05);
-}
-
-/* Loading button state */
-.create-lead-form .submit-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Enhanced upload area */
-.create-lead-form .photo-upload-empty {
-  min-height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.02);
-  border: 2px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  transition: all 0.2s ease;
-}
-
-.create-lead-form .photo-upload-empty:hover {
-  border-color: rgba(0, 122, 255, 0.4);
-  background: rgba(0, 122, 255, 0.05);
-}
-
-/* iOS-style animations for team management */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes pulse {
+@keyframes subtle-depth-glow {
   0%, 100% {
     opacity: 1;
+    transform: scale(1) translateZ(0);
   }
   50% {
-    opacity: 0.5;
-  }
-}
-
-/* Enhanced iOS touch interactions */
-.ios-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center;
-}
-
-.ios-card:hover {
-  transform: translateY(-2px) scale(1.01);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.ios-card:active {
-  transform: translateY(0) scale(0.99);
-  transition: all 0.1s ease-out;
-}
-
-.ios-button {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ios-button:hover {
-  transform: scale(1.05);
-}
-
-.ios-button:active {
-  transform: scale(0.95);
-}
-
-/* ===================================================================
-   CRITICAL iPHONE INPUT FIXES - Aurelian Salomon
-   Resolves address input issues on iPhone Safari
-   =================================================================== */
-
-/* iPhone Safari Input Optimization */
-@supports (-webkit-touch-callout: none) {
-  /* Target only iOS Safari */
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  input[type="search"],
-  textarea {
-    /* CRITICAL: Prevent iOS zoom on focus */
-    font-size: 16px !important;
-    
-    /* Disable iOS styling that interferes with custom designs */
-    -webkit-appearance: none;
-    -webkit-border-radius: 0;
-    border-radius: 0;
-    
-    /* Improve touch interaction */
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    
-    /* Prevent text selection issues during autocomplete */
-    -webkit-user-select: text;
-    user-select: text;
-    
-    /* Hardware acceleration for smooth performance */
-    transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-  }
-  
-  /* Address input specific fixes */
-  input[data-address-input] {
-    /* Enhanced stability for autocomplete */
-    position: relative;
-    z-index: 1;
-    
-    /* Prevent cursor jumping */
-    -webkit-user-select: text !important;
-    user-select: text !important;
-    
-    /* Smooth transitions */
-    transition: none !important; /* Disable transitions that cause cursor issues */
-  }
-  
-  /* Address autocomplete dropdown fixes */
-  [data-address-predictions] {
-    /* Ensure dropdown doesn't interfere with input */
-    pointer-events: auto;
-    isolation: isolate;
-    z-index: 9999;
-    
-    /* Prevent iOS momentum scrolling issues */
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-  
-  /* Address prediction items */
-  [data-address-prediction] {
-    /* Prevent iOS double-tap zoom */
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(0, 122, 255, 0.1);
-    
-    /* Ensure proper touch targets */
-    min-height: 44px;
-    
-    /* Prevent text selection during tap */
-    -webkit-user-select: none;
-    user-select: none;
-  }
-}
-
-/* Mobile viewport fixes for input fields */
-@media screen and (max-width: 768px) {
-  /* Prevent viewport zoom on any input focus */
-  input,
-  textarea,
-  select {
-    font-size: 16px !important;
-    line-height: 1.4 !important;
-  }
-  
-  /* Enhanced create lead form mobile fixes */
-  .create-lead-form input {
-    /* Disable iOS zoom */
-    font-size: 16px !important;
-    
-    /* Improve responsiveness */
-    -webkit-appearance: none;
-    appearance: none;
-    
-    /* Better touch interaction */
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  /* Address field specific mobile fixes */
-  .create-lead-form input[data-address-input] {
-    /* Prevent input jumping */
-    transform: none !important;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-    
-    /* Stable positioning */
-    position: relative !important;
-    z-index: 2 !important;
-  }
-  
-  /* Dropdown positioning on mobile */
-  .create-lead-form .address-predictions-dropdown {
-    /* Prevent layout shifts */
-    max-height: 40vh !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    
-    /* Better positioning */
-    position: absolute !important;
-    top: 100% !important;
-    left: 0 !important;
-    right: 0 !important;
-    z-index: 9999 !important;
-  }
-}
-
-/* iPhone X and newer safe area support */
-@supports (padding: max(0px)) and (-webkit-touch-callout: none) {
-  .create-lead-form {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
-  }
-  
-  /* Ensure dropdown doesn't go behind safe area */
-  .address-predictions-dropdown {
-    bottom: max(0px, env(safe-area-inset-bottom)) !important;
-  }
-}
-
-/* Fix for iOS keyboard appearance */
-@supports (-webkit-touch-callout: none) {
-  /* Prevent layout shifts when keyboard appears */
-  .create-lead-form .relative {
-    /* Stable container for address input */
-    contain: layout style !important;
-  }
-  
-  /* Input stability during keyboard animation */
-  .create-lead-form input:focus {
-    /* Prevent smooth scrolling interference */
-    scroll-behavior: auto !important;
-    
-    /* Maintain position during keyboard appearance */
-    position: relative !important;
-    z-index: 3 !important;
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
   }
 }
 
 /* ===================================================================
-   DAYLIGHT ARC & CLOSER LINEUP CONTAINMENT FIXES - NO SCROLLING
+   CRITICAL PERFORMANCE FIXES - Hardware Accelerated Animations
+   Replaces Framer Motion with GPU-accelerated CSS transforms
    =================================================================== */
 
-/* Prevent scrolling in daylight arc cards with new viewBox */
-.frosted-glass-card:has(svg[viewBox*="200 120"]) {
-  overflow: hidden !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* Ensure proper containment for closer lineup cards */
-.frosted-glass-card[data-testid="closer-lineup-card"] {
-  overflow: visible !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* Prevent horizontal scrolling but allow vertical space for badges */
-.frosted-glass-card[data-testid="closer-lineup-card"] * {
-  overflow-x: hidden !important;
-  overflow-y: visible !important;
-}
-
-/* iOS-native animation for staggered fade-in */
+/* Hardware-accelerated fade-in animation (replaces Framer Motion) */
 @keyframes fadeInUp {
-  from {
+  0% {
     opacity: 0;
-    transform: translate3d(0, 20px, 0);
+    transform: translate3d(0, 10px, 0) scale(0.95);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 .animate-fadeInUp {
-  animation: fadeInUp 0.6s ease-out;
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0; /* Initial state */
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform, opacity;
+  contain: layout style paint; /* Optimize rendering */
 }
 
-/* Enhanced closer lineup grid layout for iOS-native feel */
-.closer-lineup-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  padding: 1.5rem 1rem;
-  min-height: 120px;
-  align-items: start;
-  justify-items: center;
-  overflow: visible;
+/* Professional spotlight animation - very subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
+  }
+  50% {
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
+  }
+  75% {
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
+  }
 }
 
-/* Closer lineup avatar sizing consistency */
-.closer-lineup-avatar-container img {
-  width: 48px !important;
-  height: 48px !important;
-  border-radius: 50%;
-  object-fit: cover;
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
 }
 
-/* Closer lineup bubble positioning */
-.closer-lineup-bubble {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  z-index: 30;
-  background-color: #CDCCC8;
-  color: #0E0E0E;
-  font-weight: 700;
-  font-size: 11px;
+/* Body Background - Deep Charcoal */
+html,
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
 }
 
-/* Closer lineup avatar containers */
-.closer-lineup-avatar-container {
+/* Login and Auth pages - prevent unnecessary scroll bars */
+body:has([data-auth-page]) {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+}
+
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Ensure auth page content fits within viewport */
+[data-auth-page] > * {
+  max-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* Atmosphere Layer - Full Screen Gradients - HARDWARE ACCELERATED */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.2) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: atmospheric-flow 25s ease-in-out infinite;
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.06) 0%, transparent 75%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.075) 0%, transparent 80%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.04) 0%, transparent 60%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 40s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+/* Breathing radial gradient animation for login page */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Ensure auth page content appears above enhanced atmosphere */
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Step 2: Frosted Glass Card Class */
+.frosted-glass-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
   position: relative;
-  width: 3.5rem;
-  height: 3.5rem;
-  overflow: visible;
-  margin-bottom: 0.75rem;
+  z-index: 2;
+  /* Hide scrollbars completely */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
 }
 
-/* Position badges with proper visibility */
-.closer-lineup-position-badge {
-  position: absolute;
-  top: -0.375rem;
-  right: -0.375rem;
-  width: 1.5rem;
-  height: 1.5rem;
-  background: #CDCCC8;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 30;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.15),
-    0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.9);
+.frosted-glass-card::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 
-.closer-lineup-position-badge span {
-  color: #0E0E0E;
-  font-size: 0.625rem;
-  font-weight: 700;
-  line-height: 1;
+/* Override for the Closer Lineup card to prevent clipping */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
 }
 
-/* Closer name styling with proper truncation */
-.closer-lineup-name {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
-  font-size: 11px;
-  line-height: 1.2;
-  font-weight: 500;
-  color: var(--text-primary);
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 70px;
-  margin-top: 0.5rem;
+/* Enhanced Closer Lineup Horizontal Scrolling */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-root] {
+  overflow: visible !important;
 }
 
-/* Mobile-specific enhancements */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Gear icon positioning and styling */
+[data-testid="closer-lineup-card"] .gear-icon-btn {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-testid="closer-lineup-card"] .gear-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive centering for closer lineup */
+@media (min-width: 768px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: flex-start;
+  }
+}
+
+/* CSS Custom Properties for Aether Theme */
+:root {
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --background-primary: #0D0D0D;
+  --background-secondary-alpha: rgba(30, 30, 30, 0.6);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --accent-primary: #007AFF;
+  --accent-light: #FFFFFF;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: rgba(30, 30, 30, 0.6);
+}
+
+/* ===================================================================
+   EXISTING STYLES (Mobile Fixes, etc.)
+   =================================================================== */
+
+/* ===================================================================
+   AETHER THEME FOUNDATION - Phase 2 Implementation
+   =================================================================== */
+
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Body Background - Deep Charcoal */
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
+}
+
+/* Atmosphere Layer - Professional Top-Right Spotlight */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    /* SOFT TOP-RIGHT SPOTLIGHT - Very gentle atmospheric glow */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.015) 30%, transparent 75%),
+    /* Secondary subtle gradients for depth */
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.02) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 8%, rgba(255, 255, 255, 0.01) 0%, transparent 70%);
+  background-size: 100% 100%, 150% 150%, 120% 120%;
+  animation: subtle-glow 40s ease-in-out infinite;
+}
+
+/* Enhanced spotlight for mobile - maintains top-right focus */
 @media (max-width: 768px) {
-  .closer-lineup-grid {
-    gap: 1rem;
-    padding: 1.25rem 0.75rem;
-    min-height: 110px;
+  body::before {
+    background: 
+      /* MOBILE TOP-RIGHT SPOTLIGHT - Very gentle and refined */
+      radial-gradient(ellipse 600px 450px at 80% 8%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 25%, transparent 70%),
+      /* Supporting mobile gradients */
+      radial-gradient(ellipse at 85% 5%, rgba(255, 255, 255, 0.025) 0%, transparent 55%),
+      radial-gradient(ellipse at 70% 12%, rgba(255, 255, 255, 0.015) 0%, transparent 65%);
+    background-size: 100% 100%, 140% 140%, 110% 110%;
   }
-  
-  .closer-lineup-avatar-container {
-    width: 3rem;
-    height: 3rem;
-    margin-bottom: 0.625rem;
+}
+
+/* Ensure all content appears above atmosphere */
+#__next, [data-nextjs-container] {
+  position: relative;
+  z-index: 1;
+}
+
+/* Global Typography */
+* {
+  color: inherit;
+}
+
+/* Primary text color */
+h1, h2, h3, h4, h5, h6, p, span, div {
+  color: #FFFFFF;
+}
+
+/* Secondary text color for details */
+.text-secondary, [data-secondary-text] {
+  color: #A0A0A0 !important;
+}
+
+/* Step 2: Frosted Glass Card Class - PERFORMANCE OPTIMIZED */
+.frosted-glass-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(10px) !important; /* Reduced from 20px for performance */
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  overflow: hidden !important; /* Prevent scrollbars on frosted glass cards */
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Override for the Closer Lineup card to prevent clipping */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
+}
+
+/* Enhanced Closer Lineup Horizontal Scrolling */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-root] {
+  overflow: visible !important;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Gear icon positioning and styling */
+[data-testid="closer-lineup-card"] .gear-icon-btn {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-testid="closer-lineup-card"] .gear-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive centering for closer lineup */
+@media (min-width: 768px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: center;
   }
-  
-  .closer-lineup-position-badge {
-    width: 1.25rem;
-    height: 1.25rem;
-    top: -0.25rem;
-    right: -0.25rem;
+}
+
+@media (max-width: 767px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: flex-start;
   }
-  
-  .closer-lineup-position-badge span {
-    font-size: 0.5rem;
+}
+
+/* CSS Custom Properties for Aether Theme */
+:root {
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --background-primary: #0D0D0D;
+  --background-secondary-alpha: rgba(30, 30, 30, 0.6);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --accent-primary: #007AFF;
+  --accent-light: #FFFFFF;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: rgba(30, 30, 30, 0.6);
+}
+
+/* ===================================================================
+   EXISTING STYLES (Mobile Fixes, etc.)
+   =================================================================== */
+
+/* ===================================================================
+   AETHER THEME FOUNDATION - Phase 2 Implementation
+   =================================================================== */
+
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
   }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Body Background - Deep Charcoal */
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
+}
+
+/* Atmosphere Layer - Professional Top-Right Spotlight */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    /* SOFT TOP-RIGHT SPOTLIGHT - Very gentle atmospheric glow */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.015) 30%, transparent 75%),
+    /* Secondary subtle gradients for depth */
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.02) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 8%, rgba(255, 255, 255, 0.01) 0%, transparent 70%);
+  background-size: 100% 100%, 150% 150%, 120% 120%;
+  animation: subtle-glow 40s ease-in-out infinite;
+}
+
+/* Enhanced spotlight for mobile - maintains top-right focus */
+@media (max-width: 768px) {
+  body::before {
+    background: 
+      /* MOBILE TOP-RIGHT SPOTLIGHT - Very gentle and refined */
+      radial-gradient(ellipse 600px 450px at 80% 8%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 25%, transparent 70%),
+      /* Supporting mobile gradients */
+      radial-gradient(ellipse at 85% 5%, rgba(255, 255, 255, 0.025) 0%, transparent 55%),
+      radial-gradient(ellipse at 70% 12%, rgba(255, 255, 255, 0.015) 0%, transparent 65%);
+    background-size: 100% 100%, 140% 140%, 110% 110%;
+  }
+}
+
+/* Ensure all content appears above atmosphere */
+#__next, [data-nextjs-container] {
+  position: relative;
+  z-index: 1;
+}
+
+/* Global Typography */
+* {
+  color: inherit;
+}
+
+/* Primary text color */
+h1, h2, h3, h4, h5, h6, p, span, div {
+  color: #FFFFFF;
+}
+
+/* Secondary text color for details */
+.text-secondary, [data-secondary-text] {
+  color: #A0A0A0 !important;
+}
+
+/* Step 2: Frosted Glass Card Class - PERFORMANCE OPTIMIZED */
+.frosted-glass-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(10px) !important; /* Reduced from 20px for performance */
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  overflow: hidden !important; /* Prevent scrollbars on frosted glass cards */
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Override for the Closer Lineup card to prevent clipping */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
+}
+
+/* Enhanced Closer Lineup Horizontal Scrolling */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-root] {
+  overflow: visible !important;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Gear icon positioning and styling */
+[data-testid="closer-lineup-card"] .gear-icon-btn {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-testid="closer-lineup-card"] .gear-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive centering for closer lineup */
+@media (min-width: 768px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: flex-start;
+  }
+}
+
+/* CSS Custom Properties for Aether Theme */
+:root {
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --background-primary: #0D0D0D;
+  --background-secondary-alpha: rgba(30, 30, 30, 0.6);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --accent-primary: #007AFF;
+  --accent-light: #FFFFFF;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: rgba(30, 30, 30, 0.6);
+}
+
+/* ===================================================================
+   DASHBOARD VISUAL DEPTH ENHANCEMENTS - BY AURELIAN SALOMON
+   Enhanced gradient shadows and depth for modern mobile UI
+   =================================================================== */
+
+/* Enhanced frosted glass cards with deeper shadows and gradients */
+.frosted-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%, 
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   
-  .closer-lineup-name {
-    font-size: 10px;
-    max-width: 60px;
+  /* Multi-layered shadow system for depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  
+  /* Enhanced hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  contain: layout style paint;
+}
+
+/* Hover states for enhanced depth perception */
+.frosted-glass-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Dashboard header with enhanced gradient */
+.dashboard-safe-content {
+  background: linear-gradient(135deg, 
+    rgba(13, 13, 13, 1) 0%,
+    rgba(20, 20, 20, 0.95) 30%,
+    rgba(13, 13, 13, 1) 100%);
+}
+
+/* Enhanced background depth layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: 
+    /* Primary depth gradient */
+    radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 70%),
+    /* Secondary atmospheric layers */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 75%),
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0A0A0A 0%, #0D0D0D 50%, #0A0A0A 100%);
+  background-size: 100% 100%, 150% 150%, 120% 120%, 100% 100%;
+  animation: subtle-depth-glow 60s ease-in-out infinite;
+}
+
+@keyframes subtle-depth-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
   }
 }
 
 /* ===================================================================
-   DAYLIGHT ARC CARD ENHANCED CONTAINMENT
+   CRITICAL PERFORMANCE FIXES - Hardware Accelerated Animations
+   Replaces Framer Motion with GPU-accelerated CSS transforms
    =================================================================== */
 
-/* Ensure daylight arc cards never scroll and maintain proper proportions */
-.frosted-glass-card:has(svg[viewBox*="200 120"]) .relative {
+/* Hardware-accelerated fade-in animation (replaces Framer Motion) */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0; /* Initial state */
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform, opacity;
+  contain: layout style paint; /* Optimize rendering */
+}
+
+/* Professional spotlight animation - very subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
+  }
+  50% {
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
+  }
+  75% {
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
+  }
+}
+
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Body Background - Deep Charcoal */
+html,
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
+}
+
+/* Login and Auth pages - prevent unnecessary scroll bars */
+body:has([data-auth-page]) {
   overflow: hidden !important;
-  width: 100% !important;
-  max-width: 100% !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
 }
 
-/* Daylight arc SVG optimization */
-.frosted-glass-card:has(svg[viewBox*="200 120"]) svg {
-  max-width: 100% !important;
-  height: auto !important;
-  contain: layout style paint !important;
-  transform: translateZ(0) !important;
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
 }
 
-/* Daylight arc container spacing */
-.daylight-arc-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
+/* Ensure auth page content fits within viewport */
+[data-auth-page] > * {
+  max-height: 100vh !important;
+  overflow: visible !important;
 }
 
-/* Mobile optimizations for daylight arc */
-@media (max-width: 768px) {
-  .frosted-glass-card:has(svg[viewBox*="200 120"]) {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-    overflow: hidden !important;
+/* Atmosphere Layer - Full Screen Gradients - HARDWARE ACCELERATED */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.2) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: atmospheric-flow 25s ease-in-out infinite;
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.06) 0%, transparent 75%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.075) 0%, transparent 80%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.04) 0%, transparent 60%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 40s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
   }
+  33% {
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+/* Breathing radial gradient animation for login page */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Ensure auth page content appears above enhanced atmosphere */
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Step 2: Frosted Glass Card Class */
+.frosted-glass-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  overflow: hidden !important; /* Prevent scrollbars on frosted glass cards */
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Override for the Closer Lineup card to prevent clipping */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
+}
+
+/* Enhanced Closer Lineup Horizontal Scrolling */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-root] {
+  overflow: visible !important;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Gear icon positioning and styling */
+[data-testid="closer-lineup-card"] .gear-icon-btn {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-testid="closer-lineup-card"] .gear-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive centering for closer lineup */
+@media (min-width: 768px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: flex-start;
+  }
+}
+
+/* CSS Custom Properties for Aether Theme */
+:root {
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --background-primary: #0D0D0D;
+  --background-secondary-alpha: rgba(30, 30, 30, 0.6);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --accent-primary: #007AFF;
+  --accent-light: #FFFFFF;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: rgba(30, 30, 30, 0.6);
+}
+
+/* ===================================================================
+   DASHBOARD VISUAL DEPTH ENHANCEMENTS - BY AURELIAN SALOMON
+   Enhanced gradient shadows and depth for modern mobile UI
+   =================================================================== */
+
+/* Enhanced frosted glass cards with deeper shadows and gradients */
+.frosted-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%, 
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   
-  .frosted-glass-card:has(svg[viewBox*="200 120"]) svg {
-    max-width: calc(100% - 1.5rem) !important;
-    width: calc(100% - 1.5rem) !important;
+  /* Multi-layered shadow system for depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  
+  /* Enhanced hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  contain: layout style paint;
+}
+
+/* Hover states for enhanced depth perception */
+.frosted-glass-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Dashboard header with enhanced gradient */
+.dashboard-safe-content {
+  background: linear-gradient(135deg, 
+    rgba(13, 13, 13, 1) 0%,
+    rgba(20, 20, 20, 0.95) 30%,
+    rgba(13, 13, 13, 1) 100%);
+}
+
+/* Enhanced background depth layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: 
+    /* Primary depth gradient */
+    radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 70%),
+    /* Secondary atmospheric layers */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 75%),
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0A0A0A 0%, #0D0D0D 50%, #0A0A0A 100%);
+  background-size: 100% 100%, 150% 150%, 120% 120%, 100% 100%;
+  animation: subtle-depth-glow 60s ease-in-out infinite;
+}
+
+@keyframes subtle-depth-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
   }
 }
+
+/* ===================================================================
+   CRITICAL PERFORMANCE FIXES - Hardware Accelerated Animations
+   Replaces Framer Motion with GPU-accelerated CSS transforms
+   =================================================================== */
+
+/* Hardware-accelerated fade-in animation (replaces Framer Motion) */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0; /* Initial state */
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform, opacity;
+  contain: layout style paint; /* Optimize rendering */
+}
+
+/* Professional spotlight animation - very subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
+  }
+  50% {
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
+  }
+  75% {
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
+  }
+}
+
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Body Background - Deep Charcoal */
+html,
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
+}
+
+/* Login and Auth pages - prevent unnecessary scroll bars */
+body:has([data-auth-page]) {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+}
+
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Ensure auth page content fits within viewport */
+[data-auth-page] > * {
+  max-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* Atmosphere Layer - Full Screen Gradients - HARDWARE ACCELERATED */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.2) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: atmospheric-flow 25s ease-in-out infinite;
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.06) 0%, transparent 75%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.075) 0%, transparent 80%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.04) 0%, transparent 60%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 40s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+/* Breathing radial gradient animation for login page */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Ensure auth page content appears above enhanced atmosphere */
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Step 2: Frosted Glass Card Class */
+.frosted-glass-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  overflow: hidden !important; /* Prevent scrollbars on frosted glass cards */
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Override for the Closer Lineup card to prevent clipping */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
+}
+
+/* Enhanced Closer Lineup Horizontal Scrolling */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-root] {
+  overflow: visible !important;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Gear icon positioning and styling */
+[data-testid="closer-lineup-card"] .gear-icon-btn {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-testid="closer-lineup-card"] .gear-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive centering for closer lineup */
+@media (min-width: 768px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: flex-start;
+  }
+}
+
+/* CSS Custom Properties for Aether Theme */
+:root {
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --background-primary: #0D0D0D;
+  --background-secondary-alpha: rgba(30, 30, 30, 0.6);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --accent-primary: #007AFF;
+  --accent-light: #FFFFFF;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: rgba(30, 30, 30, 0.6);
+}
+
+/* ===================================================================
+   DASHBOARD VISUAL DEPTH ENHANCEMENTS - BY AURELIAN SALOMON
+   Enhanced gradient shadows and depth for modern mobile UI
+   =================================================================== */
+
+/* Enhanced frosted glass cards with deeper shadows and gradients */
+.frosted-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%, 
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  
+  /* Multi-layered shadow system for depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  
+  /* Enhanced hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  contain: layout style paint;
+}
+
+/* Hover states for enhanced depth perception */
+.frosted-glass-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Dashboard header with enhanced gradient */
+.dashboard-safe-content {
+  background: linear-gradient(135deg, 
+    rgba(13, 13, 13, 1) 0%,
+    rgba(20, 20, 20, 0.95) 30%,
+    rgba(13, 13, 13, 1) 100%);
+}
+
+/* Enhanced background depth layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: 
+    /* Primary depth gradient */
+    radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 70%),
+    /* Secondary atmospheric layers */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 75%),
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0A0A0A 0%, #0D0D0D 50%, #0A0A0A 100%);
+  background-size: 100% 100%, 150% 150%, 120% 120%, 100% 100%;
+  animation: subtle-depth-glow 60s ease-in-out infinite;
+}
+
+@keyframes subtle-depth-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
+  }
+}
+
+/* ===================================================================
+   CRITICAL PERFORMANCE FIXES - Hardware Accelerated Animations
+   Replaces Framer Motion with GPU-accelerated CSS transforms
+   =================================================================== */
+
+/* Hardware-accelerated fade-in animation (replaces Framer Motion) */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0; /* Initial state */
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform, opacity;
+  contain: layout style paint; /* Optimize rendering */
+}
+
+/* Professional spotlight animation - very subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
+  }
+  50% {
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
+  }
+  75% {
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
+  }
+}
+
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Body Background - Deep Charcoal */
+html,
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
+}
+
+/* Login and Auth pages - prevent unnecessary scroll bars */
+body:has([data-auth-page]) {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+}
+
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Ensure auth page content fits within viewport */
+[data-auth-page] > * {
+  max-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* Atmosphere Layer - Full Screen Gradients - HARDWARE ACCELERATED */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.2) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: atmospheric-flow 25s ease-in-out infinite;
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.06) 0%, transparent 75%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.075) 0%, transparent 80%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.04) 0%, transparent 60%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 40s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+/* Breathing radial gradient animation for login page */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Ensure auth page content appears above enhanced atmosphere */
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Step 2: Frosted Glass Card Class */
+.frosted-glass-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  overflow: hidden !important; /* Prevent scrollbars on frosted glass cards */
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Override for the Closer Lineup card to prevent clipping */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
+}
+
+/* Enhanced Closer Lineup Horizontal Scrolling */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-root] {
+  overflow: visible !important;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Gear icon positioning and styling */
+[data-testid="closer-lineup-card"] .gear-icon-btn {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-testid="closer-lineup-card"] .gear-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive centering for closer lineup */
+@media (min-width: 768px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: flex-start;
+  }
+}
+
+/* CSS Custom Properties for Aether Theme */
+:root {
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --background-primary: #0D0D0D;
+  --background-secondary-alpha: rgba(30, 30, 30, 0.6);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --accent-primary: #007AFF;
+  --accent-light: #FFFFFF;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: rgba(30, 30, 30, 0.6);
+}
+
+/* ===================================================================
+   DASHBOARD VISUAL DEPTH ENHANCEMENTS - BY AURELIAN SALOMON
+   Enhanced gradient shadows and depth for modern mobile UI
+   =================================================================== */
+
+/* Enhanced frosted glass cards with deeper shadows and gradients */
+.frosted-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%, 
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  
+  /* Multi-layered shadow system for depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  
+  /* Enhanced hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  contain: layout style paint;
+}
+
+/* Hover states for enhanced depth perception */
+.frosted-glass-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Dashboard header with enhanced gradient */
+.dashboard-safe-content {
+  background: linear-gradient(135deg, 
+    rgba(13, 13, 13, 1) 0%,
+    rgba(20, 20, 20, 0.95) 30%,
+    rgba(13, 13, 13, 1) 100%);
+}
+
+/* Enhanced background depth layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: 
+    /* Primary depth gradient */
+    radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 70%),
+    /* Secondary atmospheric layers */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 75%),
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0A0A0A 0%, #0D0D0D 50%, #0A0A0A 100%);
+  background-size: 100% 100%, 150% 150%, 120% 120%, 100% 100%;
+  animation: subtle-depth-glow 60s ease-in-out infinite;
+}
+
+@keyframes subtle-depth-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
+  }
+}
+
+/* ===================================================================
+   CRITICAL PERFORMANCE FIXES - Hardware Accelerated Animations
+   Replaces Framer Motion with GPU-accelerated CSS transforms
+   =================================================================== */
+
+/* Hardware-accelerated fade-in animation (replaces Framer Motion) */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0; /* Initial state */
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform, opacity;
+  contain: layout style paint; /* Optimize rendering */
+}
+
+/* Professional spotlight animation - very subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
+  }
+  50% {
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
+  }
+  75% {
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
+  }
+}
+
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Body Background - Deep Charcoal */
+html,
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
+}
+
+/* Login and Auth pages - prevent unnecessary scroll bars */
+body:has([data-auth-page]) {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+}
+
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Ensure auth page content fits within viewport */
+[data-auth-page] > * {
+  max-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* Atmosphere Layer - Full Screen Gradients - HARDWARE ACCELERATED */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.2) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: atmospheric-flow 25s ease-in-out infinite;
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.06) 0%, transparent 75%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.075) 0%, transparent 80%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.04) 0%, transparent 60%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 40s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+/* Breathing radial gradient animation for login page */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Ensure auth page content appears above enhanced atmosphere */
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Step 2: Frosted Glass Card Class */
+.frosted-glass-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  overflow: hidden !important; /* Prevent scrollbars on frosted glass cards */
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Override for the Closer Lineup card to prevent clipping */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
+}
+
+/* Enhanced Closer Lineup Horizontal Scrolling */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-root] {
+  overflow: visible !important;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Gear icon positioning and styling */
+[data-testid="closer-lineup-card"] .gear-icon-btn {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-testid="closer-lineup-card"] .gear-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive centering for closer lineup */
+@media (min-width: 768px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: flex-start;
+  }
+}
+
+/* CSS Custom Properties for Aether Theme */
+:root {
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --background-primary: #0D0D0D;
+  --background-secondary-alpha: rgba(30, 30, 30, 0.6);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --accent-primary: #007AFF;
+  --accent-light: #FFFFFF;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: rgba(30, 30, 30, 0.6);
+}
+
+/* ===================================================================
+   DASHBOARD VISUAL DEPTH ENHANCEMENTS - BY AURELIAN SALOMON
+   Enhanced gradient shadows and depth for modern mobile UI
+   =================================================================== */
+
+/* Enhanced frosted glass cards with deeper shadows and gradients */
+.frosted-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%, 
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  
+  /* Multi-layered shadow system for depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  
+  /* Enhanced hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  contain: layout style paint;
+}
+
+/* Hover states for enhanced depth perception */
+.frosted-glass-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Dashboard header with enhanced gradient */
+.dashboard-safe-content {
+  background: linear-gradient(135deg, 
+    rgba(13, 13, 13, 1) 0%,
+    rgba(20, 20, 20, 0.95) 30%,
+    rgba(13, 13, 13, 1) 100%);
+}
+
+/* Enhanced background depth layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: 
+    /* Primary depth gradient */
+    radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 70%),
+    /* Secondary atmospheric layers */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 75%),
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0A0A0A 0%, #0D0D0D 50%, #0A0A0A 100%);
+  background-size: 100% 100%, 150% 150%, 120% 120%, 100% 100%;
+  animation: subtle-depth-glow 60s ease-in-out infinite;
+}
+
+@keyframes subtle-depth-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
+  }
+}
+
+/* ===================================================================
+   CRITICAL PERFORMANCE FIXES - Hardware Accelerated Animations
+   Replaces Framer Motion with GPU-accelerated CSS transforms
+   =================================================================== */
+
+/* Hardware-accelerated fade-in animation (replaces Framer Motion) */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0; /* Initial state */
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform, opacity;
+  contain: layout style paint; /* Optimize rendering */
+}
+
+/* Professional spotlight animation - very subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
+  }
+  50% {
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
+  }
+  75% {
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
+  }
+}
+
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Body Background - Deep Charcoal */
+html,
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
+}
+
+/* Login and Auth pages - prevent unnecessary scroll bars */
+body:has([data-auth-page]) {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+}
+
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Ensure auth page content fits within viewport */
+[data-auth-page] > * {
+  max-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* Atmosphere Layer - Full Screen Gradients - HARDWARE ACCELERATED */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.2) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: atmospheric-flow 25s ease-in-out infinite;
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.06) 0%, transparent 75%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.075) 0%, transparent 80%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.04) 0%, transparent 60%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 40s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+/* Breathing radial gradient animation for login page */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Ensure auth page content appears above enhanced atmosphere */
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Step 2: Frosted Glass Card Class */
+.frosted-glass-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  overflow: hidden !important; /* Prevent scrollbars on frosted glass cards */
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Override for the Closer Lineup card to prevent clipping */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
+}
+
+/* Enhanced Closer Lineup Horizontal Scrolling */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-root] {
+  overflow: visible !important;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Gear icon positioning and styling */
+[data-testid="closer-lineup-card"] .gear-icon-btn {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-testid="closer-lineup-card"] .gear-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive centering for closer lineup */
+@media (min-width: 768px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: flex-start;
+  }
+}
+
+/* CSS Custom Properties for Aether Theme */
+:root {
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --background-primary: #0D0D0D;
+  --background-secondary-alpha: rgba(30, 30, 30, 0.6);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --accent-primary: #007AFF;
+  --accent-light: #FFFFFF;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: rgba(30, 30, 30, 0.6);
+}
+
+/* ===================================================================
+   DASHBOARD VISUAL DEPTH ENHANCEMENTS - BY AURELIAN SALOMON
+   Enhanced gradient shadows and depth for modern mobile UI
+   =================================================================== */
+
+/* Enhanced frosted glass cards with deeper shadows and gradients */
+.frosted-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%, 
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  
+  /* Multi-layered shadow system for depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  
+  /* Enhanced hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  contain: layout style paint;
+}
+
+/* Hover states for enhanced depth perception */
+.frosted-glass-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Dashboard header with enhanced gradient */
+.dashboard-safe-content {
+  background: linear-gradient(135deg, 
+    rgba(13, 13, 13, 1) 0%,
+    rgba(20, 20, 20, 0.95) 30%,
+    rgba(13, 13, 13, 1) 100%);
+}
+
+/* Enhanced background depth layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: 
+    /* Primary depth gradient */
+    radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 70%),
+    /* Secondary atmospheric layers */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 75%),
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0A0A0A 0%, #0D0D0D 50%, #0A0A0A 100%);
+  background-size: 100% 100%, 150% 150%, 120% 120%, 100% 100%;
+  animation: subtle-depth-glow 60s ease-in-out infinite;
+}
+
+@keyframes subtle-depth-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
+  }
+}
+
+/* ===================================================================
+   CRITICAL PERFORMANCE FIXES - Hardware Accelerated Animations
+   Replaces Framer Motion with GPU-accelerated CSS transforms
+   =================================================================== */
+
+/* Hardware-accelerated fade-in animation (replaces Framer Motion) */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0; /* Initial state */
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform, opacity;
+  contain: layout style paint; /* Optimize rendering */
+}
+
+/* Professional spotlight animation - very subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
+  }
+  50% {
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
+  }
+  75% {
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
+  }
+}
+
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Body Background - Deep Charcoal */
+html,
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
+}
+
+/* Login and Auth pages - prevent unnecessary scroll bars */
+body:has([data-auth-page]) {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+}
+
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Ensure auth page content fits within viewport */
+[data-auth-page] > * {
+  max-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* Atmosphere Layer - Full Screen Gradients - HARDWARE ACCELERATED */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.2) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: atmospheric-flow 25s ease-in-out infinite;
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.06) 0%, transparent 75%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.075) 0%, transparent 80%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.04) 0%, transparent 60%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 40s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+/* Breathing radial gradient animation for login page */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Ensure auth page content appears above enhanced atmosphere */
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Step 2: Frosted Glass Card Class */
+.frosted-glass-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  overflow: hidden !important; /* Prevent scrollbars on frosted glass cards */
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: auto;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Override for the Closer Lineup card to prevent clipping */
+[data-testid="closer-lineup-card"] {
+  overflow: visible !important;
+}
+
+/* Enhanced Closer Lineup Horizontal Scrolling */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-root] {
+  overflow: visible !important;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for closer lineup horizontal scroll */
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+[data-testid="closer-lineup-card"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Gear icon positioning and styling */
+[data-testid="closer-lineup-card"] .gear-icon-btn {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-testid="closer-lineup-card"] .gear-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive centering for closer lineup */
+@media (min-width: 768px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-testid="closer-lineup-card"] .flex.gap-6 {
+    justify-content: flex-start;
+  }
+}
+
+/* CSS Custom Properties for Aether Theme */
+:root {
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --background-primary: #0D0D0D;
+  --background-secondary-alpha: rgba(30, 30, 30, 0.6);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --accent-primary: #007AFF;
+  --accent-light: #FFFFFF;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: rgba(30, 30, 30, 0.6);
+}
+
+/* ===================================================================
+   DASHBOARD VISUAL DEPTH ENHANCEMENTS - BY AURELIAN SALOMON
+   Enhanced gradient shadows and depth for modern mobile UI
+   =================================================================== */
+
+/* Enhanced frosted glass cards with deeper shadows and gradients */
+.frosted-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%, 
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  
+  /* Multi-layered shadow system for depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  
+  border-radius: 1rem !important;
+  position: relative;
+  z-index: 2;
+  
+  /* Enhanced hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  contain: layout style paint;
+}
+
+/* Hover states for enhanced depth perception */
+.frosted-glass-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Dashboard header with enhanced gradient */
+.dashboard-safe-content {
+  background: linear-gradient(135deg, 
+    rgba(13, 13, 13, 1) 0%,
+    rgba(20, 20, 20, 0.95) 30%,
+    rgba(13, 13, 13, 1) 100%);
+}
+
+/* Enhanced background depth layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: 
+    /* Primary depth gradient */
+    radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 70%),
+    /* Secondary atmospheric layers */
+    radial-gradient(ellipse 800px 600px at 85% 5%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 75%),
+    radial-gradient(ellipse at 90% 2%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0A0A0A 0%, #0D0D0D 50%, #0A0A0A 100%);
+  background-size: 100% 100%, 150% 150%, 120% 120%, 100% 100%;
+  animation: subtle-depth-glow 60s ease-in-out infinite;
+}
+
+@keyframes subtle-depth-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
+  }
+}
+
+/* ===================================================================
+   CRITICAL PERFORMANCE FIXES - Hardware Accelerated Animations
+   Replaces Framer Motion with GPU-accelerated CSS transforms
+   =================================================================== */
+
+/* Hardware-accelerated fade-in animation (replaces Framer Motion) */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0; /* Initial state */
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform, opacity;
+  contain: layout style paint; /* Optimize rendering */
+}
+
+/* Professional spotlight animation - very subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
+  }
+  50% {
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
+  }
+  75% {
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
+  }
+}
+
+/* Step 1: Global Foundation - OPTIMIZED FOR PERFORMANCE */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Body Background - Deep Charcoal */
+html,
+body {
+  background-color: #0D0D0D !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #FFFFFF !important;
+  overflow-x: hidden;
+}
+
+/* Login and Auth pages - prevent unnecessary scroll bars */
+body:has([data-auth-page]) {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+}
+
+[data-auth-page] {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  position: relative !important;
+}
+
+/* Ensure auth page content fits within viewport */
+[data-auth-page] > * {
+  max-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* Atmosphere Layer - Full Screen Gradients - HARDWARE ACCELERATED */
+body::before {
+  content: '';
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.2) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: atmospheric-flow 25s ease-in-out infinite;
+  /* PERFORMANCE OPTIMIZATIONS */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced atmospheric gradient for authentication pages */
+body:has([data-auth-page])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(107, 114, 128, 0.06) 0%, transparent 75%),
+    radial-gradient(ellipse at 80% 20%, rgba(156, 163, 175, 0.075) 0%, transparent 80%),
+    radial-gradient(ellipse at 90% 10%, rgba(203, 213, 225, 0.04) 0%, transparent 60%);
+  background-size: 180% 180%, 160% 160%, 120% 120%;
+  animation: auth-atmospheric-flow 40s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Enhanced animation for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+/* Breathing radial gradient animation for login page */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5

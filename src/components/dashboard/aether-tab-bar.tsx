@@ -63,7 +63,7 @@ export default function AetherTabBar() {
 
   return (
     <footer className="bottom-nav-container fixed bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.95)] backdrop-filter backdrop-blur-[20px] border-t border-white/10 pb-safe-bottom-enhanced z-50 nav-safe-bottom ios-optimized">
-      <div className="flex justify-around items-center h-16 max-w-screen-lg mx-auto px-safe-left-enhanced pr-safe-right-enhanced">
+      <div className="flex justify-around items-center h-20 max-w-screen-lg mx-auto px-safe-left-enhanced pr-safe-right-enhanced">
         {visibleTabs.map((tab) => {
           // Improved active state detection for nested routes
           const isActive = tab.path === "/dashboard" 
