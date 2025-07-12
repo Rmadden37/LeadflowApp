@@ -7,7 +7,7 @@ import {db} from "@/lib/firebase";
 import {collection, query, where, onSnapshot, orderBy, doc, writeBatch, setDoc, serverTimestamp} from "firebase/firestore";
 import CloserCard from "./closer-card";
 import {ScrollArea} from "@/components/ui/scroll-area";
-import {Button} from "@/components/ui/button";
+import {EnhancedButton} from "@/components/ui/premium-button";
 import {Loader2, RefreshCw} from "lucide-react";
 import {useToast} from "@/hooks/use-toast";
 import {syncAllUsersToClosers} from "@/utils/sync-all-users-to-closers";
@@ -230,11 +230,13 @@ export default function CloserManagementContent() {
       {/* Manual sync button for testing */}
       {(user?.role === "manager" || user?.role === "admin") && (
         <div className="flex justify-end">
-          <Button 
+          <EnhancedButton 
             onClick={handleManualSync}
             disabled={isManualSyncing || loading}
             variant="outline"
             size="sm"
+            hapticPattern="light"
+            premiumStyle="outline"
             className="flex items-center"
           >
             {isManualSyncing ? (
@@ -243,7 +245,7 @@ export default function CloserManagementContent() {
               <RefreshCw className="mr-2 h-4 w-4" />
             )}
             {isManualSyncing ? "Syncing..." : "Sync All Users"}
-          </Button>
+          </EnhancedButton>
         </div>
       )}
       

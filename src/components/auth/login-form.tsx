@@ -6,7 +6,7 @@ import {signInWithEmailAndPassword, sendPasswordResetEmail} from "firebase/auth"
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {auth} from "@/lib/firebase";
-import {Button} from "@/components/ui/button";
+import {PremiumButton} from "@/components/ui/premium-button";
 import {
   Form,
   FormControl,
@@ -18,6 +18,7 @@ import {
 import {Input} from "@/components/ui/input";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {useToast} from "@/hooks/use-toast";
+import {useHapticFeedback} from "@/hooks/use-haptic-feedback";
 import {useState} from "react";
 import {Loader2} from "lucide-react";
 
@@ -28,6 +29,7 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const {toast} = useToast();
+  const {triggerHaptic} = useHapticFeedback();
   const [isLoading, setIsLoading] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
 
@@ -40,22 +42,33 @@ export default function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Trigger light haptic feedback on form submit
+    triggerHaptic('light');
+    
     // First validate the form
     const isValid = await form.trigger();
     if (!isValid) {
-      // Don't proceed if the form is invalid
+      // Trigger error haptic for validation failure
+      triggerHaptic('error');
       return;
     }
     
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
+      
+      // Success haptic feedback
+      triggerHaptic('success');
+      
       toast({
         title: "Login Successful",
         description: "Welcome back!",
       });
       // Navigation is handled by useAuth hook
     } catch (error: any) {
+      // Error haptic feedback
+      triggerHaptic('error');
+      
       let errorMessage = "An unexpected error occurred.";
       
       // Handle common Firebase auth errors
@@ -81,8 +94,12 @@ export default function LoginForm() {
   }
 
   async function handlePasswordReset() {
+    // Trigger light haptic feedback
+    triggerHaptic('light');
+    
     const email = form.getValues("email");
     if (!email) {
+      triggerHaptic('warning');
       toast({
         title: "Email Required",
         description: "Please enter your email address first.",
@@ -94,11 +111,13 @@ export default function LoginForm() {
     setIsResettingPassword(true);
     try {
       await sendPasswordResetEmail(auth, email);
+      triggerHaptic('success');
       toast({
         title: "Password Reset Email Sent",
         description: "Check your email for password reset instructions.",
       });
     } catch (error: any) {
+      triggerHaptic('error');
       toast({
         title: "Password Reset Failed",
         description: error.message || "An unexpected error occurred.",
@@ -178,21 +197,17 @@ export default function LoginForm() {
         {/* Button glow effect */}
         <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-lg opacity-60 scale-105"></div>
         
-        <Button 
+        <PremiumButton 
           type="submit"
           form="loginForm"
           disabled={isLoading}
+          hapticPattern="medium"
+          premiumStyle="primary"
           onClick={() => {
             // Trigger validation on button click to ensure all errors display
             form.trigger();
           }}
-          className="relative w-full h-14 text-lg font-semibold rounded-2xl 
-                     bg-primary hover:bg-primary/90 
-                     active:scale-[0.98] transition-all duration-200
-                     shadow-xl shadow-primary/30 backdrop-blur-sm
-                     disabled:opacity-60 disabled:scale-100
-                     border-0 focus:ring-2 focus:ring-primary/30 focus:ring-offset-0
-                     min-h-[56px] px-8 overflow-hidden"
+          className="relative w-full h-14 text-lg font-semibold rounded-2xl"
         >
           {isLoading ? (
             <>
@@ -202,7 +217,7 @@ export default function LoginForm() {
           ) : (
             "Sign In"
           )}
-        </Button>
+        </PremiumButton>
       </div>
       
       {/* iOS-Native Secondary Actions */}
@@ -218,7 +233,8 @@ export default function LoginForm() {
                      bg-black hover:bg-black/90 border-0 outline-none
                      cursor-pointer rounded-xl px-6 py-3
                      hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/20
-                     disabled:cursor-not-allowed shadow-lg"
+                     disabled:cursor-not-allowed shadow-lg
+                     active:scale-[0.95] premium-scale-animation"
           >
             {isResettingPassword ? (
               <span className="inline-flex items-center text-muted-foreground">

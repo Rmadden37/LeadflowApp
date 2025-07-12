@@ -4,6 +4,7 @@ import "../styles/performance-optimizations.css";
 import "../styles/aurelian-ios-performance-extreme.css";
 import "../styles/ios-theme-fix.css";
 import "../styles/ios-avatar-fix.css";
+import "../styles/atmospheric-login.css";
 import { Providers } from "./providers";
 import type { Metadata, Viewport } from 'next';
 

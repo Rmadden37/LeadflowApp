@@ -1,0 +1,141 @@
+/* ===================================================================
+   MOBILE SCROLLING OPTIMIZATION - CRITICAL FIXES
+   Fixes dashboard scrolling issues and bottom navigation problems
+   =================================================================== */
+
+/* Native scroll container for dashboard main content */
+.native-scroll-container {
+  /* Use native iOS momentum scrolling */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  
+  /* Container sizing for proper scroll behavior */
+  height: calc(100vh - var(--header-height, 4rem) - var(--bottom-nav-height, 4rem));
+  max-height: calc(100vh - var(--header-height, 4rem) - var(--bottom-nav-height, 4rem));
+  
+  /* Prevent horizontal scrolling */
+  overflow-x: hidden;
+  
+  /* Smooth scrolling optimization */
+  scroll-behavior: smooth;
+  
+  /* Hardware acceleration for smooth performance */
+  transform: translateZ(0);
+  will-change: scroll-position;
+  
+  /* Prevent overscroll bounce interfering with gestures */
+  overscroll-behavior: contain;
+  
+  /* Safe area handling */
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0) + 4rem);
+}
+
+/* iOS-specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  .native-scroll-container {
+    /* Enhanced momentum scrolling for iOS */
+    -webkit-overflow-scrolling: touch;
+    
+    /* Prevent iOS viewport jumping */
+    -webkit-transform: translateZ(0);
+    
+    /* Stable positioning during scroll */
+    position: relative;
+    
+    /* Better touch response */
+    touch-action: pan-y;
+  }
+}
+
+/* Mobile-specific scroll optimizations */
+@media (max-width: 768px) {
+  .native-scroll-container {
+    /* Optimize for mobile viewports */
+    height: calc(100vh - 4rem - 4rem - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+    max-height: calc(100vh - 4rem - 4rem - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+    
+    /* Better mobile scrolling performance */
+    contain: layout style paint;
+    
+    /* Prevent layout shifts during scroll */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+}
+
+/* Bottom navigation positioning fixes */
+.bottom-nav-container {
+  /* Fixed positioning for stable bottom nav */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  
+  /* Ensure it's above all content */
+  z-index: 1000;
+  
+  /* Safe area handling */
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  
+  /* Prevent interference with scroll gestures */
+  pointer-events: auto;
+  
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* Dashboard content spacing adjustments */
+.dashboard-safe-content {
+  /* Ensure content doesn't overlap with fixed navigation */
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0));
+}
+
+/* Remove conflicting scroll behaviors */
+.disable-nested-scroll {
+  /* Disable competing scroll behaviors */
+  -webkit-overflow-scrolling: auto !important;
+  scroll-behavior: auto !important;
+  overscroll-behavior: auto !important;
+}
+
+/* Optimize scroll areas within dashboard cards */
+[data-dashboard-card] [data-radix-scroll-area-viewport] {
+  /* Use native scrolling instead of custom implementation */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto;
+  
+  /* Prevent scroll chaining conflicts */
+  overscroll-behavior: contain;
+  
+  /* Hardware acceleration */
+  transform: translateZ(0);
+}
+
+/* Enhanced safe area support */
+.pt-safe-top-enhanced {
+  padding-top: calc(1rem + env(safe-area-inset-top, 0));
+}
+
+.pb-safe-bottom-enhanced {
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0) + 4rem);
+}
+
+/* Fix for pull-to-refresh conflicts */
+.no-pull-refresh {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: auto;
+}
+
+/* iPhone-specific scrolling fixes */
+@media (max-width: 430px) {
+  .native-scroll-container {
+    /* iPhone-optimized scroll container */
+    height: calc(100vh - 8rem);
+    max-height: calc(100vh - 8rem);
+    
+    /* Better performance on smaller screens */
+    contain: strict;
+  }
+}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import {useAuth} from "@/hooks/use-auth";
-import {Button} from "@/components/ui/button";
+import {PremiumButton} from "@/components/ui/premium-button";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {LogOut, UserCircle, PlusCircle, ChevronDown, Users, ClipboardList, BarChart3} from "lucide-react";
 import {
@@ -56,30 +56,34 @@ export default function DashboardHeader() {
           
           <div className="flex items-center justify-end space-x-4 ml-auto">
             {(user?.role === "setter" || user?.role === "manager" || user?.role === "admin") && (
-              <Button 
+              <PremiumButton 
                 onClick={() => setIsCreateLeadModalOpen(true)} 
                 variant="primary-solid" 
                 size="sm" 
+                hapticPattern="medium"
+                premiumStyle="primary"
                 className="bg-gradient-to-r from-[#007AFF] to-[#0056CC] hover:from-[#007AFF]/90 hover:to-[#0056CC]/90 shadow-lg shadow-[#007AFF]/20 hover:shadow-xl hover:shadow-[#007AFF]/25 transition-all duration-300 border-0 text-white"
               >
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Create New Lead
-              </Button>
+              </PremiumButton>
             )}
             
             {/* Manager Tools Dropdown - Only for managers and admins */}
             {(user?.role === "manager" || user?.role === "admin") && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
+                  <PremiumButton
                     variant="outline"
                     size="sm"
+                    hapticPattern="light"
+                    premiumStyle="outline"
                     className="items-center gap-2 bg-white/5 dark:bg-white/5 border border-white/10 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
                   >
                     <Users className="h-4 w-4" />
                     Manage
                     <ChevronDown className="h-3 w-3" />
-                  </Button>
+                  </PremiumButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
                   align="end" 
@@ -128,15 +132,17 @@ export default function DashboardHeader() {
               </div>
             </Link>
             
-            <Button 
+            <PremiumButton 
               variant="ghost" 
               size="icon" 
               onClick={logout} 
               aria-label="Logout" 
+              hapticPattern="light"
+              premiumStyle="ghost"
               className="h-9 w-9 hover:bg-red-50/10 dark:hover:bg-red-950/20 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-300"
             >
               <LogOut className="h-4 w-4 transition-all duration-300" />
-            </Button>
+            </PremiumButton>
           </div>
         </div>
       </header>

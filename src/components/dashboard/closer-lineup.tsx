@@ -7,8 +7,9 @@ import {useToast} from "@/hooks/use-toast";
 import {db} from "@/lib/firebase";
 import {collection, query, where, onSnapshot, orderBy} from "firebase/firestore";
 import CloserCard from "./closer-card";
-import { Users, Loader2, Settings } from "lucide-react";
+import { Users, Settings } from "lucide-react";
 import ManageClosersModal from "./off-duty-closers-modal";
+import { SkeletonCloserLineup } from "@/components/ui/skeleton-loader";
 
 export default function CloserLineup() {
   const {user} = useAuth();
@@ -211,9 +212,7 @@ export default function CloserLineup() {
         )}
 
         {isLoadingClosersForLineup || isLoadingAssignedCloserIds ? (
-          <div className="flex justify-center items-center h-20">
-            <Loader2 className="w-8 h-8 animate-spin text-[var(--text-secondary)]" />
-          </div>
+          <SkeletonCloserLineup />
         ) : closers.length > 0 ? (
           <div className="relative overflow-visible">
             {/* AURELIAN'S iOS-OPTIMIZED CLOSER LINEUP GRID */}

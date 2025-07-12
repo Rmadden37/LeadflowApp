@@ -5,9 +5,9 @@ import type {Closer, LeadStatus} from "@/types";
 import {Card, CardContent} from "@/components/ui/card";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Loader2, ArrowUp, ArrowDown, Briefcase, UserCheck, UserX} from "lucide-react";
-import {Switch} from "@/components/ui/switch";
+import {PremiumSwitch} from "@/components/ui/premium-switch";
 import {Label} from "@/components/ui/label";
-import {Button} from "@/components/ui/button";
+import {EnhancedButton} from "@/components/ui/premium-button";
 import ProfileCard from "./profile-card";
 import Image from "next/image";
 
@@ -313,11 +313,12 @@ const CloserCard = memo(function CloserCard({
             </div>
           ) : showInteractiveSwitch ? (
             <div className="flex items-center space-x-2 closer-status-controls">
-              <Switch
+              <PremiumSwitch
                 id={`status-toggle-${closer.uid}`}
                 checked={currentStatusIsOnDuty}
                 onCheckedChange={handleToggleCloserAvailability}
                 disabled={isUpdatingStatus || isUpdatingOrder}
+                hapticPattern="medium"
                 aria-label={currentStatusIsOnDuty ? `Set ${closer.name || "Closer"} to Off Duty` : `Set ${closer.name || "Closer"} to On Duty`}
                 className="scale-75"
               />
@@ -351,8 +352,9 @@ const CloserCard = memo(function CloserCard({
         <div className="flex items-center justify-end space-x-1 mt-1.5 pt-1.5 border-t border-slate-200 closer-actions">
           {/* Accept & Start button for managers/admins on waiting_assignment and scheduled leads */}
           {(isWaitingAssignmentLead || isScheduledLead) && (user?.role === "manager" || user?.role === "admin") && onDispositionChange && (
-            <Button 
+            <EnhancedButton 
               size="sm" 
+              hapticPattern="success"
               className="h-6 px-2 text-xs bg-green-500/80 backdrop-blur-sm hover:bg-green-600/90 text-white border border-green-400/30 hover:border-green-300/50 transition-all duration-300 closer-action-btn"
               onClick={handleAcceptAndStart}
               disabled={isAcceptingJob}
@@ -365,13 +367,14 @@ const CloserCard = memo(function CloserCard({
               ) : (
                 "Accept & Start"
               )}
-            </Button>
+            </EnhancedButton>
           )}
           
           {/* Accept Job button for closers on scheduled leads */}
           {isScheduledLead && user?.role === "closer" && onDispositionChange && (
-            <Button 
+            <EnhancedButton 
               size="sm" 
+              hapticPattern="success"
               className="h-6 px-2 text-xs bg-green-500/80 backdrop-blur-sm hover:bg-green-600/90 text-white border border-green-400/30 hover:border-green-300/50 transition-all duration-300 closer-action-btn"
               onClick={handleAcceptJob}
               disabled={isAcceptingJob}
@@ -384,43 +387,46 @@ const CloserCard = memo(function CloserCard({
               ) : (
                 "Accept Job"
               )}
-            </Button>
+            </EnhancedButton>
           )}
           
           {/* Start Working button for closers on accepted leads */}
           {isAcceptedLead && user?.role === "closer" && onDispositionChange && (
-            <Button 
+            <EnhancedButton 
               size="sm" 
+              hapticPattern="medium"
               className="h-6 px-2 text-xs bg-blue-500/80 backdrop-blur-sm hover:bg-blue-600/90 text-white border border-blue-400/30 hover:border-blue-300/50 transition-all duration-300 closer-action-btn"
               onClick={handleStartWorking}
             >
               Start Working
-            </Button>
+            </EnhancedButton>
           )}
           
           {/* Move Controls */}
           {showMoveControls && onMove && !assignedLeadName && (
             <div className="flex items-center space-x-1 ml-2 closer-move-controls">
-              <Button 
+              <EnhancedButton 
                 variant="ghost" 
                 size="icon" 
+                hapticPattern="light"
                 className="h-5 w-5" 
                 onClick={handleMoveUp} 
                 disabled={!canMoveUp || isUpdatingStatus || isUpdatingOrder}
                 aria-label="Move closer up in lineup"
               >
                 <ArrowUp className="h-3 w-3" />
-              </Button>
-              <Button 
+              </EnhancedButton>
+              <EnhancedButton 
                 variant="ghost" 
                 size="icon" 
+                hapticPattern="light"
                 className="h-5 w-5" 
                 onClick={handleMoveDown} 
                 disabled={!canMoveDown || isUpdatingStatus || isUpdatingOrder}
                 aria-label="Move closer down in lineup"
               >
                 <ArrowDown className="h-3 w-3" />
-              </Button>
+              </EnhancedButton>
             </div>
           )}
         </div>
