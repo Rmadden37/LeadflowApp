@@ -16,7 +16,7 @@ build:
     - npm ci
     - npm run build
   
-  # Output directory for Next.js standalone build
+  # Output directory for Next.js build (App Hosting expects this)
   outputDir: .next
 
 # Environment variables for production
