@@ -465,7 +465,7 @@ export default function DaylightArcCard() {
             />
             
             {/* Enhanced Sunrise Icon with premium styling */}
-            <circle cx="25" cy="80" r="5" fill="rgba(255, 200, 50, 0.7)" 
+            <circle cx="25" cy="80" r="3" fill="rgba(255, 200, 50, 0.7)" 
               style={{ 
                 filter: `
                   drop-shadow(0 0 6px rgba(255, 200, 50, 0.5)) 
@@ -473,7 +473,7 @@ export default function DaylightArcCard() {
                 `
               }} 
             />
-            <circle cx="25" cy="80" r="7" fill="none" stroke="rgba(255, 200, 50, 0.4)" strokeWidth="2" 
+            <circle cx="25" cy="80" r="5" fill="none" stroke="rgba(255, 200, 50, 0.4)" strokeWidth="2" 
               style={{ filter: 'drop-shadow(0 0 4px rgba(255, 200, 50, 0.3))' }} 
             />
             
@@ -481,7 +481,7 @@ export default function DaylightArcCard() {
             <circle 
               cx="155" 
               cy="80" 
-              r="5" 
+              r="3" 
               fill={isDayComplete ? "rgba(147, 51, 234, 0.8)" : "rgba(200, 200, 255, 0.7)"}
               style={{ 
                 transition: 'fill 1s ease-out',
@@ -493,7 +493,7 @@ export default function DaylightArcCard() {
             <circle 
               cx="155" 
               cy="80" 
-              r="7" 
+              r="5" 
               fill="none" 
               stroke={isDayComplete ? "rgba(147, 51, 234, 0.5)" : "rgba(200, 200, 255, 0.4)"} 
               strokeWidth="2"

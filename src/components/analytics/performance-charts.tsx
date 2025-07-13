@@ -2,8 +2,7 @@
 
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
-import { BarChart, Bar, PieChart, Pie, LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } from "recharts";
+import { PremiumBarChart, PremiumPieChart, PremiumLineChart } from "@/components/premium/premium-charts";
 import { BarChart3, Activity, Calendar } from "lucide-react";
 import { SetterPerformance, CloserPerformance, TrendData } from "./types";
 import type { Lead } from "@/types";
@@ -65,26 +64,18 @@ export function PerformanceCharts({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={setterChartData} margin={{ top: 20, right: 20, bottom: 60, left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="name" 
-                  tick={{ fontSize: 11 }}
-                  angle={-45}
-                  textAnchor="end"
-                  height={60}
-                />
-                <YAxis tick={{ fontSize: 11 }} />
-                <ChartTooltip />
-                <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="sitRate" fill={chartConfig.sitRate.color} name="Sit Rate %" />
-                <Bar dataKey="failedCreditRate" fill={chartConfig.failedCredit.color} name="Failed Credit Rate %" />
-                <Bar dataKey="cancelNoShowRate" fill={chartConfig.cancelNoShow.color} name="Cancel/No Show Rate %" />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+          <PremiumBarChart 
+            data={setterChartData} 
+            categories={[
+              { key: 'sitRate', label: 'Sit Rate %', color: '#0088FE' },
+              { key: 'failedCreditRate', label: 'Failed Credit Rate %', color: '#00C49F' },
+              { key: 'cancelNoShowRate', label: 'Cancel/No Show Rate %', color: '#FFBB28' }
+            ]}
+            xAxisKey="name"
+            height={350}
+            showTooltip={true}
+            showLegend={true}
+          />
         </CardContent>
       </Card>
 

@@ -5,6 +5,111 @@
 /* Tailwind CSS base layer - critical only */
 @import 'tailwindcss/base';
 
+/* PREMIUM CHART ANIMATIONS - Ultra-responsive, hardware-accelerated */
+@keyframes premiumBarGrow {
+  0% { 
+    transform: scaleY(0) translateZ(0);
+    opacity: 0;
+  }
+  100% { 
+    transform: scaleY(1) translateZ(0);
+    opacity: 1;
+  }
+}
+
+@keyframes premiumPieGrow {
+  0% { 
+    transform: scale(0) rotate(-90deg) translateZ(0);
+    opacity: 0;
+  }
+  100% { 
+    transform: scale(1) rotate(0deg) translateZ(0);
+    opacity: 1;
+  }
+}
+
+@keyframes premiumLineDraw {
+  0% { 
+    stroke-dashoffset: 1000;
+  }
+  100% { 
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes premiumPointAppear {
+  0% { 
+    transform: scale(0) translateZ(0);
+    opacity: 0;
+  }
+  100% { 
+    transform: scale(1) translateZ(0);
+    opacity: 1;
+  }
+}
+
+/* Premium leaderboard animations with hardware acceleration */
+@keyframes premiumSlideIn {
+  0% { 
+    transform: translate3d(-20px, 0, 0);
+    opacity: 0;
+  }
+  100% { 
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes premiumRankPulse {
+  0%, 100% { 
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% { 
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+}
+
+@keyframes premiumGlow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* Premium chart containers */
+.premium-chart-container {
+  contain: layout style paint;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.premium-bar, .premium-pie-slice, .premium-line, .premium-point, .premium-text {
+  will-change: transform, opacity;
+  contain: layout style paint;
+}
+
+/* Premium leaderboard containers */
+.premium-leaderboard, .premium-team-leaderboard {
+  contain: layout style paint;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.premium-leaderboard-entry, .premium-team-entry, .premium-rank-badge {
+  will-change: transform, opacity;
+  contain: layout style paint;
+}
+
+.premium-leaderboard-entry:nth-child(1) .premium-rank-badge {
+  animation: premiumRankPulse 2s ease-in-out infinite;
+}
+
+.premium-leaderboard-entry:nth-child(1) {
+  animation: premiumGlow 3s ease-in-out infinite;
+}
+
 /* Critical CSS variables */
 :root {
   --background: 13 13 13;

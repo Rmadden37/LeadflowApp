@@ -14,6 +14,7 @@ import {auth, db, storage} from "@/lib/firebase";
 import {updateProfile, sendPasswordResetEmail} from "firebase/auth";
 import {doc, updateDoc, getDoc} from "firebase/firestore";
 import {ref as storageRef, uploadBytesResumable, getDownloadURL} from "firebase/storage";
+import {PremiumProfileImage} from "@/components/premium/premium-images";
 import {useToast} from "@/hooks/use-toast";
 import {Loader2, User, Mail, ShieldCheck, Edit3, KeyRound, Camera, Users, Bell, Settings, Shield, Database, Palette, LogOut, UserCheck} from "lucide-react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -324,11 +325,10 @@ export default function ProfilePage() {
     <div className="ios-settings-container">
       {/* iOS Profile Header */}
       <div className="ios-profile-header">
-        <div className="ios-profile-avatar">
-          {user.avatarUrl ? (
-            <img 
-              src={user.avatarUrl} 
-              alt={user.displayName || user.email || "User"} 
+        <div className="ios-profile-avatar">          {user.avatarUrl ? (
+            <PremiumProfileImage 
+              src={user.avatarUrl}
+              name={user.displayName || user.email || "User"}
               className="w-full h-full object-cover rounded-full"
             />
           ) : (
@@ -589,7 +589,7 @@ export default function ProfilePage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   ref={imgRef}
-                  alt="Crop me"
+                  alt="Profile picture to crop"
                   src={upImgSrc}
                   onLoad={onImageLoad}
                   style={{ maxBlockSize: "70vh" }}

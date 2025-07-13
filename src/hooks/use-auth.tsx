@@ -33,13 +33,15 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       console.log('⏰ Auth loading timeout reached, forcing loading to false');
-      if (loading) {
+      if (loading && !initialAuthChecked) {
+        console.log('🚨 Forcing auth check complete due to timeout');
         setLoading(false);
+        setInitialAuthChecked(true);
       }
-    }, 3000); // Reduced to 3 seconds
+    }, 2000); // Reduced to 2 seconds
 
     return () => clearTimeout(timeout);
-  }, [loading]);
+  }, [loading, initialAuthChecked]);
 
   useEffect(() => {
     console.log('🔥 Setting up Firebase auth listener');

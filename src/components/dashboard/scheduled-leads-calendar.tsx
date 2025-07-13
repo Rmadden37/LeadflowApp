@@ -82,6 +82,10 @@ export default function ScheduledLeadsCalendar({ scheduledLeads, loading, isExpa
                     setIsCalendarOpen(false);
                   }}
                   disabled={(date) => date < new Date("1900-01-01")}
+                  className="scheduled-leads-calendar"
+                  classNames={{
+                    day_selected: "bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white !bg-opacity-100 shadow-lg border-2 border-blue-400"
+                  }}
                   initialFocus
                 />
               </PopoverContent>

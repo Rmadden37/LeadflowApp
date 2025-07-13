@@ -476,6 +476,10 @@ export default function ScheduledLeadsSection() {
                       setShowCalendar(false);
                     }
                   }}
+                  className="scheduled-leads-calendar"
+                  classNames={{
+                    day_selected: "bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white !bg-opacity-100 shadow-lg border-2 border-blue-400"
+                  }}
                   initialFocus
                 />
               </PopoverContent>

@@ -1248,6 +1248,39 @@ body::before {
 /* AURELIAN SALOMAN'S iOS-NATIVE STYLING SYSTEM */
 /* Brings authentic iOS visual language to web interfaces */
 
+/* ===================================================================
+   SCHEDULED LEADS CALENDAR SOLID BACKGROUND ENHANCEMENT
+   =================================================================== */
+
+/* Enhanced solid background for scheduled leads calendar */
+.scheduled-leads-calendar [data-state="selected"],
+.scheduled-leads-calendar [aria-selected="true"] {
+  background-color: #3B82F6 !important;
+  color: white !important;
+  border: 2px solid #2563EB !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+  font-weight: 600 !important;
+}
+
+.scheduled-leads-calendar [data-state="selected"]:hover,
+.scheduled-leads-calendar [aria-selected="true"]:hover {
+  background-color: #2563EB !important;
+  color: white !important;
+  transform: scale(1.05) !important;
+}
+
+.scheduled-leads-calendar [data-state="selected"]:focus,
+.scheduled-leads-calendar [aria-selected="true"]:focus {
+  background-color: #2563EB !important;
+  color: white !important;
+  outline: 2px solid #60A5FA !important;
+  outline-offset: 2px !important;
+}
+
+/* ===================================================================
+   ORIGINAL iOS SETTINGS-STYLE GROUP LAYOUT
+   =================================================================== */
+
 /* iOS Settings-Style Group Layout */
 .ios-settings-group {
   @apply space-y-2;

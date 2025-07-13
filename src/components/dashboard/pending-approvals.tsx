@@ -235,7 +235,7 @@ export default function PendingApprovals() {
                 {/* User Info */}
                 <div className="flex items-start gap-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src="" alt={approval.userName} />
+                    <AvatarImage src={undefined} alt={approval.userName} />
                     <AvatarFallback className="bg-[var(--accent-primary)]/20 text-[var(--accent-light)]">
                       {approval.userName.split(' ').map(n => n[0]).join('').toUpperCase()}
                     </AvatarFallback>

@@ -295,12 +295,6 @@ export default function MobileNavigationLayout({ children }: MobileNavigationLay
             href="/dashboard/leaderboard" 
             isActive={pathname.includes('/leaderboard')}
           />
-          <BottomNavItem 
-            icon={<MessageCircle className="stroke-[1.5]" />} 
-            label="Chat" 
-            href="/dashboard/chat" 
-            isActive={pathname.includes('/chat')}
-          />
           
           {isManagerOrAdmin && (
             <BottomNavDropdownItem
@@ -310,6 +304,12 @@ export default function MobileNavigationLayout({ children }: MobileNavigationLay
               menuItems={managerMenuItems}
             />
           )}
+          <BottomNavItem 
+            icon={<MessageCircle className="stroke-[1.5]" />} 
+            label="Chat" 
+            href="/dashboard/chat" 
+            isActive={pathname.includes('/chat')}
+          />
           <BottomNavItem 
             icon={<User className="stroke-[1.5]" />} 
             label="Profile" 

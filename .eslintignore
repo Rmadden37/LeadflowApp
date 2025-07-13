@@ -7,3 +7,7 @@ dist/
 .env*
 public/
 build/
+# Temporarily ignore chart components during optimization
+src/components/analytics/performance-charts.tsx
+src/components/analytics/setter-quality-enhanced.tsx
+src/components/dashboard/analytics-dashboard.tsx

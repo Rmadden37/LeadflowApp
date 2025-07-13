@@ -282,7 +282,7 @@ function PendingApprovalsSimple() {
                 {/* User Info */}
                 <div className="flex items-start gap-4">
                   <Avatar className="h-12 w-12 ring-2 ring-[var(--glass-border)]">
-                    <AvatarImage src="" alt={approval.userName} />
+                    <AvatarImage src={undefined} alt={approval.userName} />
                     <AvatarFallback className="bg-gradient-to-br from-[var(--accent-primary)]/20 to-blue-500/10 text-[var(--accent-light)] font-semibold">
                       {approval.userName.split(' ').map(n => n[0]).join('').toUpperCase()}
                     </AvatarFallback>

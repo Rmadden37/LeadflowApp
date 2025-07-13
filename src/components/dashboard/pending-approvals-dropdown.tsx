@@ -281,7 +281,7 @@ function PendingApprovalsDropdown() {
               {/* User Info Header */}
               <div className="flex items-center gap-3">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="" alt={approval.userName} />
+                  <AvatarImage src={undefined} alt={approval.userName} />
                   <AvatarFallback className="bg-gradient-to-br from-[var(--accent-primary)]/20 to-blue-500/10 text-[var(--accent-light)] text-xs font-semibold">
                     {approval.userName.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </AvatarFallback>
