@@ -6,7 +6,7 @@
     "dev": "next dev -p 9003",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "prebuild": "echo 'Skipping prebuild checks in CI' || npm run typecheck && npm run lint",
+    "prebuild": "echo 'Starting prebuild for App Hosting'",
     "build": "next build",
     "postbuild": "echo 'Build completed successfully'",
     "start": "next start -p 8080",

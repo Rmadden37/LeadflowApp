@@ -287,9 +287,9 @@ const LeadDispositionModal: React.FC<LeadDispositionModalProps> = ({lead, isOpen
         // 🌟 PREMIUM iOS MODAL STYLING - Solid, Non-Transparent
         "manager-disposition-modal sm:max-w-md max-w-[95vw]",
         // 📱 MOBILE POSITIONING FIX - Better viewport handling
-        "max-h-[85vh] sm:max-h-[90vh] overflow-y-auto",
+        "max-h-[80vh] sm:max-h-[90vh] overflow-y-auto",
         // 🎯 MOBILE CENTER POSITIONING - Account for bottom nav and smaller screens
-        "fixed inset-x-4 top-[15%] sm:top-[50%] sm:left-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%]",
+        "fixed inset-x-4 top-[10%] sm:top-[50%] sm:left-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%]",
         "bg-white dark:bg-gray-900 border-0",
         "shadow-2xl shadow-black/50",
         "rounded-3xl p-0",

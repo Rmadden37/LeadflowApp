@@ -24,3 +24,4 @@ env:
   NODE_ENV: production
   NEXT_PUBLIC_DEPLOY_TARGET: app-hosting
   NEXT_PUBLIC_STATIC_EXPORT: false
+  NODE_VERSION: "20"

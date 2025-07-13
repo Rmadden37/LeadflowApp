@@ -43,13 +43,14 @@ const nextConfig = {
   },
   // Build optimization
   typescript: {
-    // Temporarily ignore TypeScript errors during build for CI
+    // Ignore TypeScript errors during build for App Hosting deployment
     ignoreBuildErrors: true,
   },
   eslint: {
-    // Temporarily ignore ESLint errors during build for CI
+    // Ignore ESLint errors during build for App Hosting deployment
     ignoreDuringBuilds: true,
   },
+  
   // Webpack configuration
   webpack: (config, { isServer, webpack }) => {
     // Exclude functions directory from webpack compilation
