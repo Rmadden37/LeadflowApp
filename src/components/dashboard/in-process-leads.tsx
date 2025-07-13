@@ -8,6 +8,7 @@ import {useRouter} from "next/navigation";
 import {db, acceptJobFunction} from "@/lib/firebase";
 import {collection, query, where, onSnapshot, orderBy, limit, doc, updateDoc, serverTimestamp, getDoc} from "firebase/firestore";
 import LeadCard from "./lead-card";
+import CloserCard from "./closer-card";
 import LeadDetailsDialog from "./lead-details-dialog";
 import { Loader2, Ghost } from "lucide-react";
 import Image from "next/image";
@@ -388,12 +389,19 @@ export default function InProcessLeads() {
   if (displayItems.length === 0) {
     return (
       <>
-        <h2 className="text-2xl font-lora text-[var(--text-primary)] mb-4">In Process Leads</h2>
+        <h2 className="text-2xl font-lora text-[var(--text-primary)] mb-4">
+          {user?.role === "admin" || user?.role === "manager" ? "Active Assignments" : "In Process Leads"}
+        </h2>
         <div className="frosted-glass-card p-6 text-center">
           <Ghost className="h-12 w-12 text-[var(--text-secondary)] mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">All Quiet</h3>
+          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+            {user?.role === "admin" || user?.role === "manager" ? "No Active Assignments" : "All Quiet"}
+          </h3>
           <p className="text-[var(--text-secondary)] text-sm max-w-xs mx-auto">
-            No leads are currently being processed.
+            {user?.role === "admin" || user?.role === "manager" 
+              ? "No leads are currently assigned to closers." 
+              : "No leads are currently being processed."
+            }
           </p>
         </div>
       </>
@@ -402,11 +410,32 @@ export default function InProcessLeads() {
 
   return (
     <>
-      <h2 className="text-2xl font-lora text-[var(--text-primary)] mb-4">In Process Leads</h2>
+      <h2 className="text-2xl font-lora text-[var(--text-primary)] mb-4">
+        {user?.role === "admin" || user?.role === "manager" ? "Active Assignments" : "In Process Leads"}
+      </h2>
       <div className="space-y-3">
         {displayItems.map(({ lead, closer }) => {
           if (!closer) return null;
           
+          // For admins and managers, show enhanced cards with job acceptance controls
+          if (user?.role === "admin" || user?.role === "manager") {
+            return (
+              <div key={lead.id} className="frosted-glass-card">
+                <CloserCard
+                  closer={closer}
+                  assignedLeadName={lead.customerName}
+                  leadId={lead.id}
+                  currentLeadStatus={lead.status}
+                  allowInteractiveToggle={false}
+                  showMoveControls={false}
+                  onDispositionChange={(newStatus) => handleDispositionChange(lead.id, newStatus)}
+                  onLeadClick={() => handleLeadClick(lead)}
+                />
+              </div>
+            );
+          }
+          
+          // For other roles, show the simple view
           return (
             <div 
               key={lead.id} 

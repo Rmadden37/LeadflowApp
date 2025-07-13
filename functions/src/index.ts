@@ -410,9 +410,18 @@ export const acceptJob = functions.https.onCall(async (data, context) => {
 
     const leadData = leadDoc.data() as Lead;
     
-    // Verify the current user is the assigned closer
-    if (leadData.assignedCloserId !== context.auth.uid) {
-      throw new functions.https.HttpsError("permission-denied", "You are not assigned to this lead");
+    // Get user data to check role and permissions
+    const userDoc = await db.collection("users").doc(context.auth.uid).get();
+    const userData = userDoc.exists ? userDoc.data() : null;
+    
+    // Allow assigned closer OR admin/manager from same team to accept job
+    const isAssignedCloser = leadData.assignedCloserId === context.auth.uid;
+    const isAdminOrManager = userData && (userData.role === "admin" || userData.role === "manager");
+    const sameTeam = userData && userData.teamId === leadData.teamId;
+    
+    if (!isAssignedCloser && !(isAdminOrManager && sameTeam)) {
+      throw new functions.https.HttpsError("permission-denied", 
+        "You are not assigned to this lead and do not have admin/manager permissions for this team");
     }
 
     // Check if the job has already been accepted
@@ -447,8 +456,8 @@ export const acceptJob = functions.https.onCall(async (data, context) => {
     // Send notification to the setter if setterId exists
     if (leadData.setterId) {
       try {
-        // Get closer info for notification
-        const closerDoc = await db.collection("closers").doc(context.auth.uid).get();
+        // Get closer info for notification - use assigned closer's name, not the accepter
+        const closerDoc = await db.collection("closers").doc(leadData.assignedCloserId).get();
         const closerName = closerDoc.exists ? closerDoc.data()?.name || "Closer" : "Closer";
         
         await LeadNotifications.jobAccepted({
@@ -468,10 +477,12 @@ export const acceptJob = functions.https.onCall(async (data, context) => {
     await db.collection("activities").add({
       type: "job_accepted",
       leadId: leadId,
-      closerId: context.auth.uid,
+      closerId: leadData.assignedCloserId, // The actual assigned closer
+      acceptedBy: context.auth.uid, // Who performed the acceptance (could be admin/manager)
       closerName: leadData.assignedCloserName,
       customerName: leadData.customerName,
       teamId: leadData.teamId,
+      isAdminAcceptance: !isAssignedCloser, // Flag to indicate if this was done by admin/manager
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
 
