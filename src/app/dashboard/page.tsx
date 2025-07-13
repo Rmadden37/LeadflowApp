@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 
 // Always load immediately
 import AetherHeader from "@/components/dashboard/aether-header";
-import AetherTabBar from "@/components/dashboard/aether-tab-bar";
 import DaylightArcCard from "@/components/dashboard/daylight-arc-card-simple";
 
 // Lazily load components below the fold with dynamic imports
@@ -43,8 +42,7 @@ export default function DashboardPage() {
         </div>
       </div>
       
-      {/* Always show the beautiful AetherTabBar - Aurelian's signature design */}
-      <AetherTabBar />
+      {/* Mobile navigation is now handled by layout - no need for AetherTabBar here */}
     </div>
   );
 }

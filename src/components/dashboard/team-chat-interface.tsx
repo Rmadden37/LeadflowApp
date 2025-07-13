@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {OptimizedAvatar} from "@/components/ui/optimized-avatar";
 import { Badge } from "@/components/ui/badge";
 import { 
   ArrowLeft, 
@@ -178,12 +178,13 @@ export default function TeamChatInterface({ channel, onBack }: TeamChatInterface
                         className={`chat-message ${isCurrentUser ? 'is-user' : 'is-other'}`}
                       >
                         {!isCurrentUser && (
-                          <Avatar className="h-8 w-8 flex-shrink-0">
-                            <AvatarImage src={message.senderAvatar} alt={message.senderName} />
-                            <AvatarFallback className="text-xs">
-                              {getInitials(message.senderName)}
-                            </AvatarFallback>
-                          </Avatar>
+                          <OptimizedAvatar
+                            src={message.senderAvatar}
+                            alt={message.senderName}
+                            size="xs"
+                            className="flex-shrink-0"
+                            fallbackText={getInitials(message.senderName)}
+                          />
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="chat-message-bubble">
@@ -202,12 +203,13 @@ export default function TeamChatInterface({ channel, onBack }: TeamChatInterface
                           </p>
                         </div>
                         {isCurrentUser && (
-                          <Avatar className="h-8 w-8 flex-shrink-0">
-                            <AvatarImage src={user?.photoUrl || undefined} alt={user?.displayName || "You"} />
-                            <AvatarFallback className="text-xs">
-                              {getInitials(user?.displayName || user?.email || "You")}
-                            </AvatarFallback>
-                          </Avatar>
+                          <OptimizedAvatar
+                            src={user?.photoUrl}
+                            alt={user?.displayName || "You"}
+                            size="xs"
+                            className="flex-shrink-0"
+                            fallbackText={getInitials(user?.displayName || user?.email || "You")}
+                          />
                         )}
                       </div>
                     );

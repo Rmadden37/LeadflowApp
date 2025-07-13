@@ -95,87 +95,111 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
     <>
       <style dangerouslySetInnerHTML={{
         __html: `
+          /* 🌟 AURELIAN'S PREMIUM iOS FORM DESIGN SYSTEM */
+          /* ============================================== */
+          
           .pure-form-container {
             max-width: 100%;
             padding: 0;
-            color: #e5e5e5;
+            color: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 20px;
+            overflow: hidden;
           }
 
           .pure-form {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 24px;
+            padding: 4px;
           }
 
           .pure-field {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
           }
 
+          /* 🏷️ iOS LABELS - Premium Typography */
           .pure-label {
-            font-size: 16px;
-            font-weight: 500;
-            color: #e5e5e5;
+            font-size: 17px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
             margin: 0;
+            letter-spacing: -0.02em;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
           }
 
+          /* 📱 iOS INPUT FIELDS - Native Design Language */
           .pure-input {
             width: 100%;
             height: 56px;
-            padding: 16px;
-            font-size: 16px !important;
+            padding: 16px 20px;
+            font-size: 17px;
             line-height: 1.4;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            color: #e5e5e5;
-            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            color: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-sizing: border-box;
             outline: none;
             -webkit-appearance: none;
             appearance: none;
+            backdrop-filter: blur(10px);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
           }
 
           .pure-input:focus {
             border-color: #007AFF;
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 
+              0 0 0 4px rgba(0, 122, 255, 0.12),
+              0 8px 24px rgba(0, 122, 255, 0.15);
+            transform: translateY(-1px);
           }
 
           .pure-input::placeholder {
             color: rgba(255, 255, 255, 0.5);
           }
 
+          /* 🎨 iOS RADIO BUTTONS - Settings Style Interface */
           .pure-radio-group {
             display: flex;
-            gap: 20px;
-            margin-top: 8px;
+            gap: 24px;
+            margin-top: 12px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
           }
 
           .pure-radio-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            flex: 1;
           }
 
           .pure-radio {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             accent-color: #007AFF;
             appearance: none;
             -webkit-appearance: none;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.25);
             border-radius: 50%;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.02);
             position: relative;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           }
 
           .pure-radio:checked {
             border-color: #007AFF;
             background: #007AFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
           }
 
           .pure-radio:checked::after {
@@ -184,43 +208,51 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: white;
           }
 
           .pure-radio-label {
             font-size: 16px;
-            color: #e5e5e5;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
             margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
           }
 
+          /* 📋 iOS CHECKBOXES - Native Toggle Style */
           .pure-checkbox-group {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
           }
 
           .pure-checkbox {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             accent-color: #007AFF;
             appearance: none;
             -webkit-appearance: none;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
-            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.02);
             position: relative;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           }
 
           .pure-checkbox:checked {
             border-color: #007AFF;
             background: #007AFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
           }
 
           .pure-checkbox:checked::after {
@@ -230,66 +262,82 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 10px;
-            font-weight: bold;
+            font-size: 11px;
+            font-weight: 700;
           }
 
           .pure-checkbox-label {
-            font-size: 14px;
-            color: #e5e5e5;
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
             margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
           }
 
+          /* 📅 SCHEDULED SECTION - iOS Settings Panel Style */
           .pure-scheduled-section {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.06) 0%, rgba(0, 122, 255, 0.02) 100%);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 122, 255, 0.15);
+            backdrop-filter: blur(15px);
             display: none;
+            margin-top: 8px;
           }
 
+          /* 🎯 PREMIUM BUTTONS - iOS Action Buttons */
           .pure-buttons {
             display: flex;
             gap: 16px;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 32px;
+            padding-top: 24px;
           }
 
           .pure-btn {
             flex: 1;
             height: 56px;
             padding: 16px 24px;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 600;
-            border-radius: 12px;
+            border-radius: 16px;
             border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+            backdrop-filter: blur(10px);
           }
 
           .pure-btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #e5e5e5;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
           }
 
           .pure-btn-secondary:hover {
             background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
           }
 
           .pure-btn-primary {
             background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
             color: white;
-            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
           }
 
           .pure-btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 122, 255, 0.35);
+            background: linear-gradient(135deg, #1A8CFF 0%, #007AFF 100%);
+          }
+
+          .pure-btn-primary:active:not(:disabled) {
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
           }
@@ -297,13 +345,15 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
           .pure-btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
           }
 
+          /* ⚡ LOADING SPINNER - iOS Activity Indicator */
           .pure-spinner {
             width: 20px;
             height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid white;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-top: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 50%;
             animation: spin 1s linear infinite;
           }
@@ -313,14 +363,19 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
             100% { transform: rotate(360deg); }
           }
 
+          /* 📱 RESPONSIVE DESIGN - Mobile Optimizations */
           @media (max-width: 640px) {
             .pure-radio-group {
               flex-direction: column;
-              gap: 12px;
+              gap: 16px;
             }
             
             .pure-buttons {
               flex-direction: column;
+            }
+            
+            .pure-btn {
+              width: 100%;
             }
           }
         `
@@ -424,8 +479,15 @@ export default function CreateLeadForm({ isOpen, onClose, onSuccess, embedded = 
 
           {/* Scheduled Appointment Section */}
           <div id="scheduled-section" className="pure-scheduled-section">
-            <h4 style={{ margin: '0 0 16px 0', color: '#e5e5e5', fontSize: '16px', fontWeight: '500' }}>
-              Schedule Appointment
+            <h4 style={{ 
+              margin: '0 0 20px 0', 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              fontSize: '17px', 
+              fontWeight: '600',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+              letterSpacing: '-0.02em'
+            }}>
+              📅 Schedule Appointment
             </h4>
             
             <div className="pure-field">

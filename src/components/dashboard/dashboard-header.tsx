@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {useAuth} from "@/hooks/use-auth";
 import {PremiumButton} from "@/components/ui/premium-button";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {OptimizedAvatar} from "@/components/ui/optimized-avatar";
 import {LogOut, UserCircle, PlusCircle, ChevronDown, Users, ClipboardList, BarChart3} from "lucide-react";
 import {
   DropdownMenu,
@@ -120,12 +120,14 @@ export default function DashboardHeader() {
               href="/dashboard/profile" 
               className="flex items-center space-x-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 dark:hover:bg-white/5 backdrop-blur-sm transition-all duration-300 group"
             >
-              <Avatar className="h-9 w-9 border-2 border-white/10 dark:border-white/20">
-                <AvatarImage src={user?.avatarUrl || undefined} alt={user?.displayName || user?.email || "User"} />
-                <AvatarFallback className="bg-gradient-to-br from-[#007AFF]/20 to-[#0056CC]/10 text-[#007AFF] font-semibold text-sm">
-                  {getAvatarFallbackText()}
-                </AvatarFallback>
-              </Avatar>
+              <OptimizedAvatar
+                src={user?.avatarUrl}
+                alt={user?.displayName || user?.email || "User"}
+                size="sm"
+                className="border-2 border-white/10 dark:border-white/20"
+                fallbackText={getAvatarFallbackText()}
+                priority={true}
+              />
               <div className="flex flex-col text-xs">
                 <span className="font-semibold text-foreground">{user?.displayName || user?.email}</span>
                 <span className="text-muted-foreground/70 capitalize">{user?.role}</span>

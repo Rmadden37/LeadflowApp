@@ -1,8 +1,16 @@
-// Firebase messaging service worker for push notifications
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+// Enhanced Firebase messaging service worker for push notifications
+// Addresses VAPID warnings and connection timeout issues
 
-// Firebase configuration - same as your main app
+// Import Firebase SDK with error handling
+try {
+  importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+  importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+  console.log('✅ FCM SW: Firebase scripts loaded successfully');
+} catch (error) {
+  console.error('❌ FCM SW: Failed to load Firebase scripts:', error);
+}
+
+// Enhanced Firebase configuration with validation
 const firebaseConfig = {
   apiKey: "AIzaSyBc3jmFE6dRXBApmWD9Jg2PO86suqGgaZw",
   authDomain: "leadflow-4lvrr.firebaseapp.com",
@@ -13,11 +21,15 @@ const firebaseConfig = {
   measurementId: "G-KDEF2C21SH",
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-// Initialize Firebase Cloud Messaging and get a reference to the service
-const messaging = firebase.messaging();
+// Initialize Firebase with error handling
+let messaging = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  messaging = firebase.messaging();
+  console.log('✅ FCM SW: Firebase initialized successfully');
+} catch (error) {
+  console.error('❌ FCM SW: Firebase initialization failed:', error);
+}
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {

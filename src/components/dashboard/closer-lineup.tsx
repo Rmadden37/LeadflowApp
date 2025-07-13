@@ -1,6 +1,7 @@
 "use client";
 
 import {useState, useEffect} from "react";
+import Image from "next/image";
 import type {Closer, UserRole, Lead} from "@/types";
 import {useAuth} from "@/hooks/use-auth";
 import {useToast} from "@/hooks/use-toast";
@@ -217,7 +218,7 @@ export default function CloserLineup() {
           <div className="relative overflow-visible">
             {/* AURELIAN'S iOS-OPTIMIZED CLOSER LINEUP GRID */}
             <div 
-              className="grid grid-cols-3 gap-4 py-6 px-4 items-start justify-items-center min-h-[120px]"
+              className="grid grid-cols-3 gap-6 py-8 px-4 items-start justify-items-center min-h-[160px]"
               style={{
                 // iOS Safari PWA optimization
                 WebkitUserSelect: 'none',
@@ -229,7 +230,7 @@ export default function CloserLineup() {
               {closers.slice(0, 6).map((closer, index) => (
                 <div 
                   key={closer.uid} 
-                  className="flex flex-col items-center w-full max-w-[85px]"
+                  className="flex flex-col items-center w-full max-w-[100px]"
                   style={{
                     // Prevent iOS Safari from adding video controls
                     WebkitUserSelect: 'none',
@@ -241,8 +242,8 @@ export default function CloserLineup() {
                   <div 
                     className="relative mb-3 closer-lineup-avatar-container"
                     style={{
-                      width: '48px',
-                      height: '48px',
+                      width: '64px',
+                      height: '64px',
                       isolation: 'isolate', // Create new stacking context for iOS
                       position: 'relative',
                       zIndex: 1
@@ -262,7 +263,7 @@ export default function CloserLineup() {
                     >
                       {/* iOS-optimized avatar with proper containment */}
                       <div 
-                        className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center shadow-md border-2 border-white/20"
+                        className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center shadow-md border-2 border-white/20"
                         style={{
                           overflow: 'hidden',
                           position: 'relative',
@@ -275,9 +276,11 @@ export default function CloserLineup() {
                         }}
                       >
                         {closer.avatarUrl ? (
-                          <img 
+                          <Image 
                             src={closer.avatarUrl}
                             alt={closer.name}
+                            width={48}
+                            height={48}
                             className="w-full h-full object-cover"
                             style={{
                               // iOS Safari PWA image optimization
@@ -293,9 +296,11 @@ export default function CloserLineup() {
                             }}
                           />
                         ) : (
-                          <img 
-                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(closer.name)}&background=4F46E5&color=fff&size=48&format=png`}
+                          <Image 
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(closer.name)}&background=4F46E5&color=fff&size=64&format=png`}
                             alt={closer.name}
+                            width={48}
+                            height={48}
                             className="w-full h-full object-cover"
                             style={{
                               WebkitUserSelect: 'none',
@@ -321,8 +326,8 @@ export default function CloserLineup() {
                         className="w-7 h-7 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white/80"
                         style={{
                           position: 'absolute',
-                          top: '-6px',
-                          right: '-6px',
+                          top: '-8px',
+                          right: '-8px',
                           zIndex: 15, // Higher than avatar to ensure visibility
                           // Prevent iOS Safari from adding controls
                           WebkitUserSelect: 'none',
@@ -357,7 +362,7 @@ export default function CloserLineup() {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
-                      maxWidth: '70px'
+                      maxWidth: '90px'
                     }}
                   >
                     {closer.name}

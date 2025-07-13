@@ -4,6 +4,7 @@ import {useState, useEffect} from "react";
 import type {Lead, Closer, LeadStatus} from "@/types";
 import {useAuth} from "@/hooks/use-auth";
 import {useToast} from "@/hooks/use-toast";
+import {useRouter} from "next/navigation";
 import {db, acceptJobFunction} from "@/lib/firebase";
 import {collection, query, where, onSnapshot, orderBy, limit, doc, updateDoc, serverTimestamp, getDoc} from "firebase/firestore";
 import LeadCard from "./lead-card";
@@ -56,6 +57,7 @@ interface InProcessDisplayItem {
 export default function InProcessLeads() {
   const {user} = useAuth();
   const {toast} = useToast();
+  const router = useRouter();
   const [displayItems, setDisplayItems] = useState<InProcessDisplayItem[]>([]);
   const [loadingLeads, setLoadingLeads] = useState(true);
   const [loadingClosers, setLoadingClosers] = useState(true);
@@ -357,6 +359,9 @@ export default function InProcessLeads() {
         title: "Disposition Updated",
         description: `Lead status updated to ${newStatus.replace("_", " ")}.`,
       });
+
+      // Navigate to dashboard after successful disposition save
+      router.push("/dashboard");
     } catch (error) {
       console.error("Error updating lead disposition:", error);
       toast({

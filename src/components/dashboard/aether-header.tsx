@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function AetherHeader() {
   return (
-    <div className="flex justify-between items-center p-6 pt-8">
+    <div className="flex justify-between items-center p-6 pt-8 lg:hidden">
       <h1 className="text-4xl font-lora text-[var(--text-primary)]">Dashboard</h1>
       <div className="flex items-center space-x-3">
         {/* Create Lead Button */}

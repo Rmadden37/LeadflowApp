@@ -1,0 +1,133 @@
+/* ===================================================================
+   AURELIAN'S iOS-NATIVE BOTTOM NAVIGATION
+   Clean, minimal, and perfectly aligned with iOS design language
+   =================================================================== */
+
+/* Override any existing bottom nav styles with clean iOS approach */
+.bottom-nav-container,
+nav[class*="bottom"] {
+  /* Clean iOS backdrop with proper opacity */
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  
+  /* iOS hairline border */
+  border-top: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+  
+  /* Remove all excessive shadows and effects */
+  box-shadow: none !important;
+  
+  /* iOS-standard height with proper safe area */
+  height: 80px !important;
+  min-height: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+  
+  /* Ensure proper z-index */
+  z-index: 1000 !important;
+}
+
+/* Clean tab styling with iOS touch targets */
+.bottom-nav-container button,
+.bottom-nav-container a {
+  /* Remove all backgrounds and effects */
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  
+  /* iOS-standard touch target */
+  min-height: 44px !important;
+  min-width: 44px !important;
+  padding: 8px 12px !important;
+  
+  /* iOS spring transitions */
+  transition: color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  
+  /* Prevent iOS double-tap zoom */
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* iOS-native active state with system blue */
+.bottom-nav-container [aria-selected="true"],
+.bottom-nav-container .active,
+.bottom-nav-container button.active,
+.bottom-nav-container a.active {
+  color: #007AFF !important;
+}
+
+/* iOS-native inactive state */
+.bottom-nav-container [aria-selected="false"],
+.bottom-nav-container button:not(.active),
+.bottom-nav-container a:not(.active) {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+/* Subtle hover state for non-touch devices */
+@media (hover: hover) {
+  .bottom-nav-container button:hover:not(.active),
+  .bottom-nav-container a:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+}
+
+/* iOS press state */
+.bottom-nav-container button:active,
+.bottom-nav-container a:active {
+  transform: scale(0.95) !important;
+  transition: transform 0.1s ease !important;
+}
+
+/* iOS-standard icons with perfect sizing */
+.bottom-nav-container svg {
+  width: 24px !important;
+  height: 24px !important;
+  stroke-width: 1.5px !important;
+}
+
+/* iOS-standard labels with perfect typography */
+.bottom-nav-container span {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  margin-top: 2px !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+}
+
+/* iOS-native badge styling */
+.bottom-nav-container .badge,
+.bottom-nav-container [class*="badge"] {
+  background: #FF3B30 !important;
+  color: white !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  border-radius: 9px !important;
+  border: 2px solid rgba(0, 0, 0, 0.8) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Remove all text shadows and glows */
+.bottom-nav-container *,
+.bottom-nav-container *::before,
+.bottom-nav-container *::after {
+  text-shadow: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure proper spacing for content above nav */
+.dashboard-safe-content,
+main[class*="dashboard"] {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* iOS-specific safe area handling */
+@supports (-webkit-touch-callout: none) {
+  .bottom-nav-container,
+  nav[class*="bottom"] {
+    /* Enhanced safe area support for iOS */
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  }
+}

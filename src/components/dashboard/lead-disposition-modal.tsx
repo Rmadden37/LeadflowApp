@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import type {Lead, LeadStatus,Closer} from "@/types";
 import {Button} from "@/components/ui/button";
 import {
@@ -67,7 +68,7 @@ const timeSlots = (() => {
   return slots;
 })();
 
-export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispositionModalProps) {
+const LeadDispositionModal: React.FC<LeadDispositionModalProps> = ({lead, isOpen, onClose}) => {
   const [selectedStatus, setSelectedStatus] = useState<LeadStatus | undefined>(undefined);
   const [notes, setNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -282,19 +283,38 @@ export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispos
     <Dialog open={isOpen} onOpenChange={(open) => {
       if (!open) onClose();
     }}>
-      <DialogContent className="manager-disposition-modal sm:max-w-md max-w-[95vw] bg-[var(--glass-bg)] backdrop-blur-[20px] border border-[var(--glass-border)] text-[var(--text-primary)] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-[var(--text-primary)]">
-            {(user?.role === "manager" || user?.role === "admin") ? "Manager Disposition" : "Update Lead Disposition"}
-          </DialogTitle>
-          <DialogDescription className="text-[var(--text-secondary)]">
-            {(user?.role === "manager" || user?.role === "admin")
-              ? `Set the status for lead: ${lead.customerName}. As a manager/admin, you can set any disposition or reassign the lead.`
-              : `Select the outcome for lead: ${lead.customerName}.`
-            }
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
+      <DialogContent className={cn(
+        // 🌟 PREMIUM iOS MODAL STYLING - Solid, Non-Transparent
+        "manager-disposition-modal sm:max-w-md max-w-[95vw] max-h-[90vh] overflow-y-auto",
+        "bg-white dark:bg-gray-900 border-0",
+        "shadow-2xl shadow-black/50",
+        "rounded-3xl p-0",
+        
+        // ✨ iOS DEPTH & LAYERING - Proper Z-Index Management  
+        "relative z-50",
+        "backdrop-blur-none", // Remove transparency conflicts
+        
+        // 🎨 iOS NATIVE APPEARANCE
+        "before:absolute before:inset-0 before:rounded-3xl",
+        "before:bg-gradient-to-b before:from-white/5 before:to-transparent before:pointer-events-none"
+      )}>
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <DialogHeader className="space-y-0">
+            <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">
+              {(user?.role === "manager" || user?.role === "admin") ? "Manager Disposition" : "Update Lead Disposition"}
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400 mt-1">
+              {(user?.role === "manager" || user?.role === "admin")
+                ? `Set the status for lead: ${lead.customerName}. As a manager/admin, you can set any disposition or reassign the lead.`
+                : `Select the outcome for lead: ${lead.customerName}.`
+              }
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+
+        {/* 📱 MAIN CONTENT - iOS Settings Style Container */}
+        <div className="p-6 bg-gray-50 dark:bg-gray-800/50">
+          <div className="grid gap-4">{/* Content will go here */}</div>
           <RadioGroup 
             onValueChange={(value) => {
               haptic.listItemSelect();
@@ -314,8 +334,15 @@ export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispos
                   status === "waiting_assignment" && (user?.role === "manager" || user?.role === "admin") 
                     ? "bg-amber-500/10 border-amber-400/30 hover:bg-amber-500/20" 
                     : "",
+                  status === "sold" 
+                    ? "bg-green-500/10 border-green-400/30 hover:bg-green-500/20"
+                    : "",
                   selectedStatus === status 
-                    ? "bg-[var(--accent-light)]/10 border-[var(--accent-light)]/60 shadow-lg"
+                    ? status === "sold" 
+                      ? "bg-green-500/20 border-green-400/60 shadow-lg shadow-green-500/20"
+                      : status === "waiting_assignment" && (user?.role === "manager" || user?.role === "admin")
+                        ? "bg-amber-500/20 border-amber-400/60 shadow-lg shadow-amber-500/20"
+                        : "bg-[var(--accent-light)]/10 border-[var(--accent-light)]/60 shadow-lg"
                     : ""
                 )}
                 data-state={selectedStatus === status ? "checked" : "unchecked"}
@@ -324,15 +351,28 @@ export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispos
                 <RadioGroupItem 
                   value={status} 
                   id={`status-${status}`} 
-                  className="manager-disposition-radio border-[var(--accent-light)] text-[var(--accent-light)] data-[state=checked]:border-[var(--accent-light)] data-[state=checked]:bg-[var(--accent-light)]/20 h-5 w-5" 
+                  className={cn(
+                    "h-5 w-5",
+                    status === "sold" 
+                      ? "border-green-400 text-green-400 data-[state=checked]:border-green-400 data-[state=checked]:bg-green-400/20"
+                      : "border-[var(--accent-light)] text-[var(--accent-light)] data-[state=checked]:border-[var(--accent-light)] data-[state=checked]:bg-[var(--accent-light)]/20",
+                    "manager-disposition-radio"
+                  )}
                 />
                 <Label 
                   htmlFor={`status-${status}`} 
-                  className="capitalize flex-1 text-[var(--text-primary)] cursor-pointer font-medium text-base leading-6"
+                  className={cn(
+                    "capitalize flex-1 cursor-pointer font-medium text-base leading-6",
+                    status === "sold" ? "text-green-400" : "text-[var(--text-primary)]"
+                  )}
                 >
                   {status === "waiting_assignment" && (user?.role === "manager" || user?.role === "admin") ? (
                     <span className="font-medium text-amber-300">
                       Reassign Closer
+                    </span>
+                  ) : status === "sold" ? (
+                    <span className="font-medium text-green-400">
+                      Sold
                     </span>
                   ) : (
                     status.replace("_", " ")
@@ -410,24 +450,39 @@ export default function LeadDispositionModal({lead, isOpen, onClose}: LeadDispos
             className="bg-transparent border-[var(--glass-border)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-light)]"
           />
         </div>
-        <DialogFooter>
-          <Button 
-            variant="outline" 
-            onClick={onClose} 
-            disabled={isLoading}
-            className="bg-transparent border-[var(--glass-border)] text-[var(--text-primary)] hover:bg-white/10"
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={isLoading || !selectedStatus}
-            className="bg-[var(--accent-light)] text-black hover:bg-[var(--accent-light)]/90"
-          >
-            {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Save Disposition"}
-          </Button>
-        </DialogFooter>
+        {/* 🎯 ACTION BUTTONS - iOS Modal Footer Style */}
+        <div className="p-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col-reverse sm:flex-row gap-3">
+            <Button 
+              variant="outline" 
+              onClick={onClose} 
+              disabled={isLoading}
+              className={cn(
+                "flex-1 sm:flex-none h-11",
+                "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600",
+                "text-gray-700 dark:text-gray-300",
+                "hover:bg-gray-50 dark:hover:bg-gray-700"
+              )}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSubmit} 
+              disabled={isLoading || !selectedStatus}
+              className={cn(
+                "flex-1 sm:flex-none h-11",
+                "bg-[#007AFF] hover:bg-[#0056CC] border-0",
+                "text-white font-semibold",
+                "shadow-lg shadow-[#007AFF]/25"
+              )}
+            >
+              {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Save Disposition"}
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export default LeadDispositionModal;

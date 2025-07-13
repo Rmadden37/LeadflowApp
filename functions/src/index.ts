@@ -208,8 +208,8 @@ interface Closer {
  * Priority order:
  * 1. On Duty closers only
  * 2. Same team as the lead
- * 3. Lowest lineup order (rotation system)
- * 4. Least number of current assignments
+ * 3. Only closers with ZERO current assignments (strict round-robin)
+ * 4. Lowest lineup order (rotation system)
  */
 async function getNextAvailableCloser(teamId: string): Promise<Closer | null> {
   try {
@@ -270,19 +270,12 @@ async function getNextAvailableCloser(teamId: string): Promise<Closer | null> {
       return null;
     }
 
-    // Sort by lineup order first, then by current assignments
+    // Sort by lineup order (since all have zero assignments)
     availableUnassignedClosers.sort((a, b) => {
       const orderA = a.lineupOrder || 999999;
       const orderB = b.lineupOrder || 999999;
       
-      if (orderA !== orderB) {
-        return orderA - orderB;
-      }
-      
-      // If same lineup order, choose the one with fewer assignments
-      const assignmentsA = closerAssignments.get(a.uid) || 0;
-      const assignmentsB = closerAssignments.get(b.uid) || 0;
-      return assignmentsA - assignmentsB;
+      return orderA - orderB; // Primary sort by lineup order
     });
 
     const selectedCloser = availableUnassignedClosers[0];

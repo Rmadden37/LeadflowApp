@@ -1,7 +1,7 @@
 "use client";
 
 import _Link from "next/link";
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, lazy, Suspense} from "react";
 import {useAuth} from "@/hooks/use-auth";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -18,11 +18,15 @@ import {useToast} from "@/hooks/use-toast";
 import {Loader2, User, Mail, ShieldCheck, Edit3, KeyRound, Camera, Users, Bell, Settings, Shield, Database, Palette, LogOut, UserCheck} from "lucide-react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose} from "@/components/ui/dialog";
-import ReactCrop, {type Crop, PixelCrop, centerCrop, makeAspectCrop} from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
-import NotificationSettings from "@/components/notifications/notification-settings";
-import {ThemeToggleButton} from "@/components/theme-toggle-button";
-// import NotificationTestPanel from "@/components/notifications/notification-test-panel";
+
+// Lazy load heavy components
+const ReactCrop = lazy(() => import("react-image-crop").then(module => ({ default: module.default })));
+const NotificationSettings = lazy(() => import("@/components/notifications/notification-settings"));
+// const ThemeToggleButton = lazy(() => import("@/components/theme-toggle-button").then(module => ({ default: module.ThemeToggleButton })));
+
+// Import crop types directly
+import type {Crop, PixelCrop} from "react-image-crop";
+import {centerCrop, makeAspectCrop} from "react-image-crop";
 
 
 const profileFormSchema = z.object({
@@ -317,264 +321,243 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-3xl space-y-8"> {/* Increased max-w for new section */}
-      <Card className="shadow-xl">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold font-headline flex items-center justify-center">
-            <User className="mr-3 h-8 w-8 text-primary" />
-            User Profile
-          </CardTitle>
-          <CardDescription className="text-center">Manage your personal information and account settings.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex flex-col items-center space-y-4">
-            <Avatar className="h-24 w-24 border-2 border-primary shadow-md">
-              <AvatarImage src={user.avatarUrl || undefined} alt={user.displayName || user.email || "User"} />
-              <AvatarFallback className="text-3xl">
-                {user.displayName ? user.displayName.substring(0, 2).toUpperCase() : (user.email ? user.email.substring(0, 2).toUpperCase() : <User size={40}/>)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="relative group">
-              <Button variant="outline" size="sm" onClick={() => document.getElementById("photoInput")?.click()} disabled={isUploadingPhoto}>
-                <Camera className="mr-2 h-4 w-4" />
-                {isUploadingPhoto ? "Uploading..." : "Change Photo"}
-              </Button>
-              <input type="file" id="photoInput" accept="image/*" onChange={onSelectFile} className="hidden" />
-            </div>
-            <p className="text-xs text-muted-foreground">For best results, upload a 1x1 (square) image.</p>
-          </div>
+    <div className="ios-settings-container">
+      {/* iOS Profile Header */}
+      <div className="ios-profile-header">
+        <div className="ios-profile-avatar">
+          {user.avatarUrl ? (
+            <img 
+              src={user.avatarUrl} 
+              alt={user.displayName || user.email || "User"} 
+              className="w-full h-full object-cover rounded-full"
+            />
+          ) : (
+            user.displayName ? user.displayName.substring(0, 2).toUpperCase() : 
+            (user.email ? user.email.substring(0, 2).toUpperCase() : "U")
+          )}
+        </div>
+        <div className="ios-profile-name">
+          {user.displayName || "User"}
+        </div>
+        <div className="ios-profile-email">
+          {user.email}
+        </div>
+      </div>
 
-          <div className="space-y-2 pt-4 border-t">
-            <div className="flex items-center text-sm">
-              <Mail className="mr-2 h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">Email:</span>
-              <span className="ml-2 text-muted-foreground">{user.email}</span>
+      {/* Personal Information Group */}
+      <div className="ios-settings-group">
+        <div className="ios-settings-group-title">Personal Information</div>
+        <div className="ios-settings-card">
+          <div className="ios-settings-row" onClick={() => document.getElementById("photoInput")?.click()}>
+            <div className="ios-settings-icon" style={{ background: 'var(--ios-blue)' }}>
+              <Camera size={16} />
             </div>
-            <div className="flex items-center text-sm">
-              <ShieldCheck className="mr-2 h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">Role:</span>
-              <span className="ml-2 text-muted-foreground capitalize">{user.role}</span>
-            </div>
-            {user.teamId && (
-              <div className="flex items-center text-sm">
-                <Users className="mr-2 h-5 w-5 text-muted-foreground" />
-                <span className="font-medium">Team ID:</span>
-                <span className="ml-2 text-muted-foreground">{user.teamId}</span>
+            <div className="ios-settings-content">
+              <div className="ios-settings-title">Profile Photo</div>
+              <div className="ios-settings-subtitle">
+                {isUploadingPhoto ? "Uploading..." : "Tap to change photo"}
               </div>
-            )}
+            </div>
+            <div className="ios-settings-chevron">›</div>
           </div>
-
+          
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleUpdateProfile)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(handleUpdateProfile)}>
               <FormField
                 control={form.control}
                 name="displayName"
                 render={({field}) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center"><Edit3 className="mr-2 h-4 w-4"/>Display Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <div className="ios-settings-row">
+                    <div className="ios-settings-icon" style={{ background: 'var(--ios-green)' }}>
+                      <Edit3 size={16} />
+                    </div>
+                    <div className="ios-settings-content">
+                      <div className="ios-settings-title">Display Name</div>
+                      <Input 
+                        {...field} 
+                        placeholder="Your Name" 
+                        className="border-none bg-transparent p-0 text-var(--ios-text-secondary) text-sm focus:ring-0"
+                      />
+                    </div>
+                  </div>
                 )}
               />
-              <Button type="submit" disabled={isUpdatingProfile} className="w-full sm:w-auto">
-                {isUpdatingProfile ? (
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                ) : (
-                  "Save Changes"
-                )}
-              </Button>
+              <div className="ios-settings-row">
+                <Button 
+                  type="submit" 
+                  disabled={isUpdatingProfile} 
+                  className="w-full bg-var(--ios-blue) hover:bg-var(--ios-blue-dark) border-0 rounded-lg h-12"
+                >
+                  {isUpdatingProfile ? (
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
+              </div>
             </form>
           </Form>
-        </CardContent>
-        <CardFooter className="flex-col items-start space-y-4 border-t pt-6 mt-6">
-          <div className="w-full">
-            <h3 className="text-xl font-bold font-headline flex items-center justify-center">
-              <KeyRound className="mr-2 h-6 w-6 text-primary"/>
-                    Password Reset
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1 text-center">
-                    If you need to reset your password, click the button below. A reset link will be sent to your email address.
-            </p>
-          </div>
-          <Button variant="outline" onClick={handlePasswordReset} disabled={isSendingResetEmail} className="w-full sm:w-auto self-center">
-            {isSendingResetEmail ? (
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            ) : (
-              "Send Password Reset Email"
-            )}
-          </Button>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
 
-      {/* Push Notifications Settings */}
-      <Card className="shadow-xl">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold font-headline flex items-center justify-center">
-            <Bell className="mr-3 h-7 w-7 text-primary" />
-            Push Notifications
-          </CardTitle>
-          <CardDescription className="text-center">
-            Get instant notifications for new leads, appointments, and important updates
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex justify-center">
-          <NotificationSettings />
-        </CardContent>
-      </Card>
-
-      {/* App Preferences Section */}
-      <Card className="shadow-xl">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold font-headline flex items-center justify-center">
-            <Palette className="mr-3 h-7 w-7 text-primary" />
-            App Preferences
-          </CardTitle>
-          <CardDescription className="text-center">
-            Customize your app experience and visual preferences
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Theme Selector */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h4 className="font-medium">Theme</h4>
-              <p className="text-sm text-muted-foreground">
-                Choose between light, dark, or system theme
-              </p>
+      {/* Account Information Group */}
+      <div className="ios-settings-group">
+        <div className="ios-settings-group-title">Account Information</div>
+        <div className="ios-settings-card">
+          <div className="ios-settings-row">
+            <div className="ios-settings-icon" style={{ background: 'var(--ios-gray)' }}>
+              <Mail size={16} />
             </div>
-            <ThemeToggleButton />
-          </div>
-
-          {/* Other preferences can be added here */}
-        </CardContent>
-      </Card>
-
-      {/* Account Management Section */}
-      <Card className="shadow-xl border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold font-headline flex items-center justify-center text-red-700 dark:text-red-300">
-            <Shield className="mr-3 h-7 w-7" />
-            Account Management
-          </CardTitle>
-          <CardDescription className="text-center text-red-600 dark:text-red-400">
-            Manage your account security and session
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col items-center space-y-4 p-6 border border-red-200 dark:border-red-700 rounded-lg bg-red-50/50 dark:bg-red-950/10">
-            <div className="text-center space-y-2">
-              <h4 className="font-semibold text-red-800 dark:text-red-200">Sign Out</h4>
-              <p className="text-sm text-red-600 dark:text-red-400">
-                Sign out of your account and return to the login page
-              </p>
+            <div className="ios-settings-content">
+              <div className="ios-settings-title">Email</div>
+              <div className="ios-settings-subtitle">{user.email}</div>
             </div>
-            <Button 
-              variant="destructive" 
-              onClick={logout}
-              className="w-full max-w-xs"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
-            </Button>
           </div>
-        </CardContent>
-      </Card>
+          
+          <div className="ios-settings-row">
+            <div className="ios-settings-icon" style={{ background: 'var(--ios-orange)' }}>
+              <ShieldCheck size={16} />
+            </div>
+            <div className="ios-settings-content">
+              <div className="ios-settings-title">Role</div>
+              <div className="ios-settings-subtitle capitalize">{user.role}</div>
+            </div>
+          </div>
 
-      {/* Admin Tools Section - Only for Admin Users */}
+          {user.teamId && (
+            <div className="ios-settings-row">
+              <div className="ios-settings-icon" style={{ background: 'var(--ios-purple)' }}>
+                <Users size={16} />
+              </div>
+              <div className="ios-settings-content">
+                <div className="ios-settings-title">Team ID</div>
+                <div className="ios-settings-subtitle">{user.teamId}</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Security Group */}
+      <div className="ios-settings-group">
+        <div className="ios-settings-group-title">Security</div>
+        <div className="ios-settings-card">
+          <div className="ios-settings-row" onClick={handlePasswordReset}>
+            <div className="ios-settings-icon" style={{ background: 'var(--ios-red)' }}>
+              <KeyRound size={16} />
+            </div>
+            <div className="ios-settings-content">
+              <div className="ios-settings-title">Reset Password</div>
+              <div className="ios-settings-subtitle">Send reset link to email</div>
+            </div>
+            <div className="ios-settings-chevron">›</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Notifications Group */}
+      <div className="ios-settings-group">
+        <div className="ios-settings-group-title">Notifications</div>
+        <div className="ios-settings-card">
+          <div className="ios-settings-row">
+            <div className="ios-settings-icon" style={{ background: 'var(--ios-red)' }}>
+              <Bell size={16} />
+            </div>
+            <div className="ios-settings-content">
+              <div className="ios-settings-title">Push Notifications</div>
+              <div className="ios-settings-subtitle">Configure notification preferences</div>
+            </div>
+          </div>
+          <div className="p-4">
+            <Suspense fallback={
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-[var(--ios-blue)]" />
+                <span className="ml-2 text-sm text-[var(--ios-text-secondary)]">Loading notifications...</span>
+              </div>
+            }>
+              <NotificationSettings />
+            </Suspense>
+          </div>
+        </div>
+      </div>
+
+      {/* Preferences Group */}
+      <div className="ios-settings-group">
+        <div className="ios-settings-group-title">Preferences</div>
+        <div className="ios-settings-card">
+          <div className="ios-settings-row">
+            <div className="ios-settings-icon" style={{ background: 'var(--ios-indigo)' }}>
+              <Palette size={16} />
+            </div>
+            <div className="ios-settings-content">
+              <div className="ios-settings-title">Theme</div>
+              <div className="ios-settings-subtitle">Light, dark, or system</div>
+            </div>
+            <div className="ios-settings-action">
+              {/* <Suspense fallback={<div>Loading theme toggle...</div>}><ThemeToggleButton /></Suspense> */}
+              {/* Theme toggle button removed during legacy cleanup. Implement new theme toggle if needed. */}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Admin Tools Group - Only for Admin Users */}
       {user.role === 'admin' && (
-        <Card className="shadow-xl border-amber-200 dark:border-amber-800 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold font-headline flex items-center justify-center text-amber-700 dark:text-amber-300">
-              <Shield className="mr-3 h-7 w-7" />
-              Admin Tools
-            </CardTitle>
-            <CardDescription className="text-center text-amber-600 dark:text-amber-400">
-              Administrative controls and system management
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-1 gap-3">
-              {/* System Administration */}
-              <Card 
-                className="cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border-amber-200 dark:border-amber-700"
-                onClick={() => window.location.href = '/dashboard/admin-tools'}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400">
-                      <Settings className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
-                        System Administration
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Manage system settings and advanced configurations
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* User Management */}
-              <Card 
-                className="cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border-amber-200 dark:border-amber-700"
-                onClick={() => window.location.href = '/dashboard/admin-tools/users'}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
-                      <UserCheck className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
-                        User Management
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Manage user accounts, roles, and permissions
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Database Tools */}
-              <Card 
-                className="cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border-amber-200 dark:border-amber-700"
-                onClick={() => window.location.href = '/dashboard/admin-tools/database'}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
-                      <Database className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
-                        Database Management
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Database maintenance and data management tools
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+        <div className="ios-settings-group">
+          <div className="ios-settings-group-title">Administration</div>
+          <div className="ios-settings-card">
+            <div className="ios-settings-row" onClick={() => window.location.href = '/dashboard/admin-tools'}>
+              <div className="ios-settings-icon" style={{ background: 'var(--ios-red)' }}>
+                <Settings size={16} />
+              </div>
+              <div className="ios-settings-content">
+                <div className="ios-settings-title">System Administration</div>
+                <div className="ios-settings-subtitle">Manage system settings</div>
+              </div>
+              <div className="ios-settings-chevron">›</div>
             </div>
-          </CardContent>
-        </Card>
+            
+            <div className="ios-settings-row" onClick={() => window.location.href = '/dashboard/admin-tools/users'}>
+              <div className="ios-settings-icon" style={{ background: 'var(--ios-blue)' }}>
+                <UserCheck size={16} />
+              </div>
+              <div className="ios-settings-content">
+                <div className="ios-settings-title">User Management</div>
+                <div className="ios-settings-subtitle">Manage accounts and permissions</div>
+              </div>
+              <div className="ios-settings-chevron">›</div>
+            </div>
+            
+            <div className="ios-settings-row" onClick={() => window.location.href = '/dashboard/admin-tools/database'}>
+              <div className="ios-settings-icon" style={{ background: 'var(--ios-purple)' }}>
+                <Database size={16} />
+              </div>
+              <div className="ios-settings-content">
+                <div className="ios-settings-title">Database Management</div>
+                <div className="ios-settings-subtitle">Database maintenance tools</div>
+              </div>
+              <div className="ios-settings-chevron">›</div>
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* Notification Testing Panel (Development) */}
-      {/* {process.env.NODE_ENV === 'development' && (
-        <Card className="shadow-xl border-yellow-200 dark:border-yellow-800">
-          <CardContent className="p-6">
-            <NotificationTestPanel />
-          </CardContent>
-        </Card>
-      )} */}
+      {/* Account Actions Group */}
+      <div className="ios-settings-group">
+        <div className="ios-settings-card">
+          <div className="ios-settings-row" onClick={logout}>
+            <div className="ios-settings-icon" style={{ background: 'var(--ios-red)' }}>
+              <LogOut size={16} />
+            </div>
+            <div className="ios-settings-content">
+              <div className="ios-settings-title" style={{ color: 'var(--ios-red)' }}>Sign Out</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Hidden file input for photo upload */}
+      <input type="file" id="photoInput" accept="image/*" onChange={onSelectFile} className="hidden" />
 
       {/* Photo Cropping Modal */}
       <Dialog open={isPhotoModalOpen} onOpenChange={(open) => {

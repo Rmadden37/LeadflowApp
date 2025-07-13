@@ -271,7 +271,8 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
             gap: 16px;
             margin-top: 24px;
             padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            /* REMOVED border-top to fix hard line issue on dashboard */
+            /* border-top: 1px solid rgba(255, 255, 255, 0.1); */
           }
 
           .pure-btn {
@@ -320,7 +321,8 @@ export default function CreateLeadFormPure({ isOpen, onClose, onSuccess, embedde
             width: 20px;
             height: 20px;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid white;
+            /* REDUCED opacity to fix hard line issue on dashboard */
+            border-top: 2px solid rgba(255, 255, 255, 0.6);
             border-radius: 50%;
             animation: spin 1s linear infinite;
           }

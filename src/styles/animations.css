@@ -1,0 +1,357 @@
+/* ===================================================================
+   ANIMATIONS - Loaded conditionally based on user preferences
+   =================================================================== */
+
+/* Only load animations if user hasn't requested reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+
+/* Atmospheric login page animations */
+@keyframes breathe {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.3;
+  }
+  25% { 
+    transform: translateY(-10px) translateX(5px);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translateY(-5px) translateX(-3px);
+    opacity: 0.4;
+  }
+  75% { 
+    transform: translateY(-15px) translateX(2px);
+    opacity: 0.5;
+  }
+}
+
+/* Professional spotlight animation - very subtle and elegant */
+@keyframes subtle-glow {
+  0%, 100% {
+    transform: scale(1) translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.005) translateX(-0.2%) translateY(0.2%);
+    opacity: 0.99;
+  }
+  50% {
+    transform: scale(1.003) translateX(-0.3%) translateY(0.3%);
+    opacity: 0.995;
+  }
+  75% {
+    transform: scale(1.004) translateX(-0.15%) translateY(0.15%);
+    opacity: 0.992;
+  }
+}
+
+/* Atmospheric flow animation */
+@keyframes atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) scale(1);
+  }
+  50% {
+    transform: translateX(2%) scale(1.01);
+  }
+}
+
+/* Enhanced atmospheric flow for auth pages */
+@keyframes auth-atmospheric-flow {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    opacity: 1;
+  }
+  33% {
+    transform: translateX(1.5%) translateY(-1%) scale(1.01);
+    opacity: 0.95;
+  }
+  66% {
+    transform: translateX(-0.5%) translateY(0.5%) scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+/* Subtle depth glow for dashboard */
+@keyframes subtle-depth-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02) translateZ(0);
+  }
+}
+
+/* PRIMETIME Countdown Card Animations */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Hardware-accelerated list animations */
+@keyframes listEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-list-enter {
+  animation: listEnter 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Staggered entrance for better perceived performance */
+.animate-list-enter:nth-child(1) { animation-delay: 0ms; }
+.animate-list-enter:nth-child(2) { animation-delay: 40ms; }
+.animate-list-enter:nth-child(3) { animation-delay: 80ms; }
+.animate-list-enter:nth-child(4) { animation-delay: 120ms; }
+.animate-list-enter:nth-child(5) { animation-delay: 160ms; }
+.animate-list-enter:nth-child(n+6) { animation-delay: 200ms; }
+
+/* Intersection observer animations */
+@keyframes intersectionEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.intersection-observed.entering {
+  animation: intersectionEnter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.intersection-observed.leaving {
+  opacity: 0.8;
+  transform: translateZ(0) scale(0.98);
+  transition: all 0.2s ease-out;
+}
+
+/* iOS ripple effect */
+@keyframes rippleExpand {
+  0% {
+    width: 0;
+    height: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+    width: 200px;
+    height: 200px;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+.ios-ripple-enhanced::after {
+  content: '';
+  position: absolute;
+  top: var(--ripple-y, 50%);
+  left: var(--ripple-x, 50%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: rippleExpand 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  pointer-events: none;
+}
+
+/* Pulse animations */
+@keyframes pulse-subtle {
+  0% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 5px rgba(46, 234, 154, 0.5));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(46, 234, 154, 0.8));
+  }
+  100% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 5px rgba(46, 234, 154, 0.5));
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2.5s ease-in-out infinite;
+}
+
+/* Enhanced background animations - only on desktop */
+@media (min-width: 768px) {
+  body::before {
+    animation: subtle-glow 40s ease-in-out infinite;
+  }
+  
+  body:has([data-auth-page])::before {
+    animation: auth-atmospheric-flow 40s ease-in-out infinite;
+  }
+  
+  body:not(:has([data-auth-page]))::before {
+    animation: subtle-depth-glow 60s ease-in-out infinite;
+  }
+}
+
+/* Premium button micro-animations */
+.premium-scale-animation {
+  transition: all 0.2s ease-out;
+}
+
+.premium-scale-animation:active {
+  transform: scale(0.95);
+}
+
+/* Ultra-responsive touch feedback */
+.ultra-responsive {
+  transition: transform 0.05s ease-out !important;
+}
+
+.ultra-responsive:active {
+  transform: scale(0.97) translateZ(0) !important;
+}
+
+/* Haptic button optimization */
+.haptic-button {
+  transition: transform 0.05s ease-out !important;
+}
+
+.haptic-button:active {
+  transform: scale(0.96) translateZ(0) !important;
+}
+
+/* Hover states for enhanced depth perception - desktop only */
+@media (hover: hover) {
+  .frosted-glass-card:hover {
+    transform: translateY(-2px) scale(1.002);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.5),
+      0 6px 20px rgba(0, 0, 0, 0.3),
+      0 3px 12px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+}
+
+/* Atmospheric particles for login page */
+.atmospheric-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.atmospheric-particle-1 {
+  top: 25%;
+  left: 25%;
+  width: 8px;
+  height: 8px;
+  background: rgba(45, 212, 191, 0.2);
+  animation: float 8s ease-in-out infinite;
+}
+
+.atmospheric-particle-2 {
+  top: 75%;
+  right: 33.33%;
+  width: 4px;
+  height: 4px;
+  background: rgba(59, 130, 246, 0.3);
+  animation: float 6s ease-in-out infinite 2s;
+}
+
+.atmospheric-particle-3 {
+  top: 50%;
+  left: 75%;
+  width: 6px;
+  height: 6px;
+  background: rgba(168, 85, 247, 0.25);
+  animation: float 10s ease-in-out infinite 4s;
+}
+
+.atmospheric-particle-4 {
+  bottom: 25%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: rgba(249, 115, 22, 0.2);
+  animation: float 9s ease-in-out infinite 1s;
+}
+
+} /* End of prefers-reduced-motion: no-preference */
+
+/* Fallback animations for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeInUp {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  
+  .animate-list-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  
+  .intersection-observed.entering {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  
+  /* Keep essential animations running */
+  .animate-spin,
+  .loading-skeleton {
+    animation-play-state: running !important;
+  }
+  
+  /* Simplify transitions for accessibility */
+  * {
+    transition-duration: 0.1s !important;
+  }
+}
+
+/* Battery optimization - reduce effects on slow connections */
+@media (prefers-reduced-data: reduce) {
+  .atmospheric-animation,
+  body::before {
+    display: none !important;
+  }
+  
+  .frosted-glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Performance monitoring in development */
+@media (max-width: 768px) {
+  body:not(.page-visible) .animate-fadeInUp,
+  body:not(.page-visible) .ios-button-interactive {
+    animation-play-state: paused !important;
+    transition: none !important;
+  }
+}

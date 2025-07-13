@@ -19,7 +19,7 @@ import {
   MessageCircle
 } from "lucide-react";
 import AvailabilityToggle from "./availability-toggle";
-import { ThemeToggleButton } from "@/components/theme-toggle-button";
+// import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { useState } from "react";
 import { useHapticFeedback } from "@/utils/haptic";
 
@@ -62,13 +62,6 @@ function DashboardSidebarContent() {
       window.removeEventListener('open-create-lead', handleOpenCreateLead);
     };
   }, []);
-
-  // Debug: log isMobile and openMobile
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      console.log('[Sidebar] isMobile:', isMobile, 'openMobile:', openMobile);
-    }
-  }, [isMobile, openMobile]);
 
   // Debug logging for user role
   React.useEffect(() => {
@@ -331,7 +324,7 @@ function DashboardSidebarContent() {
                 <Monitor className="h-4 w-4 group-data-[collapsible=icon]:mx-auto" />
                 <span className="text-xs group-data-[collapsible=icon]:hidden">Theme</span>
               </div>
-              <ThemeToggleButton />
+              {/* Theme toggle button removed during legacy cleanup. Implement new theme toggle if needed. */}
             </div>
           </SidebarMenuItem>
 

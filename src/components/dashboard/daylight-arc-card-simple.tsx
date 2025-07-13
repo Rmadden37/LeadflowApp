@@ -245,30 +245,42 @@ export default function DaylightArcCard() {
   // Clamp progress between 0 and 1
   progress = Math.max(0, Math.min(1, progress));
   
+  // Calculate daylight remaining
+  const daylightRemainingMinutes = Math.max(0, sunsetMinutes - totalMinutes);
+  const daylightRemainingHours = Math.floor(daylightRemainingMinutes / 60);
+  const daylightRemainingMins = daylightRemainingMinutes % 60;
+  
   // Calculate dynamic sun color based on daylight remaining
   const daylightRemaining = 1 - progress;
   
   const getSunColor = (daylightRemaining: number): string => {
     if (daylightRemaining > 0.85 || daylightRemaining < 0.15) {
-      return "#FFA85C"; // Warm amber horizon
+      return "#FFB366"; // Warmer amber horizon
     } else if (daylightRemaining > 0.6) {
-      return "#2EEA9A"; // Signature green
+      return "#34D399"; // Warmer emerald
     } else if (daylightRemaining > 0.3) {
-      return "#FFD700"; // Golden warning
+      return "#FBBF24"; // Warmer golden
     } else {
-      return "#FF6B47"; // Urgent red-orange
+      return "#F87171"; // Warmer coral-red
     }
   };
 
   const getSunGlow = (daylightRemaining: number): string => {
     if (daylightRemaining > 0.85 || daylightRemaining < 0.15) {
-      return "drop-shadow(0 0 10px rgba(255, 168, 92, 0.9))";
+      return "drop-shadow(0 0 12px rgba(255, 179, 102, 0.9)) drop-shadow(0 2px 4px rgba(255, 179, 102, 0.3))";
     } else if (daylightRemaining > 0.6) {
-      return "drop-shadow(0 0 6px rgba(46, 234, 154, 0.7))";
+      return "drop-shadow(0 0 8px rgba(52, 211, 153, 0.8)) drop-shadow(0 2px 4px rgba(52, 211, 153, 0.2))";
     } else if (daylightRemaining > 0.3) {
-      return "drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))";
+      return "drop-shadow(0 0 10px rgba(251, 191, 36, 0.9)) drop-shadow(0 2px 4px rgba(251, 191, 36, 0.3))";
     } else {
-      return "drop-shadow(0 0 12px rgba(255, 107, 71, 1.0))";
+      return "drop-shadow(0 0 14px rgba(248, 113, 113, 1.0)) drop-shadow(0 2px 6px rgba(248, 113, 113, 0.4))";
+    }
+  };
+
+  // Haptic feedback handler
+  const triggerHapticFeedback = () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10); // Subtle haptic feedback
     }
   };
 
@@ -277,6 +289,15 @@ export default function DaylightArcCard() {
     const period = hours >= 12 ? 'PM' : 'AM';
     const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
     return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
+  // Format daylight remaining for display
+  const formatDaylightRemaining = (): string => {
+    if (daylightRemainingMinutes <= 0) return "0h 0m";
+    if (daylightRemainingHours > 0) {
+      return `${daylightRemainingHours}h ${daylightRemainingMins}m`;
+    }
+    return `${daylightRemainingMins}m`;
   };
 
   // Format golden hour timer with smooth seconds
@@ -295,7 +316,22 @@ export default function DaylightArcCard() {
   };
 
   return (
-    <div className="frosted-glass-card px-4 py-6 overflow-hidden relative h-[240px] max-w-full">
+    <div 
+      className="frosted-glass-card px-4 py-6 overflow-hidden relative h-[240px] max-w-full transition-all duration-200 active:scale-[0.98]"
+      onClick={triggerHapticFeedback}
+      style={{
+        background: 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        border: '1px solid rgba(255,255,255,0.18)',
+        boxShadow: `
+          inset 0 1px 0 rgba(255,255,255,0.2),
+          inset 0 -1px 0 rgba(255,255,255,0.05),
+          0 8px 32px rgba(0,0,0,0.3),
+          0 2px 8px rgba(0,0,0,0.2)
+        `,
+      }}
+    >
       {/* Debug indicators */}
       {isGoldenHour && (
         <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 text-xs rounded-full font-medium z-50">
@@ -310,39 +346,36 @@ export default function DaylightArcCard() {
       
       <div className="flex flex-col items-center justify-between h-full w-full max-w-full">
         
-        {/* Dynamic Content Section - Clock/Timer/Day Complete */}
+        {/* Dynamic Content Section - Golden Hour Timer/Day Complete Only */}
         <div className="h-[50px] flex flex-col justify-center items-center relative">
           
-          {/* Normal Clock Display */}
-          <div className={`absolute inset-0 flex flex-col justify-center items-center transition-all duration-700 ${
-            isGoldenHour || isDayComplete ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'
-          }`} style={{
-            transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-          }}>
-            <div className="text-2xl font-light text-white tracking-wider">
-              {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </div>
-            <div className="text-xs text-white/60 opacity-60 uppercase tracking-widest mt-1">
-              {currentTime.toLocaleDateString([], { weekday: 'short' })}
-            </div>
-          </div>
-
           {/* Golden Hour Timer */}
           <div className={`absolute inset-0 flex flex-col justify-center items-center transition-all duration-700 ${
             isGoldenHour && !isDayComplete ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
           }`} style={{
             transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
           }}>
-            <div className="text-4xl font-light text-white tracking-wider leading-none" style={{
-              filter: 'drop-shadow(0 0 15px rgba(255, 215, 0, 0.8))',
-              textShadow: '0 0 30px rgba(255, 215, 0, 0.6), 0 0 50px rgba(255, 215, 0, 0.4)',
-              fontFeatureSettings: '"tnum"'
-            }}>
+            <div 
+              className="text-4xl font-semibold text-white tracking-tight leading-none"
+              style={{
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                fontWeight: 600,
+                filter: 'drop-shadow(0 0 15px rgba(255, 215, 0, 0.8))',
+                textShadow: '0 0 30px rgba(255, 215, 0, 0.6), 0 0 50px rgba(255, 215, 0, 0.4)',
+                fontFeatureSettings: '"tnum"'
+              }}
+            >
               {formatGoldenHourTimer(goldenHourMinutesLeft)}
             </div>
-            <div className="text-xs text-white/80 opacity-90 uppercase tracking-[0.3em] font-medium mt-1" style={{
-              textShadow: '0 1px 3px rgba(0,0,0,0.6)'
-            }}>
+            <div 
+              className="text-xs text-white/80 uppercase tracking-[0.3em] font-medium mt-1"
+              style={{
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                fontWeight: 500,
+                opacity: 0.9,
+                textShadow: '0 1px 3px rgba(0,0,0,0.6)'
+              }}
+            >
               Golden Hour
             </div>
           </div>
@@ -353,16 +386,19 @@ export default function DaylightArcCard() {
           }`} style={{
             transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
           }}>
-            <div className="text-2xl font-light text-white tracking-wider leading-none animate-pulse" style={{
-              filter: 'drop-shadow(0 0 12px rgba(147, 51, 234, 0.6))',
-              textShadow: '0 0 25px rgba(147, 51, 234, 0.4), 0 0 40px rgba(147, 51, 234, 0.2)',
-              animationDuration: '3s'
-            }}>
+            <div 
+              className="text-2xl font-semibold text-white tracking-tight leading-none animate-pulse"
+              style={{
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                fontWeight: 600,
+                filter: 'drop-shadow(0 0 12px rgba(147, 51, 234, 0.6))',
+                textShadow: '0 0 25px rgba(147, 51, 234, 0.4), 0 0 40px rgba(147, 51, 234, 0.2)',
+                animationDuration: '3s'
+              }}
+            >
               Day Complete
             </div>
-            <div className="text-xs text-white/70 opacity-80 uppercase tracking-[0.25em] font-medium mt-2">
-              Tomorrow rises at {getTomorrowSunrise()}
-            </div>
+
           </div>
         </div>
 
@@ -379,50 +415,92 @@ export default function DaylightArcCard() {
             className="absolute inset-0 overflow-visible"
             preserveAspectRatio="xMidYMid meet"
           >
-            {/* Background Arc - Changes color when day is complete */}
+            {/* Subtle Gradient Definitions for Understated iOS Feel */}
+            <defs>
+              {/* Main progress gradient - very subtle and understated */}
+              <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(255, 255, 255, 0.15)" />
+                <stop offset="50%" stopColor="rgba(255, 255, 255, 0.20)" />
+                <stop offset="100%" stopColor="rgba(255, 255, 255, 0.15)" />
+              </linearGradient>
+              
+              {/* Background arc with minimal presence */}
+              <linearGradient id="backgroundGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(255, 255, 255, 0.02)" />
+                <stop offset="50%" stopColor="rgba(255, 255, 255, 0.05)" />
+                <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
+              </linearGradient>
+              
+              {/* Subtle shadow filter */}
+              <filter id="subtleShadow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="rgba(0,0,0,0.1)"/>
+              </filter>
+            </defs>
+            
+            
+            {/* Very Subtle Background Arc */}
             <path
               d={`M 25 80 A 65 65 0 0 1 155 80`}
               fill="none"
-              stroke={isDayComplete ? "rgba(147, 51, 234, 0.2)" : "rgba(255, 255, 255, 0.1)"}
+              stroke={isDayComplete ? "rgba(147, 51, 234, 0.12)" : "url(#backgroundGradient)"}
               strokeWidth="2"
               strokeLinecap="round"
-              style={{ transition: 'stroke 1s ease-out' }}
+              style={{ 
+                transition: 'stroke 1s ease-out'
+              }}
             />
             
-            {/* Progress Arc - Subtle purple when complete */}
+            {/* Main Progress Arc - Very understated */}
             <path
               d={`M 25 80 A 65 65 0 0 1 155 80`}
               fill="none"
-              stroke={isDayComplete ? "rgba(147, 51, 234, 0.4)" : "rgba(255, 255, 255, 0.3)"}
+              stroke={isDayComplete ? "rgba(147, 51, 234, 0.25)" : "url(#progressGradient)"}
               strokeWidth="2"
               strokeLinecap="round"
               strokeDasharray={Math.PI * 65}
               strokeDashoffset={Math.PI * 65 * (1 - progress)}
               style={{
-                transition: 'stroke-dashoffset 0.5s ease-out, stroke 1s ease-out'
+                transition: 'stroke-dashoffset 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), stroke 1s ease-out'
               }}
             />
             
-            {/* Sunrise Icon */}
-            <circle cx="25" cy="80" r="3" fill="rgba(255, 200, 50, 0.5)" />
-            <circle cx="25" cy="80" r="5" fill="none" stroke="rgba(255, 200, 50, 0.2)" strokeWidth="1" />
-            
-            {/* Sunset Icon - Moon when day complete */}
-            <circle 
-              cx="155" 
-              cy="80" 
-              r="3" 
-              fill={isDayComplete ? "rgba(147, 51, 234, 0.7)" : "rgba(200, 200, 255, 0.5)"}
-              style={{ transition: 'fill 1s ease-out' }}
+            {/* Enhanced Sunrise Icon with premium styling */}
+            <circle cx="25" cy="80" r="5" fill="rgba(255, 200, 50, 0.7)" 
+              style={{ 
+                filter: `
+                  drop-shadow(0 0 6px rgba(255, 200, 50, 0.5)) 
+                  drop-shadow(0 1px 2px rgba(0,0,0,0.2))
+                `
+              }} 
             />
+            <circle cx="25" cy="80" r="7" fill="none" stroke="rgba(255, 200, 50, 0.4)" strokeWidth="2" 
+              style={{ filter: 'drop-shadow(0 0 4px rgba(255, 200, 50, 0.3))' }} 
+            />
+            
+            {/* Enhanced Sunset Icon - Moon when day complete */}
             <circle 
               cx="155" 
               cy="80" 
               r="5" 
+              fill={isDayComplete ? "rgba(147, 51, 234, 0.8)" : "rgba(200, 200, 255, 0.7)"}
+              style={{ 
+                transition: 'fill 1s ease-out',
+                filter: isDayComplete 
+                  ? `drop-shadow(0 0 8px rgba(147, 51, 234, 0.6)) drop-shadow(0 1px 2px rgba(0,0,0,0.2))` 
+                  : `drop-shadow(0 0 6px rgba(200, 200, 255, 0.5)) drop-shadow(0 1px 2px rgba(0,0,0,0.2))`
+              }}
+            />
+            <circle 
+              cx="155" 
+              cy="80" 
+              r="7" 
               fill="none" 
-              stroke={isDayComplete ? "rgba(147, 51, 234, 0.4)" : "rgba(200, 200, 255, 0.2)"} 
-              strokeWidth="1"
-              style={{ transition: 'stroke 1s ease-out' }}
+              stroke={isDayComplete ? "rgba(147, 51, 234, 0.5)" : "rgba(200, 200, 255, 0.4)"} 
+              strokeWidth="2"
+              style={{ 
+                transition: 'stroke 1s ease-out',
+                filter: 'drop-shadow(0 0 4px rgba(200, 200, 255, 0.3))'
+              }}
             />
             
             {/* Add stars when day is complete */}
@@ -437,7 +515,7 @@ export default function DaylightArcCard() {
             )}
           </svg>
           
-          {/* Sun Marker */}
+          {/* Sun Marker - Enhanced with more subtle glow and shadow */}
           <svg
             width="100%"
             height="100"
@@ -445,20 +523,50 @@ export default function DaylightArcCard() {
             className="absolute inset-0 pointer-events-none z-10 overflow-visible"
             preserveAspectRatio="xMidYMid meet"
           >
+            {/* Sun shadow for depth */}
+            <circle
+              cx={90 - 65 * Math.cos(Math.PI * progress) + 1}
+              cy={80 - 65 * Math.sin(Math.PI * progress) + 1}
+              r={6}
+              fill="rgba(0, 0, 0, 0.2)"
+              style={{
+                transition: 'fill 0.8s ease-out, filter 0.8s ease-out'
+              }}
+            />
+            
+            {/* Main sun indicator */}
             <circle
               cx={90 - 65 * Math.cos(Math.PI * progress)}
               cy={80 - 65 * Math.sin(Math.PI * progress)}
-              r={5}
+              r={6}
               fill={getSunColor(daylightRemaining)}
               style={{
                 filter: getSunGlow(daylightRemaining),
                 transition: 'fill 0.8s ease-out, filter 0.8s ease-out'
               }}
             />
+            
+            {/* Day abbreviation centered in arc */}
+            <text
+              x="90"
+              y="85"
+              textAnchor="middle"
+              className="text-xs uppercase tracking-widest font-medium"
+              fill="rgba(255, 255, 255, 0.5)"
+              style={{
+                fontSize: '9px',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                fontWeight: 500,
+                opacity: 0.5,
+                textShadow: '0 1px 2px rgba(0,0,0,0.4)'
+              }}
+            >
+              {currentTime.toLocaleDateString([], { weekday: 'short' })}
+            </text>
           </svg>
         </div>
 
-        {/* Labels Section - Transforms for day complete */}
+        {/* Labels Section - Enhanced Typography */}
         <div className={`h-[50px] w-full flex justify-center items-center transition-all duration-700 ${
           isGoldenHour ? 'opacity-30 scale-95' : isDayComplete ? 'opacity-40 scale-95' : 'opacity-100 scale-100'
         }`} style={{
@@ -467,19 +575,53 @@ export default function DaylightArcCard() {
           <div className="w-full max-w-[160px]">
             <div className="flex justify-between w-full">
               <div className="text-center">
-                <div className="text-xs uppercase text-white/60 opacity-70 mb-1">
+                <div 
+                  className="text-xs uppercase text-white/50 mb-1"
+                  style={{
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                    fontWeight: 500,
+                    opacity: 0.6,
+                    letterSpacing: '0.05em',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.4)'
+                  }}
+                >
                   {isDayComplete ? 'Yesterday' : 'Sunrise'}
                 </div>
-                <div className="text-sm font-medium text-white">
+                <div 
+                  className="text-sm font-semibold text-white"
+                  style={{
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                    fontWeight: 600,
+                    textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                    fontFeatureSettings: '"tnum"'
+                  }}
+                >
                   {loading ? '...' : formatTime(sunrise[0], sunrise[1])}
                 </div>
               </div>
               
               <div className="text-center">
-                <div className="text-xs uppercase text-white/60 opacity-70 mb-1">
+                <div 
+                  className="text-xs uppercase text-white/50 mb-1"
+                  style={{
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                    fontWeight: 500,
+                    opacity: 0.6,
+                    letterSpacing: '0.05em',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.4)'
+                  }}
+                >
                   {isDayComplete ? 'Rest Time' : 'Sunset'}
                 </div>
-                <div className="text-sm font-medium text-white">
+                <div 
+                  className="text-sm font-semibold text-white"
+                  style={{
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                    fontWeight: 600,
+                    textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                    fontFeatureSettings: '"tnum"'
+                  }}
+                >
                   {isDayComplete 
                     ? currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     : (loading ? '...' : formatTime(sunset[0], sunset[1]))

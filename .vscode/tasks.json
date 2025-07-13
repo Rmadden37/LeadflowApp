@@ -2,12 +2,11 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Dev Server - Network Accessible",
+			"label": "Dev Server - Network 2",
 			"type": "shell",
-			"command": "npx next dev -p 9002 -H 0.0.0.0",
+			"command": "npx next dev -p 9003 -H 0.0.0.0",
 			"group": "build",
-			"isBackground": true,
-			"problemMatcher": []
+			"isBackground": true
 		}
 	]
 }

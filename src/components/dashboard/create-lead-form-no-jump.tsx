@@ -104,6 +104,8 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
             display: flex;
             flex-direction: column;
             gap: 20px;
+            background: transparent !important;
+            /* Ensure dark theme throughout the form */
           }
 
           .form-field {
@@ -245,7 +247,7 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
             border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px; /* Increased from 16px for better spacing */
             opacity: ${dispatchType === 'scheduled' ? '1' : '0.4'};
             transition: opacity 0.2s ease;
           }
@@ -262,7 +264,8 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
             gap: 16px;
             margin-top: 24px;
             padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            /* REMOVED border-top to fix hard line issue on dashboard */
+            /* border-top: 1px solid rgba(255, 255, 255, 0.1); */
           }
 
           .form-btn {
@@ -311,7 +314,8 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
             width: 20px;
             height: 20px;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid white;
+            /* REDUCED opacity to fix hard line issue on dashboard */
+            border-top: 2px solid rgba(255, 255, 255, 0.6);
             border-radius: 50%;
             animation: spin 1s linear infinite;
           }
@@ -462,17 +466,8 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
             </div>
           </div>
 
-          {/* Submit Buttons */}
+          {/* Submit Buttons - Swapped order: Create Lead left, Back right */}
           <div className="form-buttons">
-            <button
-              type="button"
-              className="form-btn btn-secondary"
-              onClick={() => {
-                if (onClose) onClose();
-              }}
-            >
-              {embedded ? 'Back' : 'Cancel'}
-            </button>
             <button
               type="submit"
               className="form-btn btn-primary"
@@ -486,6 +481,15 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
               ) : (
                 'Create Lead'
               )}
+            </button>
+            <button
+              type="button"
+              className="form-btn btn-secondary"
+              onClick={() => {
+                if (onClose) onClose();
+              }}
+            >
+              {embedded ? 'Back' : 'Cancel'}
             </button>
           </div>
         </form>

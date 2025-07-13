@@ -25,6 +25,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseAuthUser | null>(null);
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialAuthChecked, setInitialAuthChecked] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -42,119 +43,61 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
 
   useEffect(() => {
     console.log('🔥 Setting up Firebase auth listener');
-    const unsubscribeAuth = onAuthStateChanged(auth, async (fbUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (fbUser) => {
       console.log('🔥 Firebase auth state changed:', !!fbUser);
       setFirebaseUser(fbUser);
       if (!fbUser) {
         setUser(null);
         setLoading(false);
+        setInitialAuthChecked(true);
+        return; // Explicitly return undefined
       }
-      // If fbUser exists, the other useEffect will handle fetching AppUser
+
+      const userDocRef = doc(db, "users", fbUser.uid);
+      const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists()) {
+          const userData = {uid: doc.id, ...doc.data()} as AppUser;
+          console.log('👤 User data from Firestore:', {email: userData.email, role: userData.role});
+          setUser(userData);
+        } else {
+          console.log('🤷 User not found in Firestore, but authenticated.');
+          setUser(null);
+        }
+        setLoading(false);
+        setInitialAuthChecked(true);
+      });
+
+      // This return is for the onAuthStateChanged cleanup
+      return () => {
+        console.log('🧹 Unsubscribing from user snapshot');
+        unsubscribeSnapshot();
+      };
     });
+
     return () => {
       console.log('🔥 Cleaning up Firebase auth listener');
       unsubscribeAuth();
     };
   }, []);
 
-  useEffect(() => {
-    let unsubscribeUserDoc: (() => void) | undefined;
-
-    if (firebaseUser) {
-      console.log('👤 Setting up user document listener for:', firebaseUser.uid);
-      setLoading(true);
-      const userDocRef = doc(db, "users", firebaseUser.uid);
-
-      unsubscribeUserDoc = onSnapshot(userDocRef, async (docSnap) => {
-        console.log('📄 User document changed, exists:', docSnap.exists());
-        if (docSnap.exists()) {
-          const appUserData = {uid: firebaseUser.uid, ...docSnap.data()} as AppUser;
-          setUser(appUserData);
-          console.log('✅ User set:', appUserData.email, appUserData.role);
-        } else {
-          // User document not found - expected for new users
-          console.log('❌ User document not found, creating default user doc');
-          // Create a default user doc
-          const defaultUser = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email || null,
-            displayName: firebaseUser.displayName || null,
-            role: "setter", // default role, adjust as needed
-            teamId: "default", // or set to a sensible default/team selection logic
-            avatarUrl: firebaseUser.photoURL || null,
-            phoneNumber: firebaseUser.phoneNumber || null,
-            status: "On Duty"
-          };
-          try {
-            await setDoc(userDocRef, defaultUser, {merge: true});
-            setUser(defaultUser as AppUser);
-            console.log('✅ Default user doc created');
-          } catch (err) {
-            console.error('🚨 Failed to create user doc:', err);
-            setUser(null);
-          }
-        }
-        setLoading(false);
-      }, (error) => {
-        // Auth error - set to null and continue
-        console.log('🚨 User document error:', error);
-        setUser(null);
-        setLoading(false);
-      });
-    } else {
-      console.log('🚫 No Firebase user, clearing app user');
-      setUser(null);
-      setLoading(false);
-    }
-    return () => {
-      if (unsubscribeUserDoc) {
-        console.log('🧹 Cleaning up user document listener');
-        unsubscribeUserDoc();
-      }
-    };
-  }, [firebaseUser]);
-
-
-  useEffect(() => {
-    // Prevent navigation during initial load or if already loading
-    if (loading) return;
-    
-    // Only redirect if we're certain about the auth state
-    // Allow access to both login and signup pages for unauthenticated users
-    if (!user && pathname !== "/login" && pathname !== "/signup") {
-      router.replace("/login");
-    } else if (user && (pathname === "/login" || pathname === "/signup")) {
-      router.replace("/dashboard");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading, pathname]);
-
   const logout = async () => {
     setLoading(true);
     await firebaseSignOut(auth);
     setUser(null);
     setFirebaseUser(null);
-    // router.push will be handled by the effect above
-    setLoading(false);
+    router.push("/login");
   };
 
-  // Avoid rendering children if loading and not on auth pages without a user
-  // This prevents a flash of content before redirect
-  if (loading && pathname !== "/login" && pathname !== "/signup" && !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
+  const value = {
+    firebaseUser,
+    user,
+    loading: loading || !initialAuthChecked,
+    teamId: user?.teamId || null,
+    role: user?.role || null,
+    logout,
+  };
 
-  const contextValue = {firebaseUser, user, loading, teamId: user?.teamId || null, role: user?.role || null, logout};
-
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

@@ -138,7 +138,7 @@ const OptimizedMobileLeadCard = React.memo(function OptimizedMobileLeadCard({
       offset: shouldOpen ? -120 : 0,
       isDragging: false
     });
-  }, [swipeState.offset, swipeState, isSwipeEnabled]);
+  }, [swipeState, isSwipeEnabled]);
 
   // Cleanup RAF on unmount
   React.useEffect(() => {

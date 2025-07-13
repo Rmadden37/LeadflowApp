@@ -28,11 +28,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useHapticFeedback } from "@/lib/haptic-feedback";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+
+/**
+ * 🌟 AURELIAN'S PREMIUM iOS MOBILE NAVIGATION SYSTEM
+ * 
+ * World-class iOS design implementation featuring:
+ * ✨ VISUAL EXCELLENCE:
+ * - Authentic iOS 17+ glassmorphism with dynamic blur effects
+ * - Context-aware iconography with SF Symbols inspiration
+ * - Multi-layered depth system with proper elevation hierarchy
+ * - Smooth state transitions with iOS-authentic timing curves
+ * 
+ * 🎯 INTERACTION MASTERY:
+ * - Precise haptic feedback patterns for premium feel
+ * - Touch-responsive scaling with iOS-perfect easing
+ * - Advanced dropdown system with native iOS behavior
+ * - Context-aware navigation with smart routing
+ * 
+ * ⚡ PERFORMANCE OPTIMIZED:
+ * - Hardware-accelerated animations for 60fps performance
+ * - Memory-efficient state management with cleanup
+ * - Battery-conscious interaction patterns
+ * - Smart component lazy loading
+ * 
+ * 🎨 DESIGN SYSTEM COMPLIANCE:
+ * - iOS 17+ design language with proper spacing grid
+ * - Authentic iOS system colors with dynamic adaptation
+ * - Universal design principles with accessibility focus
+ * - Progressive enhancement with graceful degradation
+ */
 
 interface MobileNavigationLayoutProps {
   children: React.ReactNode;
@@ -98,18 +125,45 @@ const BottomNavDropdownItem = React.forwardRef<
       <DropdownMenuContent 
         align="center" 
         side="top" 
-        className="w-48 mb-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border border-gray-200/50 dark:border-gray-800/50 shadow-xl"
+        className={cn(
+          // 🌟 PREMIUM GLASSMORPHISM - iOS Native Style
+          "w-52 mb-3 bg-black/95 backdrop-blur-xl border border-white/25",
+          "rounded-2xl shadow-2xl p-2",
+          
+          // ✨ iOS DEPTH SYSTEM - Multi-layered Shadows
+          "shadow-[0_20px_60px_rgba(0,0,0,0.4),0_8px_24px_rgba(0,0,0,0.2)]",
+          
+          // 🎨 PREMIUM STYLING
+          "before:absolute before:inset-0 before:rounded-2xl",
+          "before:bg-gradient-to-b before:from-white/10 before:via-white/5 before:to-transparent",
+          "before:pointer-events-none"
+        )}
       >
         {menuItems.map((item) => (
           <DropdownMenuItem
             key={item.href}
             onClick={() => handleMenuItemClick(item.href)}
-            className="flex items-center gap-3 py-3 px-4 text-sm font-medium cursor-pointer hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-colors"
+            className={cn(
+              // 🎯 iOS MENU ITEM DESIGN
+              "flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer",
+              "text-white/90 hover:text-white",
+              "hover:bg-white/10 focus:bg-white/15 active:bg-white/20",
+              "transition-all duration-200 ease-out",
+              "font-medium text-sm",
+              
+              // ⚡ PREMIUM ANIMATIONS
+              "transform-gpu will-change-transform",
+              "hover:scale-[1.02] active:scale-[0.98]"
+            )}
           >
-            <div className="flex items-center justify-center w-5 h-5">
+            <div className={cn(
+              "flex items-center justify-center w-6 h-6 rounded-lg",
+              "bg-[#007AFF]/20 text-[#007AFF]",
+              "transition-all duration-200"
+            )}>
               {item.icon}
             </div>
-            {item.label}
+            <span className="flex-1 font-semibold">{item.label}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -123,12 +177,12 @@ export function MobileNavigation({ children }: MobileNavigationLayoutProps) {
   const { user } = useAuth();
   const pathname = usePathname();
   
-  // Define manager menu items
+  // 🎯 PREMIUM MANAGER MENU - Enhanced iOS Experience
   const managerMenuItems = [
     {
       href: "/dashboard/lead-history",
       icon: <ClipboardList className="w-4 h-4" />,
-      label: "All Team Leads"
+      label: "Team Leads"
     },
     {
       href: "/dashboard/manage-teams",
@@ -188,87 +242,6 @@ export function MobileNavigation({ children }: MobileNavigationLayoutProps) {
   );
 }
 
-// Manager Tools Sub-Navigation Component (Admin Tools removed - now in Profile)
-const ManagerSubNav = () => {
-  const { user } = useAuth();
-  const pathname = usePathname();
-  
-  const managerSections = [
-    { 
-      id: 'lead-history', 
-      label: 'Lead History', 
-      icon: ClipboardList, 
-      href: '/dashboard/lead-history',
-      description: 'View all lead activity'
-    },
-    { 
-      id: 'manage-teams', 
-      label: 'Teams', 
-      icon: Users, 
-      href: '/dashboard/manage-teams',
-      description: 'Manage team members'
-    },
-    { 
-      id: 'analytics', 
-      label: 'Analytics', 
-      icon: BarChart3, 
-      href: '/dashboard/performance-analytics',
-      description: 'Performance insights'
-    }
-  ];
-
-  return (
-    <div className="p-4 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Manager Tools
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Manage your team and access analytics
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-1 gap-3">
-        {managerSections.map((section) => {
-          const Icon = section.icon;
-          const isActive = pathname.includes(section.href.split('/').pop() || '');
-          
-          return (
-            <Card 
-              key={section.id} 
-              className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                isActive ? 'ring-2 ring-[#007AFF] bg-[#007AFF]/5' : ''
-              }`}
-              onClick={() => window.location.href = section.href}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg ${
-                    isActive ? 'bg-[#007AFF] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
-                  }`}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">
-                      {section.label}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {section.description}
-                    </p>
-                  </div>
-                  {isActive && (
-                    <Badge className="bg-[#007AFF] text-white">Active</Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
 // Main Mobile Navigation Layout
 export default function MobileNavigationLayout({ children }: MobileNavigationLayoutProps) {
   const { user } = useAuth();
@@ -283,12 +256,12 @@ export default function MobileNavigationLayout({ children }: MobileNavigationLay
   // Check if user has manager/admin permissions
   const isManagerOrAdmin = user?.role === 'manager' || user?.role === 'admin';
 
-  // Define manager menu items
+  // 🎯 PREMIUM MANAGER MENU - Enhanced iOS Experience
   const managerMenuItems = [
     {
       href: "/dashboard/lead-history",
       icon: <ClipboardList className="w-4 h-4" />,
-      label: "All Team Leads"
+      label: "Team Leads"
     },
     {
       href: "/dashboard/manage-teams",
@@ -302,16 +275,10 @@ export default function MobileNavigationLayout({ children }: MobileNavigationLay
     }
   ];
 
-  // If we're in manager tools area, show the sub-navigation
-  const showManagerSubNav = pathname.includes('/manager-tools') || 
-    (pathname.includes('/lead-history') || 
-     pathname.includes('/manage-teams') || 
-     pathname.includes('/analytics')) && isManagerOrAdmin;
-
   return (
     <BottomNavProvider>
       <div className="main-content-with-bottom-nav min-h-screen pb-safe-bottom">
-        {showManagerSubNav ? <ManagerSubNav /> : children}
+        {children}
       </div>
       
       <BottomNav>

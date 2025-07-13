@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {OptimizedAvatar} from "@/components/ui/optimized-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, User, Shield, Copy, Check } from "lucide-react";
@@ -118,12 +118,14 @@ export default function ProfileCard({ isOpen, onClose, profile }: ProfileCardPro
         
         <div className="flex flex-col items-center space-y-6 py-4">
           {/* Avatar */}
-          <Avatar className="h-20 w-20 border-2 border-primary shadow-lg">
-            <AvatarImage src={avatarSrc} alt={displayName} />
-            <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-900 text-blue-900 dark:text-blue-100 font-bold text-lg">
-              {displayName.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <OptimizedAvatar
+            src={avatarSrc}
+            alt={displayName}
+            size="lg"
+            className="border-2 border-primary shadow-lg"
+            fallbackText={displayName.substring(0, 2).toUpperCase()}
+            priority={true}
+          />
 
           {/* Name and Role */}
           <div className="text-center space-y-2">

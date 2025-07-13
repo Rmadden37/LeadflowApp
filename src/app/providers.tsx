@@ -5,7 +5,6 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BadgeServiceInitializer } from "@/components/badge-service-initializer";
-import { IOSThemeFix } from "@/components/ios-theme-fix";
 import NotificationPermissionPrompt from "@/components/notifications/notification-permission-prompt";
 
 // Define proper types for ErrorBoundary
@@ -268,7 +267,7 @@ export function Providers({ children }: ProvidersProps): React.ReactElement {
           disableTransitionOnChange
           themes={['light', 'dark', 'system']}
         >
-          <IOSThemeFix />
+          {/* iOS theme fix removed during legacy cleanup. Implement new fix if needed. */}
           <AuthProvider>
             <BadgeServiceInitializer />
             {children}

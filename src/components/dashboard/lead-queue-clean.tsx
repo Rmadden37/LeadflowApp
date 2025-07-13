@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import LeadCard from "./lead-card";
 import ScheduledLeadsSection from "./scheduled-leads-enhanced";
+import LeadDetailsDialog from "./lead-details-dialog";
 
 type Tab = "waiting" | "scheduled";
 
@@ -91,7 +92,17 @@ export default function LeadQueueClean() {
   }, [user?.teamId, toast]);
 
   const handleLeadClick = (lead: Lead) => {
+    console.log('🔥 LeadQueueClean - Lead clicked:', { 
+      leadId: lead.id, 
+      customerName: lead.customerName,
+      context: "queue-waiting",
+      userRole: user?.role 
+    });
     setSelectedLead(lead);
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedLead(null);
   };
 
   const renderWaitingLeads = () => {
@@ -182,6 +193,14 @@ export default function LeadQueueClean() {
       {activeTab === "scheduled" && (
         <ScheduledLeadsSection />
       )}
+
+      {/* Lead Details Modal */}
+      <LeadDetailsDialog 
+        lead={selectedLead} 
+        isOpen={!!selectedLead} 
+        onClose={handleCloseDialog} 
+        context="queue-waiting"
+      />
     </div>
   );
 }

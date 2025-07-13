@@ -9,12 +9,6 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Loader2, 
   Users, 
   UserCog, 
@@ -22,7 +16,6 @@ import {
   ShieldAlert, 
   ShieldCheck, 
   Building2, 
-  ChevronDown, 
   Camera, 
   Search,
   UserCheck,
@@ -32,11 +25,10 @@ import {useToast} from "@/hooks/use-toast";
 import ChangeUserRoleModal from "./change-user-role-modal";
 import ConfirmUserDeleteModal from "./confirm-user-delete-modal";
 import UploadAvatarModal from "./upload-avatar-modal";
-import UpdateUserProfileModal from "./update-user-profile-modal";
 import TeamAvailabilityToggle from "./team-availability-toggle";
 import TeamSelector from "./team-selector";
 import InviteNewUserButton from "./invite-new-user-button";
-import PendingApprovals from "./pending-approvals";
+import PendingApprovalsDropdown from "./pending-approvals-dropdown";
 import {initializeTeams} from "@/utils/init-teams";
 
 interface Team {
@@ -58,7 +50,6 @@ export default function TeamUserManagement() {
   const [selectedUserForRoleChange, setSelectedUserForRoleChange] = useState<AppUser | null>(null);
   const [selectedUserForDelete, setSelectedUserForDelete] = useState<AppUser | null>(null);
   const [selectedUserForAvatar, setSelectedUserForAvatar] = useState<AppUser | null>(null);
-  const [selectedUserForProfile, setSelectedUserForProfile] = useState<AppUser | null>(null);
   const [closerStatuses, setCloserStatuses] = useState<{ [uid: string]: "On Duty" | "Off Duty" }>({});
 
   // Load all teams and initialize missing ones
@@ -297,9 +288,6 @@ export default function TeamUserManagement() {
 
   return (
     <>
-      {/* Pending User Approvals */}
-      <PendingApprovals />
-
       {/* Enhanced Team Selection and Invite Controls */}
       <div className="frosted-glass-card p-4 lg:p-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -313,11 +301,14 @@ export default function TeamUserManagement() {
             </div>
           </div>
           
-          {/* Enhanced Invite Button */}
-          <InviteNewUserButton 
-            variant="primary-solid"
-            className="bg-gradient-to-r from-[var(--accent-primary)] to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 rounded-lg px-4 lg:px-6 py-2 lg:py-2.5 text-sm flex items-center gap-2 w-full lg:w-auto justify-center"
-          />
+          {/* Compact Pending Approvals and Invite Button */}
+          <div className="flex items-center gap-3">
+            <PendingApprovalsDropdown />
+            <InviteNewUserButton 
+              variant="primary-solid"
+              className="bg-gradient-to-r from-[var(--accent-primary)] to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 rounded-lg px-4 lg:px-6 py-2 lg:py-2.5 text-sm flex items-center gap-2 w-full lg:w-auto justify-center"
+            />
+          </div>
         </div>
         
         <div className="mt-4">
@@ -425,7 +416,10 @@ export default function TeamUserManagement() {
                             className={`h-12 w-12 lg:h-14 lg:w-14 border-2 cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-[var(--accent-primary)] hover:ring-offset-2 ${
                               isCurrentUser ? 'ring-2 ring-[var(--accent-primary)] ring-offset-2 border-[var(--accent-primary)]' : 'border-[var(--glass-border)]'
                             }`}
-                            onClick={() => setSelectedUserForProfile(teamMember)}
+                            onClick={() => {
+                              const userData = encodeURIComponent(JSON.stringify(teamMember));
+                              window.location.href = `/dashboard/update-user?user=${userData}`;
+                            }}
                             tabIndex={0}
                             aria-label={`Edit profile for ${teamMember.displayName || teamMember.email}`}
                           >
@@ -440,7 +434,10 @@ export default function TeamUserManagement() {
                           
                           {/* Camera overlay on hover */}
                           <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
-                               onClick={() => setSelectedUserForProfile(teamMember)}>
+                               onClick={() => {
+                                 const userData = encodeURIComponent(JSON.stringify(teamMember));
+                                 window.location.href = `/dashboard/update-user?user=${userData}`;
+                               }}>
                             <UserCog className="h-4 w-4 text-white" />
                           </div>
                         </div>
@@ -487,39 +484,22 @@ export default function TeamUserManagement() {
                         </div>
                       </div>
                       
-                      {/* Enhanced Action Buttons */}
+                      {/* Enhanced Action Buttons - Direct Profile Management */}
                       <div className="flex items-center gap-2 w-full lg:w-auto">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="bg-white/10 border border-[var(--glass-border)] text-[var(--text-primary)] hover:bg-white/20 hover:border-[var(--accent-primary)]/50 focus:bg-white/20 focus:border-[var(--accent-primary)] transition-all duration-200 flex-1 lg:flex-none backdrop-blur-sm" 
-                              aria-label="User actions"
-                            >
-                              <UserCog className="mr-2 h-4 w-4" />
-                              <span className="hidden lg:inline">Actions</span>
-                              <span className="lg:hidden">Manage</span>
-                              <ChevronDown className="ml-1.5 h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48 bg-[var(--background)]/95 backdrop-blur-lg border border-[var(--glass-border)] shadow-2xl">
-                            <DropdownMenuItem onClick={() => setSelectedUserForProfile(teamMember)} aria-label="Edit full profile" className="text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/10 focus:bg-[var(--accent-primary)]/10">
-                              <UserCog className="mr-2 h-4 w-4" /> Edit Full Profile
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setSelectedUserForRoleChange(teamMember)} aria-label="Change role" className="text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/10 focus:bg-[var(--accent-primary)]/10">
-                              <ShieldAlert className="mr-2 h-4 w-4" /> Change Role
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => setSelectedUserForDelete(teamMember)} 
-                              disabled={(teamMember.role === "manager" || teamMember.role === "admin") || teamMember.uid === managerUser?.uid} 
-                              aria-label="Delete user"
-                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 focus:bg-red-500/10"
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" /> Delete User
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => {
+                            const userData = encodeURIComponent(JSON.stringify(teamMember));
+                            window.location.href = `/dashboard/update-user?user=${userData}`;
+                          }}
+                          className="bg-white/10 border border-[var(--glass-border)] text-[var(--text-primary)] hover:bg-white/20 hover:border-[var(--accent-primary)]/50 focus:bg-white/20 focus:border-[var(--accent-primary)] transition-all duration-200 flex-1 lg:flex-none backdrop-blur-sm" 
+                          aria-label={`Manage profile for ${teamMember.displayName || teamMember.email}`}
+                        >
+                          <UserCog className="mr-2 h-4 w-4" />
+                          <span className="hidden lg:inline">Manage Profile</span>
+                          <span className="lg:hidden">Manage</span>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -553,14 +533,6 @@ export default function TeamUserManagement() {
           user={selectedUserForAvatar}
           isOpen={!!selectedUserForAvatar}
           onClose={() => setSelectedUserForAvatar(null)}
-        />
-      )}
-
-      {selectedUserForProfile && (
-        <UpdateUserProfileModal
-          user={selectedUserForProfile}
-          isOpen={!!selectedUserForProfile}
-          onClose={() => setSelectedUserForProfile(null)}
         />
       )}
     </>
