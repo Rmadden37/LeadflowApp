@@ -1069,10 +1069,34 @@ body:has([data-auth-page])::before {
 }
 
 /* ===================================================================
-   MOBILE BACKGROUND BRIGHTNESS FIX - MOVED TO END OF FILE
+   MOBILE MODAL POSITIONING FIXES
    =================================================================== */
 
-/* This section has been moved to the end of the file for proper precedence */
+/* Mobile-specific modal positioning to prevent bottom cutoff */
+@media screen and (max-width: 768px) {
+  /* Lead disposition modal specific fixes */
+  .manager-disposition-modal {
+    /* Adjust positioning to account for mobile nav */
+    position: fixed;
+    top: 45% !important;
+    left: 50% !important;
+    transform: translate(-50%, -45%) !important;
+    max-height: 85vh !important;
+    margin: 1rem !important;
+  }
+}
+
+/* iOS Safari specific modal fixes */
+@supports (-webkit-touch-callout: none) {
+  @media screen and (max-width: 768px) {
+    .manager-disposition-modal {
+      /* iOS Safari viewport fixes */
+      top: 40% !important;
+      transform: translate(-50%, -40%) !important;
+      max-height: 80vh !important;
+    }
+  }
+}
 
 /* ===================================================================
    FINAL MOBILE BACKGROUND BRIGHTNESS FIX - MUST BE LAST
@@ -1158,7 +1182,6 @@ body::before {
     radial-gradient(ellipse at 80% 20%, rgba(99, 179, 237, 0.06) 0%, rgba(13, 13, 13, 1) 60%),
     radial-gradient(ellipse 1200px 800px at 50% 0%, rgba(0, 122, 255, 0.04) 0%, rgba(7, 15, 28, 1) 80%) !important;
   background-size: 100% 100%, 120% 120%, 120% 120%, 150% 150% !important;
-  animation: atmospheric-flow 25s ease-in-out infinite !important;
 }
 
 /* ===================================================================

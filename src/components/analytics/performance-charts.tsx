@@ -1,8 +1,27 @@
 "use client";
 
-
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PremiumBarChart, PremiumPieChart, PremiumLineChart } from "@/components/premium/premium-charts";
+import { 
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer
+} from "recharts";
 import { BarChart3, Activity, Calendar } from "lucide-react";
 import { SetterPerformance, CloserPerformance, TrendData } from "./types";
 import type { Lead } from "@/types";

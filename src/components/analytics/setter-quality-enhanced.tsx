@@ -3,6 +3,23 @@
 import { useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PremiumLineChart, PremiumBarChart } from "@/components/premium/premium-charts";
+import { 
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer
+} from "recharts";
 import { TrendingUp, Target, Calendar, Activity, Award, Users } from "lucide-react";
 import type { Lead } from "@/types";
 

@@ -13,10 +13,12 @@
     "incremental": true,
     "module": "esnext",
     "esModuleInterop": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
     "baseUrl": "src",
     "paths": {
       "@/*": [

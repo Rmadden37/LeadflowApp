@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 
 // Lazy load heavy chart components for premium performance
 const ChartComponent = lazy(() => import('@/components/analytics/chart-components'));
-const SetterQuality = lazy(() => import('@/components/analytics/setter-quality-enhanced'));
+// const SetterQuality = lazy(() => import('@/components/analytics/setter-quality-enhanced')); // Temporarily removed
 
 interface PremiumAnalyticsProps {
   className?: string;

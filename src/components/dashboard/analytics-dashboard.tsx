@@ -6,13 +6,31 @@ import { useToast } from "@/hooks/use-toast";
 import { getTeamStatsFunction, db } from "@/lib/firebase";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PremiumBarChart, PremiumLineChart, PremiumPieChart } from "@/components/premium/premium-charts";
+import { 
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer
+} from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Users, Target, Activity, Calendar, DollarSign, Filter, BarChart3, PieChart as PieChartIcon, Download } from "lucide-react";
 import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore";
 import type { Lead, Closer } from "@/types";
-import SetterQualityEnhanced from "@/components/analytics/setter-quality-enhanced";
+// import SetterQualityEnhanced from "@/components/analytics/setter-quality-enhanced"; // Temporarily removed
 
 interface TeamStats {
   teamId: string;
