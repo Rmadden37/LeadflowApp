@@ -7,9 +7,15 @@ const withPWA = require('next-pwa')({
   publicExcludes: ['!noprecache/**/*'],
 });
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
+// Bundle analyzer - only load if available (optional dependency for CI)
+let withBundleAnalyzer = (config) => config;
+try {
+  withBundleAnalyzer = require('@next/bundle-analyzer')({
+    enabled: process.env.ANALYZE === 'true',
+  });
+} catch (error) {
+  console.log('Bundle analyzer not available, skipping...');
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

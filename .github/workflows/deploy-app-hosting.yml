@@ -34,8 +34,8 @@ jobs:
         
       - name: Configure Next.js for App Hosting
         run: |
-          # Use the App Hosting configuration
-          cp next.config.app-hosting.js next.config.js
+          # Next.js config already supports App Hosting
+          echo "✅ Using existing next.config.js with App Hosting support"
           
       - name: Build application
         run: |
@@ -45,7 +45,8 @@ jobs:
           
       - name: Configure Firebase for App Hosting
         run: |
-          cp firebase.app-hosting.json firebase.json
+          # Firebase config already supports App Hosting
+          echo "✅ Using existing firebase.json with App Hosting support"
           
       - name: Deploy to Firebase App Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
