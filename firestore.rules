@@ -7,12 +7,16 @@ service cloud.firestore {
       return request.auth != null;
     }
     
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
     function getUserRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+      return getUserData().role;
     }
     
     function getUserTeamId() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.teamId;
+      return getUserData().teamId;
     }
     
     function isAdmin() {
@@ -54,7 +58,7 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && isAdmin();
     }
 
-    // Leads collection - Enhanced permissions for manager/admin job acceptance
+    // ENHANCED Leads collection - Specific rules for manager/admin job acceptance
     match /leads/{leadId} {
       allow read: if isAuthenticated() && (
         // Admins can read all leads
@@ -80,24 +84,43 @@ service cloud.firestore {
       allow update: if isAuthenticated() && (
         // Admins can update any lead
         isAdmin() ||
+        
         // Managers can update leads in their team
         (isManager() && resource.data.teamId == getUserTeamId()) ||
+        
         // Setters can update leads they created or in their team
         (isSetter() && (
           resource.data.setterId == request.auth.uid ||
           resource.data.teamId == getUserTeamId()
         )) ||
+        
         // Closers can update leads assigned to them
         (isCloser() && resource.data.assignedCloserId == request.auth.uid) ||
-        // Special case: Managers/Admins can accept jobs on behalf of closers
+        
+        // CRITICAL: Special case for job acceptance by managers/admins
+        // Allow managers to update leads for job acceptance on behalf of closers
+        (isManager() && 
+         resource.data.teamId == getUserTeamId() &&
+         // Only allow specific job acceptance fields to be updated
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+           'status', 'acceptedAt', 'acceptedBy', 'updatedAt'
+         ]) &&
+         // Only allow transitions to accepted status or in_process from valid states
+         (request.resource.data.status in ['accepted', 'in_process'] &&
+          resource.data.status in ['waiting_assignment', 'scheduled', 'accepted'])
+        ) ||
+        
+        // CRITICAL: Special case for disposition updates by managers/admins
+        // Allow managers/admins to update lead dispositions
         (isManagerOrAdmin() && 
          resource.data.teamId == getUserTeamId() &&
-         // Only allow specific fields to be updated for job acceptance
+         // Allow disposition-related field updates
          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-           'status', 'acceptedAt', 'acceptedBy', 'updatedAt', 'dispositionNotes',
-           'dispositionUpdatedBy', 'dispositionUpdatedAt', 'assignedCloserId', 
-           'assignedCloserName', 'scheduledAppointmentTime'
-         ]))
+           'status', 'updatedAt', 'dispositionNotes', 'dispositionUpdatedBy', 
+           'dispositionUpdatedAt', 'assignedCloserId', 'assignedCloserName', 
+           'scheduledAppointmentTime', 'acceptedAt', 'acceptedBy'
+         ])
+        )
       );
       
       allow delete: if isAuthenticated() && isManagerOrAdmin();
@@ -137,6 +160,20 @@ service cloud.firestore {
       
       allow update, delete: if isAuthenticated() && 
         (isAdmin() || resource.data.performedBy == request.auth.uid);
+    }
+
+    // Activities collection (for logging)
+    match /activities/{activityId} {
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        (isManager() && resource.data.teamId == getUserTeamId()) ||
+        resource.data.closerId == request.auth.uid ||
+        resource.data.acceptedBy == request.auth.uid
+      );
+      
+      allow create: if isAuthenticated();
+      
+      allow update, delete: if isAuthenticated() && isAdmin();
     }
 
     // Pending approvals collection
@@ -219,7 +256,7 @@ service cloud.firestore {
       );
     }
 
-    // Teams collection (if you have one)
+    // Teams collection
     match /teams/{teamId} {
       allow read: if isAuthenticated() && (
         isAdmin() ||
@@ -258,6 +295,36 @@ service cloud.firestore {
       );
       
       allow create, update, delete: if isAuthenticated() && isManagerOrAdmin();
+    }
+
+    // User tokens for FCM
+    match /userTokens/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Appointment reminders
+    match /appointmentReminders/{reminderId} {
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        resource.data.assignedCloserId == request.auth.uid ||
+        (isManager() && getUserTeamId() in resource.data.teamId)
+      );
+      
+      allow create: if isAuthenticated();
+      
+      allow update: if isAuthenticated() && (
+        isAdmin() ||
+        resource.data.assignedCloserId == request.auth.uid
+      );
+      
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+
+    // Function errors (for debugging)
+    match /function_errors/{errorId} {
+      allow read: if isAuthenticated() && isAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && isAdmin();
     }
 
     // Default deny rule for any other collections

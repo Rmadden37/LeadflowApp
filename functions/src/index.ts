@@ -386,7 +386,7 @@ export const assignLeadOnCreate = functions.firestore
 });
 
 /**
- * CORRECTED Accept a job (callable function)
+ * FIXED Accept a job (callable function)
  * Called when a closer clicks on their assigned lead for the first time
  * Enhanced to support managers/admins accepting on behalf of closers
  */
@@ -422,34 +422,42 @@ export const acceptJob = functions.https.onCall(async (data, context) => {
     const userData = userDoc.data();
     const userRole = userData?.role;
     
-    functions.logger.info(`User data: role=${userRole}, teamId=${userData?.teamId}`);
-    functions.logger.info(`Lead data: status=${leadData.status}, assignedCloserId=${leadData.assignedCloserId}, teamId=${leadData.teamId}`);
+    functions.logger.info(`User: ${context.auth.uid}, Role: ${userRole}, Team: ${userData?.teamId}`);
+    functions.logger.info(`Lead: ${leadId}, Status: ${leadData.status}, AssignedTo: ${leadData.assignedCloserId}, Team: ${leadData.teamId}`);
 
-    // Enhanced permission checks
+    // ENHANCED PERMISSION LOGIC - This is the key fix
     let hasPermission = false;
     let permissionReason = "";
 
-    if (userRole === "closer") {
-      // Closers can only accept leads assigned to them
-      hasPermission = leadData.assignedCloserId === context.auth.uid;
-      permissionReason = hasPermission 
-        ? "Closer accepting their assigned lead"
-        : "Lead not assigned to this closer";
-    } else if (userRole === "manager") {
-      // Managers can accept leads for anyone in their team
-      hasPermission = leadData.teamId === userData?.teamId;
-      permissionReason = hasPermission 
-        ? "Manager accepting lead on behalf of team member"
-        : "Lead not in manager's team";
-    } else if (userRole === "admin") {
-      // Admins can accept any lead
+    // Check permissions based on role
+    if (userRole === "admin") {
+      // Admins can accept ANY lead
       hasPermission = true;
-      permissionReason = "Admin accepting lead";
+      permissionReason = "Admin has unrestricted access";
+    } else if (userRole === "manager") {
+      // Managers can accept leads in their team
+      if (leadData.teamId === userData?.teamId) {
+        hasPermission = true;
+        permissionReason = "Manager accepting lead in their team";
+      } else {
+        hasPermission = false;
+        permissionReason = `Manager team mismatch: user team ${userData?.teamId} vs lead team ${leadData.teamId}`;
+      }
+    } else if (userRole === "closer") {
+      // Closers can only accept leads assigned to them
+      if (leadData.assignedCloserId === context.auth.uid) {
+        hasPermission = true;
+        permissionReason = "Closer accepting their assigned lead";
+      } else {
+        hasPermission = false;
+        permissionReason = `Closer not assigned: assigned to ${leadData.assignedCloserId}, user is ${context.auth.uid}`;
+      }
     } else {
-      permissionReason = "Invalid user role for job acceptance";
+      hasPermission = false;
+      permissionReason = `Invalid role: ${userRole}`;
     }
 
-    functions.logger.info(`Permission check: hasPermission=${hasPermission}, reason=${permissionReason}`);
+    functions.logger.info(`Permission check: ${hasPermission}, Reason: ${permissionReason}`);
 
     if (!hasPermission) {
       throw new functions.https.HttpsError("permission-denied", permissionReason);
