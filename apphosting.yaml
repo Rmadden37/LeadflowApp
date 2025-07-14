@@ -21,9 +21,9 @@ runConfig:
     - variable: IGNORE_ESLINT_ERRORS
       value: "true"
   
-  # Memory and CPU allocation for build
-  cpu: 4
-  memory: 8GiB
+  # Memory and CPU allocation for build - optimized for Cloud Run
+  cpu: 2
+  memory: 4GiB
   
   # Timeout for build process (20 minutes)
   timeoutSeconds: 1200
@@ -39,9 +39,9 @@ serveConfig:
   # Port configuration
   port: 8080
   
-  # Memory and CPU for production runtime
-  memory: 2GiB
-  cpu: 1
+  # Memory and CPU for production runtime - aligned with Cloud Run requirements
+  memory: 4GiB
+  cpu: 2
   
   # Health check endpoint
   healthCheck:
