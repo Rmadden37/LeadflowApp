@@ -82,10 +82,14 @@ const BottomNav = React.forwardRef<
     <nav
       ref={ref}
       className={cn(
-        // Clean, iOS-native positioning
-        "fixed bottom-0 left-0 right-0 z-[1000]",
+        // Clean, iOS-native positioning with iPhone-specific safe area
+        "fixed left-0 right-0 z-[1000]",
+        // iPhone-specific bottom positioning - higher up for home indicator
+        "bottom-[env(safe-area-inset-bottom)] sm:bottom-0", 
         // Proper iOS heights with safe area
-        "h-20 pb-safe-bottom",
+        "h-20 sm:h-16",
+        // Enhanced padding for iPhone safe area
+        "pb-[calc(env(safe-area-inset-bottom)+8px)] sm:pb-safe-bottom",
         // Simplified iOS glass morphism
         "bg-black/80 backdrop-blur-xl border-t border-white/10",
         // Smooth entrance animation
@@ -96,6 +100,9 @@ const BottomNav = React.forwardRef<
         // Native iOS blur effect
         backdropFilter: "blur(20px) saturate(180%)",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
+        // iPhone-specific bottom positioning for home indicator
+        bottom: "calc(env(safe-area-inset-bottom, 34px) + 16px)",
+        ...({} as React.CSSProperties),
       }}
       {...props}
     >

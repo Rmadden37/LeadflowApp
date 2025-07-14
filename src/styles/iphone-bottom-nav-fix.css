@@ -5,26 +5,36 @@
 
 /* iPhone-specific bottom navigation positioning */
 @supports (-webkit-touch-callout: none) {
+  /* Target ALL possible bottom navigation selectors */
   .bottom-nav-container,
   nav[class*="bottom"],
-  [data-testid="bottom-navigation"] {
-    /* Position ABOVE the home indicator, not covering it */
-    bottom: env(safe-area-inset-bottom, 0px) !important;
+  [data-testid="bottom-navigation"],
+  nav.fixed.bottom-0,
+  .fixed.bottom-0[class*="z-"],
+  nav:has([class*="bottom-nav"]) {
+    /* AGGRESSIVE POSITIONING - Move WAY above home indicator */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
     
-    /* Reduce height for iPhone optimization */
-    height: 64px !important;
-    min-height: 64px !important;
+    /* Increase height to compensate for higher positioning */
+    height: 80px !important;
+    min-height: 80px !important;
     
-    /* Add internal padding for safe area */
-    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important;
+    /* Add substantial internal padding for safe area */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+    
+    /* Force positioning and visibility */
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1001 !important;
     
     /* Ensure visibility above iPhone home indicator */
     transform: translateY(0) !important;
     
-    /* iPhone-specific backdrop */
-    background: rgba(0, 0, 0, 0.92) !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    /* iPhone-specific backdrop with high contrast */
+    background: rgba(0, 0, 0, 0.95) !important;
+    backdrop-filter: blur(30px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
     
     /* Ensure it's visible */
     opacity: 1 !important;
@@ -95,9 +105,21 @@
 @supports (-webkit-touch-callout: none) {
   .dashboard-safe-content,
   .native-scroll-container,
+  .main-content-with-bottom-nav,
   main {
-    /* Reserve proper space for iPhone bottom nav */
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 8px) !important;
+    /* Reserve proper space for iPhone bottom nav - much more space */
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px) + 20px) !important;
+  }
+  
+  /* Target Tailwind CSS classes used by BottomNav component */
+  .fixed.bottom-0.left-0.right-0,
+  .fixed.bottom-0.z-\\[1000\\] {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
+  }
+  
+  /* Override pb-safe-bottom utility */
+  .pb-safe-bottom {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
   }
 }
 
@@ -108,3 +130,21 @@
   background: rgba(0, 255, 0, 0.3) !important;
 }
 */
+
+/* ULTRA-AGGRESSIVE iPhone Bottom Navigation Fix */
+@supports (-webkit-touch-callout: none) {
+  /* Target by component structure */
+  nav[class*="fixed"][class*="bottom-0"] {
+    bottom: calc(env(safe-area-inset-bottom, 34px) + 20px) !important;
+    height: 80px !important;
+    min-height: 80px !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+  }
+  
+  /* Target by data attributes if they exist */
+  [data-component="bottom-nav"],
+  [data-testid*="bottom"],
+  [role="tablist"][class*="bottom"] {
+    bottom: calc(env(safe-area-inset-bottom, 34px) + 20px) !important;
+  }
+}
