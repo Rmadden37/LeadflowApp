@@ -155,34 +155,57 @@ const CloserCard = memo(function CloserCard({
     }
   }, [onLeadClick, closer.name, assignedLeadName, user?.role]);
 
-  // Memoized disposition handlers
+  // Enhanced Accept & Start handler for managers/admins
   const handleAcceptAndStart = useCallback(() => {
     if (onDispositionChange && leadId && !isAcceptingJob) {
       console.log('🔥 CloserCard - Accept & Start button clicked:', { 
         closerName: closer.name, 
         leadStatus: currentLeadStatus,
         leadId: leadId,
-        userRole: user?.role 
+        userRole: user?.role,
+        isManagerAdmin: user?.role === "manager" || user?.role === "admin"
       });
       
       setIsAcceptingJob(true);
       
+      // For managers/admins, they're accepting on behalf of the assigned closer
       // First call the cloud function to record acceptance
       acceptJobFunction({ leadId })
         .then((result) => {
           console.log('🔥 Cloud function acceptJob executed successfully:', result.data);
           // Then update status to in_process
           onDispositionChange("in_process");
+          
+          const actionDescription = (user?.role === "manager" || user?.role === "admin") 
+            ? `Lead accepted on behalf of ${closer.name} and is now in process.`
+            : "Lead has been accepted and is now in process.";
+            
           toast({
             title: "Lead Accepted",
-            description: "Lead has been accepted and is now in process."
+            description: actionDescription
           });
         })
         .catch((error) => {
           console.error('🔥 Error executing acceptJob cloud function:', error);
+          
+          // Enhanced error handling for specific cases
+          let errorMessage = "There was an issue accepting this lead. Please try again.";
+          
+          if (error.message?.includes('permission')) {
+            errorMessage = (user?.role === "manager" || user?.role === "admin")
+              ? "Unable to accept lead on behalf of closer. Please check permissions."
+              : "You don't have permission to accept this lead.";
+          } else if (error.message?.includes('not assigned')) {
+            errorMessage = "This lead is not properly assigned. Please check the assignment.";
+          } else if (error.message?.includes('unauthenticated')) {
+            errorMessage = "Please log in again and try again.";
+          } else if (error.message?.includes('failed-precondition')) {
+            errorMessage = "Lead is not in the correct status to be accepted.";
+          }
+          
           toast({
             title: "Error Accepting Lead",
-            description: "There was an issue accepting this lead. Please try again.",
+            description: errorMessage,
             variant: "destructive"
           });
         })
@@ -216,9 +239,23 @@ const CloserCard = memo(function CloserCard({
         })
         .catch((error) => {
           console.error('🔥 Error executing acceptJob cloud function:', error);
+          
+          // Enhanced error handling
+          let errorMessage = "There was an issue accepting this job. Please try again.";
+          
+          if (error.message?.includes('permission')) {
+            errorMessage = "You don't have permission to accept this job.";
+          } else if (error.message?.includes('not assigned')) {
+            errorMessage = "This job is not assigned to you.";
+          } else if (error.message?.includes('unauthenticated')) {
+            errorMessage = "Please log in again and try again.";
+          } else if (error.message?.includes('failed-precondition')) {
+            errorMessage = "Job is not in the correct status to be accepted.";
+          }
+          
           toast({
             title: "Error Accepting Job",
-            description: "There was an issue accepting this job. Please try again.",
+            description: errorMessage,
             variant: "destructive"
           });
         })
