@@ -1,0 +1,235 @@
+/* ===================================================================
+   LOADING PERFORMANCE OPTIMIZATIONS
+   Targeted fixes to reduce perceived loading time and improve UX
+   =================================================================== */
+
+/* Critical above-the-fold loading optimizations */
+.loading-skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.1) 25%, 
+    rgba(255,255,255,0.2) 50%, 
+    rgba(255,255,255,0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes loading-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Faster spinner animation for critical loading states */
+.fast-spinner {
+  animation: fast-spin 0.6s linear infinite !important;
+}
+
+@keyframes fast-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Optimize auth page loading */
+[data-auth-page] {
+  /* Prevent layout shifts during loading */
+  contain: layout style paint;
+  
+  /* Faster rendering */
+  transform: translateZ(0);
+  will-change: auto;
+  
+  /* Reduce reflows */
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+}
+
+/* Loading screen optimizations */
+.loading-screen {
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  contain: strict;
+  
+  /* Prevent unnecessary paints */
+  background-attachment: fixed;
+}
+
+/* Optimize initial page load */
+.initial-loading-spinner {
+  /* Immediate visibility */
+  opacity: 1 !important;
+  visibility: visible !important;
+  
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+  
+  /* Smooth animation */
+  animation: fast-spin 0.8s linear infinite;
+}
+
+/* Reduce animation complexity during loading */
+@media (prefers-reduced-motion: no-preference) {
+  .loading-reduce-animation {
+    /* Simplify complex animations during load */
+    animation-duration: 0.5s !important;
+    animation-timing-function: ease-out !important;
+  }
+}
+
+/* Fast content visibility for critical elements */
+.critical-content {
+  /* Immediate rendering */
+  content-visibility: auto;
+  contain-intrinsic-size: auto;
+  
+  /* Prevent layout shifts */
+  contain: layout style;
+}
+
+/* Optimize form loading */
+.auth-form {
+  /* Prevent form layout shifts */
+  contain: layout style;
+  
+  /* Faster rendering */
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* Optimize button interactions during loading */
+.loading-button {
+  /* Prevent interaction delays */
+  touch-action: manipulation;
+  
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+  
+  /* Smooth state changes */
+  transition: all 0.15s ease-out;
+}
+
+/* Avatar loading optimizations */
+.avatar-loading-container {
+  /* Prevent layout shifts */
+  contain: layout style paint;
+  
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: auto;
+  
+  /* Smooth loading state */
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 50%;
+}
+
+/* Optimize dashboard component loading */
+.dashboard-component-loading {
+  /* Smooth skeleton loading */
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.05) 25%, 
+    rgba(255,255,255,0.15) 50%, 
+    rgba(255,255,255,0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.2s infinite;
+  
+  /* Prevent layout shifts */
+  contain: layout style;
+  
+  /* Hardware acceleration */
+  transform: translateZ(0);
+}
+
+/* Reduce paint complexity during initial load */
+.simplified-background {
+  /* Simpler gradients during load */
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+  
+  /* Disable complex animations temporarily */
+  animation: none !important;
+}
+
+/* Priority loading for above-the-fold content */
+.above-fold-priority {
+  /* Immediate rendering */
+  content-visibility: auto;
+  contain-intrinsic-size: auto;
+  
+  /* High priority */
+  will-change: auto;
+  contain: layout style;
+}
+
+/* Optimize Firebase real-time listener performance */
+.firestore-optimized {
+  /* Reduce reflow impact */
+  contain: layout style paint;
+  
+  /* Smooth updates */
+  transition: all 0.2s ease-out;
+}
+
+/* Loading progress optimizations */
+.loading-progress {
+  /* Smooth progress animation */
+  transition: width 0.3s ease-out;
+  
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: width;
+  
+  /* Prevent layout shifts */
+  contain: layout style;
+}
+
+/* Network-aware optimizations */
+@media (max-width: 768px) {
+  /* Reduce complexity on mobile */
+  .mobile-loading-optimized {
+    /* Simpler animations */
+    animation-duration: 0.8s !important;
+    
+    /* Reduce backdrop filters */
+    backdrop-filter: blur(4px) !important;
+    
+    /* Optimize transforms */
+    transform: translateZ(0) !important;
+  }
+}
+
+/* Reduce motion for better performance */
+@media (prefers-reduced-motion: reduce) {
+  .loading-skeleton,
+  .dashboard-component-loading {
+    /* Static loading states */
+    animation: none !important;
+    background: rgba(255,255,255,0.1) !important;
+  }
+  
+  /* Keep essential loading indicators */
+  .initial-loading-spinner,
+  .fast-spinner {
+    animation: fast-spin 1s linear infinite !important;
+  }
+}
+
+/* Performance monitoring helpers (development only) */
+@media screen {
+  .perf-monitor::before {
+    content: "⚡";
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 9999;
+    background: rgba(34, 197, 94, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+  }
+}

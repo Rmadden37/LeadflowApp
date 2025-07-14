@@ -12,14 +12,8 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react'],
-    // Improve chunk loading reliability
-    optimizeCss: true,
   },
-  // Improve chunk loading and prevent 404s
-  generateBuildId: async () => {
-    return 'leadflow-build-' + Date.now();
-  },
-  webpack: (config, { dev, isServer }) => {
+  webpack: (config) => {
     // Add path aliases
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -44,29 +38,6 @@ const nextConfig = {
         process: 'process/browser',
       }),
     ];
-
-    // Improve chunk loading reliability in development
-    if (dev) {
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            default: {
-              minChunks: 2,
-              priority: -20,
-              reuseExistingChunk: true,
-            },
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              priority: -10,
-              chunks: 'all',
-            },
-          },
-        },
-      };
-    }
 
     return config;
   },

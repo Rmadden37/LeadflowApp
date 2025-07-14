@@ -3,7 +3,6 @@
 
 import {useAuth} from "@/hooks/use-auth";
 import LoginForm from "@/components/auth/login-form";
-import {Loader2} from "lucide-react";
 
 export default function LoginPage() {
   const {user, loading} = useAuth();
@@ -11,7 +10,7 @@ export default function LoginPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-14 w-14 animate-spin text-primary" />
+        <div className="h-14 w-14 animate-spin rounded-full border-4 border-primary border-r-transparent" />
       </div>
     );
   }
@@ -20,7 +19,7 @@ export default function LoginPage() {
   if (user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-14 w-14 animate-spin text-primary" />
+        <div className="h-14 w-14 animate-spin rounded-full border-4 border-primary border-r-transparent" />
       </div>
     );
   }
@@ -76,9 +75,18 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-gradient-to-tr from-[#007AFF]/5 via-transparent to-[#007AFF]/5" />
       </div>
       
-      {/* Enhanced LeadFlow Brand */}
-      <div className="mb-12 flex items-center justify-center text-primary relative z-10">
-        <h1 className="text-6xl font-bold font-headline tracking-tight bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent drop-shadow-sm">
+      {/* Enhanced LeadFlow Brand - iOS SF Pro Display */}
+      <div className="mb-12 flex items-center justify-center relative z-50">
+        <h1 
+          className="text-7xl md:text-8xl font-black tracking-tight text-white drop-shadow-2xl select-none"
+          style={{
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif',
+            fontWeight: 900,
+            letterSpacing: '-0.02em',
+            lineHeight: 0.9,
+            textShadow: '0 4px 20px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 255, 255, 0.1)'
+          }}
+        >
           LeadFlow
         </h1>
       </div>

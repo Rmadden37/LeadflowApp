@@ -1,86 +1,96 @@
-
 "use client";
 
-import {zodResolver} from "@hookform/resolvers/zod";
-import {signInWithEmailAndPassword, sendPasswordResetEmail} from "firebase/auth";
-import {useForm} from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
-import {auth} from "@/lib/firebase";
-import {PremiumButton} from "@/components/ui/premium-button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {useToast} from "@/hooks/use-toast";
-import {useHapticFeedback} from "@/hooks/use-haptic-feedback";
-import {useState} from "react";
-import {Loader2} from "lucide-react";
+import { auth } from "@/lib/firebase";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect, useRef } from "react";
+import { Loader2, Mail, Lock } from "lucide-react";
 
 const formSchema = z.object({
-  email: z.string().email({message: "Invalid email address."}),
-  password: z.string().min(6, {message: "Password must be at least 6 characters."}),
+  email: z.string().email({ message: "Invalid email address." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
 export default function LoginForm() {
-  const {toast} = useToast();
-  const {triggerHaptic} = useHapticFeedback();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const isMountedRef = useRef(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Trigger light haptic feedback on form submit
-    triggerHaptic('light');
-    
-    // First validate the form
-    const isValid = await form.trigger();
-    if (!isValid) {
-      // Trigger error haptic for validation failure
-      triggerHaptic('error');
-      return;
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Safe state setter that checks if component is still mounted
+  const safeSetIsLoading = (value: boolean) => {
+    if (isMountedRef.current) {
+      setIsLoading(value);
     }
+  };
+
+  const safeSetIsResettingPassword = (value: boolean) => {
+    if (isMountedRef.current) {
+      setIsResettingPassword(value);
+    }
+  };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    safeSetIsLoading(true);
+    console.log('🔐 Login attempt for:', values.email);
     
-    setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      console.log('✅ Login successful', userCredential.user?.uid);
       
-      // Success haptic feedback
-      triggerHaptic('success');
+      if (isMountedRef.current) {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back! Redirecting to dashboard...",
+        });
+        
+        // AuthProvider will handle the redirect automatically
+        // No need for manual redirect here
+      }
       
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!",
-      });
-      // Navigation is handled by useAuth hook
     } catch (error: any) {
-      // Error haptic feedback
-      triggerHaptic('error');
+      console.error('❌ Login failed:', error);
       
-      let errorMessage = "An unexpected error occurred.";
+      if (!isMountedRef.current) return;
       
-      // Handle common Firebase auth errors
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        errorMessage = "Invalid email or password. Please try again.";
-        // Set form errors to highlight the fields
-        form.setError("email", { type: "manual" });
-        form.setError("password", { type: "manual" });
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMessage = "Too many failed login attempts. Please try again later or reset your password.";
-      } else if (error.message) {
-        errorMessage = error.message;
+      let errorMessage = "Please check your credentials and try again.";
+      
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = "No account found with this email address.";
+          break;
+        case 'auth/wrong-password':
+          errorMessage = "Incorrect password. Please try again.";
+          break;
+        case 'auth/invalid-credential':
+          errorMessage = "Invalid email or password.";
+          break;
+        case 'auth/too-many-requests':
+          errorMessage = "Too many failed attempts. Please try again later.";
+          break;
+        case 'auth/network-request-failed':
+          errorMessage = "Network error. Please check your connection and try again.";
+          break;
+        default:
+          errorMessage = error.message || "Login failed. Please try again.";
       }
       
       toast({
@@ -89,17 +99,14 @@ export default function LoginForm() {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      safeSetIsLoading(false);
     }
   }
 
   async function handlePasswordReset() {
-    // Trigger light haptic feedback
-    triggerHaptic('light');
-    
     const email = form.getValues("email");
+    
     if (!email) {
-      triggerHaptic('warning');
       toast({
         title: "Email Required",
         description: "Please enter your email address first.",
@@ -108,156 +115,185 @@ export default function LoginForm() {
       return;
     }
 
-    setIsResettingPassword(true);
+    safeSetIsResettingPassword(true);
+    
     try {
       await sendPasswordResetEmail(auth, email);
-      triggerHaptic('success');
-      toast({
-        title: "Password Reset Email Sent",
-        description: "Check your email for password reset instructions.",
-      });
+      
+      if (isMountedRef.current) {
+        toast({
+          title: "Reset Email Sent",
+          description: "Check your inbox for password reset instructions.",
+        });
+      }
+      
     } catch (error: any) {
-      triggerHaptic('error');
+      console.error('❌ Password reset error:', error);
+      
+      if (!isMountedRef.current) return;
+      
+      let errorMessage = "Failed to send reset email.";
+      
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = "No account found with this email address.";
+          break;
+        case 'auth/invalid-email':
+          errorMessage = "Invalid email address.";
+          break;
+        case 'auth/too-many-requests':
+          errorMessage = "Too many reset attempts. Please try again later.";
+          break;
+        case 'auth/network-request-failed':
+          errorMessage = "Network error. Please check your connection and try again.";
+          break;
+        default:
+          errorMessage = error.message || "An unexpected error occurred.";
+      }
+      
       toast({
         title: "Password Reset Failed",
-        description: error.message || "An unexpected error occurred.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
-      setIsResettingPassword(false);
+      safeSetIsResettingPassword(false);
     }
   }
 
   return (
-    <div className="w-full max-w-md">
-      {/* Premium iOS-Style Form Container with Enhanced Glassmorphism */}
-      <div className="relative mb-6">
-        {/* Subtle glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 rounded-2xl blur-xl opacity-50"></div>
+    <div className="w-full max-w-md mx-auto">
+      {/* Main Form Container */}
+      <div className="relative">
+        {/* Glow Effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 rounded-3xl blur-xl opacity-60"></div>
         
-        {/* Main form container */}
-        <div className="relative bg-card/50 backdrop-blur-2xl rounded-2xl p-1 border border-border/30 shadow-2xl shadow-black/10">
-          <div className="bg-card/70 backdrop-blur-sm rounded-xl p-6 overflow-hidden">
-            <Form {...form}>
-              <form id="loginForm" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-hidden">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({field}) => (
-                    <FormItem>
-                      <FormControl>
+        {/* Form Card */}
+        <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-3xl p-8 border border-gray-700/50 shadow-2xl">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Email Field */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                         <Input 
-                          {...field}
-                          type="email"
-                          placeholder="Email"
-                          className={`h-14 px-4 text-lg bg-secondary/20 border-0 rounded-2xl 
-                                   placeholder:text-muted-foreground/60 
-                                   focus:bg-secondary/40 focus:ring-2 focus:ring-primary/20 
-                                   transition-all duration-300 font-medium
-                                   hover:bg-secondary/30 backdrop-blur-sm
-                                   shadow-inner shadow-black/5 min-h-[56px]
-                                   ${form.formState.errors.email ? 'border-destructive border' : ''}`}
+                          {...field} 
+                          type="email" 
+                          placeholder="Email address" 
+                          disabled={isLoading || isResettingPassword}
+                          className="h-14 pl-12 pr-4 text-base bg-gray-800/50 border-gray-600/50 rounded-2xl 
+                                   placeholder:text-gray-400 text-white
+                                   focus:bg-gray-800/70 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20
+                                   transition-all duration-300
+                                   hover:bg-gray-800/60 hover:border-gray-500/50
+                                   disabled:opacity-50 disabled:cursor-not-allowed"
                         />
-                      </FormControl>
-                      <FormMessage className="text-xs mt-1 ml-1 text-destructive font-medium" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({field}) => (
-                    <FormItem>
-                      <FormControl>
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-red-400 text-sm mt-2" />
+                  </FormItem>
+                )}
+              />
+
+              {/* Password Field */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                         <Input 
-                          {...field}
+                          {...field} 
                           type="password" 
-                          placeholder="Password"
-                          className={`h-14 px-4 text-lg bg-secondary/20 border-0 rounded-2xl
-                                   placeholder:text-muted-foreground/60
-                                   focus:bg-secondary/40 focus:ring-2 focus:ring-primary/20
-                                   transition-all duration-300 font-medium
-                                   hover:bg-secondary/30 backdrop-blur-sm
-                                   shadow-inner shadow-black/5 min-h-[56px]
-                                   ${form.formState.errors.password ? 'border-destructive border' : ''}`}
+                          placeholder="Password" 
+                          disabled={isLoading || isResettingPassword}
+                          className="h-14 pl-12 pr-4 text-base bg-gray-800/50 border-gray-600/50 rounded-2xl 
+                                   placeholder:text-gray-400 text-white
+                                   focus:bg-gray-800/70 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20
+                                   transition-all duration-300
+                                   hover:bg-gray-800/60 hover:border-gray-500/50
+                                   disabled:opacity-50 disabled:cursor-not-allowed"
                         />
-                      </FormControl>
-                      <FormMessage className="text-xs mt-1 ml-1 text-destructive font-medium" />
-                    </FormItem>
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-red-400 text-sm mt-2" />
+                  </FormItem>
+                )}
+              />
+
+              {/* Forgot Password Link - Centered within card */}
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={handlePasswordReset}
+                  disabled={isResettingPassword || isLoading}
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isResettingPassword ? (
+                    <span className="flex items-center">
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                      Sending...
+                    </span>
+                  ) : (
+                    "Forgot password?"
                   )}
-                />
-              </form>
-            </Form>
+                </button>
+              </div>
+
+              {/* Sign In Button */}
+              <Button 
+                type="submit" 
+                disabled={isLoading || isResettingPassword} 
+                className="w-full h-14 text-base font-semibold rounded-2xl 
+                         bg-gradient-to-r from-blue-600 to-purple-600 
+                         hover:from-blue-500 hover:to-purple-500 
+                         text-white border-0 shadow-lg
+                         transition-all duration-300 
+                         disabled:opacity-50 disabled:cursor-not-allowed
+                         hover:shadow-xl hover:shadow-blue-500/25"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </div>
+
+      {/* Sign Up Section - Better separated */}
+      <div className="mt-8 text-center">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-700/50"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-gray-900 text-gray-400">or</span>
           </div>
         </div>
-      </div>
-
-      {/* Premium iOS-Native Primary Button */}
-      <div className="relative mb-6">
-        {/* Button glow effect */}
-        <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-lg opacity-60 scale-105"></div>
         
-        <PremiumButton 
-          type="submit"
-          form="loginForm"
-          disabled={isLoading}
-          hapticPattern="medium"
-          premiumStyle="primary"
-          onClick={() => {
-            // Trigger validation on button click to ensure all errors display
-            form.trigger();
-          }}
-          className="relative w-full h-14 text-lg font-semibold rounded-2xl"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Signing In...
-            </>
-          ) : (
-            "Sign In"
-          )}
-        </PremiumButton>
-      </div>
-      
-      {/* iOS-Native Secondary Actions */}
-      <div className="mt-8 space-y-6">
-        {/* Forgot Password Link */}
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={handlePasswordReset}
-            disabled={isResettingPassword}
-            className="text-base font-medium text-white 
-                     transition-all duration-200 disabled:opacity-50 
-                     bg-black hover:bg-black/90 border-0 outline-none
-                     cursor-pointer rounded-xl px-6 py-3
-                     hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/20
-                     disabled:cursor-not-allowed shadow-lg
-                     active:scale-[0.95] premium-scale-animation"
-          >
-            {isResettingPassword ? (
-              <span className="inline-flex items-center text-muted-foreground">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Sending reset email...
-              </span>
-            ) : (
-              "Forgot your password?"
-            )}
-          </button>
-        </div>
-
-        {/* Sign Up Link */}
-        <div className="text-center text-base text-muted-foreground/80 mt-6">
-          Don't have an account?{" "}
-          <a 
-            href="/signup" 
-            className="font-semibold text-primary hover:text-primary/80 
-                     transition-all duration-200
-                     underline-offset-4 hover:underline"
-          >
-            Sign up
-          </a>
+        <div className="mt-6">
+          <p className="text-gray-400 text-base">
+            Don't have an account?{" "}
+            <a 
+              href="/signup" 
+              className="text-blue-400 hover:text-blue-300 font-semibold transition-colors hover:underline underline-offset-4"
+            >
+              Sign up
+            </a>
+          </p>
         </div>
       </div>
     </div>

@@ -20,14 +20,19 @@ import {Loader2, User, Mail, ShieldCheck, Edit3, KeyRound, Camera, Users, Bell, 
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose} from "@/components/ui/dialog";
 
-// Lazy load heavy components
-const ReactCrop = lazy(() => import("react-image-crop").then(module => ({ default: module.default })));
-const NotificationSettings = lazy(() => import("@/components/notifications/notification-settings"));
-// const ThemeToggleButton = lazy(() => import("@/components/theme-toggle-button").then(module => ({ default: module.ThemeToggleButton })));
-
-// Import crop types directly
+// Import crop types and functions
 import type {Crop, PixelCrop} from "react-image-crop";
 import {centerCrop, makeAspectCrop} from "react-image-crop";
+
+// Dynamic imports for heavy components
+import dynamic from "next/dynamic";
+const ReactCrop = dynamic(() => import("react-image-crop"), {
+  loading: () => <div className="animate-pulse bg-gray-200 h-64 w-64 rounded"></div>,
+  ssr: false
+});
+const NotificationSettings = dynamic(() => import("@/components/notifications/notification-settings"), {
+  loading: () => <div className="animate-pulse bg-gray-200 h-32 rounded"></div>
+});
 
 
 const profileFormSchema = z.object({

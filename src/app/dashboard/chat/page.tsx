@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   ArrowLeft, 
   MessageCircle, 
@@ -17,14 +20,11 @@ import { ChatService } from "@/lib/chat-service";
 import type { ChatChannel } from "@/types";
 import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
 
-// Lazy load heavy components
-const TeamChatInterface = lazy(() => import("@/components/dashboard/team-chat-interface"));
-const Card = lazy(() => import("@/components/ui/card").then(module => ({ default: module.Card })));
-const CardContent = lazy(() => import("@/components/ui/card").then(module => ({ default: module.CardContent })));
-const CardHeader = lazy(() => import("@/components/ui/card").then(module => ({ default: module.CardHeader })));
-const CardTitle = lazy(() => import("@/components/ui/card").then(module => ({ default: module.CardTitle })));
-const Badge = lazy(() => import("@/components/ui/badge").then(module => ({ default: module.Badge })));
-const ScrollArea = lazy(() => import("@/components/ui/scroll-area").then(module => ({ default: module.ScrollArea })));
+// Only lazy load the heavy chat interface component
+import dynamic from "next/dynamic";
+const TeamChatInterface = dynamic(() => import("@/components/dashboard/team-chat-interface"), {
+  loading: () => <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
+});
 
 export default function ChatPage() {
   const { user } = useAuth();
@@ -147,19 +147,10 @@ export default function ChatPage() {
   // If a channel is selected, show the chat interface
   if (selectedChannel) {
     return (
-      <Suspense fallback={
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-3" />
-            <p className="text-sm text-gray-500">Loading chat...</p>
-          </div>
-        </div>
-      }>
-        <TeamChatInterface 
-          channel={selectedChannel}
-          onBack={() => setSelectedChannel(null)}
-        />
-      </Suspense>
+      <TeamChatInterface 
+        channel={selectedChannel}
+        onBack={() => setSelectedChannel(null)}
+      />
     );
   }
 
