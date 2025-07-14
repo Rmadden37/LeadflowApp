@@ -3,6 +3,7 @@ import "./globals.css";
 import "../styles/performance-optimizations.css";
 import "../styles/aurelian-ios-performance-extreme.css";
 import "../styles/ios-avatar-fix.css";
+import "../styles/iphone-bottom-nav-fix.css";
 import { Providers } from "./providers";
 import type { Metadata, Viewport } from 'next';
 

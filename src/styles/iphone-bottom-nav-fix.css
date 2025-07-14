@@ -1,0 +1,110 @@
+/* ===================================================================
+   IPHONE BOTTOM NAVIGATION VISIBILITY FIX
+   Fixes bottom navigation positioning on iPhone screens
+   =================================================================== */
+
+/* iPhone-specific bottom navigation positioning */
+@supports (-webkit-touch-callout: none) {
+  .bottom-nav-container,
+  nav[class*="bottom"],
+  [data-testid="bottom-navigation"] {
+    /* Position ABOVE the home indicator, not covering it */
+    bottom: env(safe-area-inset-bottom, 0px) !important;
+    
+    /* Reduce height for iPhone optimization */
+    height: 64px !important;
+    min-height: 64px !important;
+    
+    /* Add internal padding for safe area */
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important;
+    
+    /* Ensure visibility above iPhone home indicator */
+    transform: translateY(0) !important;
+    
+    /* iPhone-specific backdrop */
+    background: rgba(0, 0, 0, 0.92) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    
+    /* Ensure it's visible */
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+  }
+}
+
+/* iPhone SE and smaller screens */
+@media (max-width: 375px) and (-webkit-touch-callout: none) {
+  .bottom-nav-container,
+  nav[class*="bottom"],
+  [data-testid="bottom-navigation"] {
+    /* Even smaller height for compact screens */
+    height: 58px !important;
+    min-height: 58px !important;
+    
+    /* Compact padding */
+    padding: 4px 8px !important;
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 6px) !important;
+  }
+  
+  /* Compact button sizing */
+  .bottom-nav-container button,
+  .bottom-nav-container a {
+    padding: 6px 8px !important;
+    font-size: 10px !important;
+  }
+  
+  /* Smaller icons */
+  .bottom-nav-container svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+/* iPhone 12/13/14/15 (standard) */
+@media (min-width: 376px) and (max-width: 430px) and (-webkit-touch-callout: none) {
+  .bottom-nav-container,
+  nav[class*="bottom"],
+  [data-testid="bottom-navigation"] {
+    /* Standard iPhone height */
+    height: 64px !important;
+    min-height: 64px !important;
+    
+    /* Position above home indicator with extra space */
+    bottom: max(env(safe-area-inset-bottom, 0px), 4px) !important;
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 10px) !important;
+  }
+}
+
+/* iPhone Pro Max and larger */
+@media (min-width: 431px) and (-webkit-touch-callout: none) {
+  .bottom-nav-container,
+  nav[class*="bottom"],
+  [data-testid="bottom-navigation"] {
+    /* Larger screen height */
+    height: 68px !important;
+    min-height: 68px !important;
+    
+    /* Position with comfortable spacing */
+    bottom: max(env(safe-area-inset-bottom, 0px), 6px) !important;
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px) !important;
+  }
+}
+
+/* Content spacing adjustments for iPhone */
+@supports (-webkit-touch-callout: none) {
+  .dashboard-safe-content,
+  .native-scroll-container,
+  main {
+    /* Reserve proper space for iPhone bottom nav */
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 8px) !important;
+  }
+}
+
+/* Debug helper (remove in production) */
+/* 
+.bottom-nav-container {
+  outline: 2px solid lime !important;
+  background: rgba(0, 255, 0, 0.3) !important;
+}
+*/
