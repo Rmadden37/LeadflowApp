@@ -457,7 +457,7 @@ export const acceptJob = functions.https.onCall(async (data, context) => {
     if (leadData.setterId) {
       try {
         // Get closer info for notification - use assigned closer's name, not the accepter
-        const closerDoc = await db.collection("closers").doc(leadData.assignedCloserId).get();
+        const closerDoc = await db.collection("closers").doc(leadData.assignedCloserId!).get();
         const closerName = closerDoc.exists ? closerDoc.data()?.name || "Closer" : "Closer";
         
         await LeadNotifications.jobAccepted({

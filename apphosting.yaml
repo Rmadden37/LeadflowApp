@@ -1,27 +1,63 @@
-# Firebase App Hosting Configuration
-# This configures Firebase App Hosting for the LeadFlow application
-
-# Runtime configuration
+# Firebase App Hosting configuration
 runConfig:
-  # Use Cloud Run for scalable hosting
-  minInstances: 0
-  maxInstances: 10
-  memory: 2Gi
-  cpu: 1
-  timeoutSeconds: 300
-
-# Build configuration for Next.js
-build:
-  commands:
-    - npm ci
-    - npm run build
+  # Use the custom CI build script
+  buildCommand: chmod +x ci-build.sh && ./ci-build.sh
   
-  # Output directory for Next.js build (App Hosting expects this)
-  outputDir: .next
+  # Node.js runtime configuration
+  runtime: nodejs20
+  
+  # Environment variables for the build
+  env:
+    - variable: NODE_ENV
+      value: production
+    - variable: NEXT_PUBLIC_DEPLOY_TARGET
+      value: app-hosting
+    - variable: NEXT_PUBLIC_STATIC_EXPORT
+      value: "false"
+    - variable: CI
+      value: "true"
+  
+  # Memory and CPU allocation for build
+  cpu: 4
+  memory: 8GiB
+  
+  # Timeout for build process (20 minutes)
+  timeoutSeconds: 1200
 
-# Environment variables for production
-env:
-  NODE_ENV: production
-  NEXT_PUBLIC_DEPLOY_TARGET: app-hosting
-  NEXT_PUBLIC_STATIC_EXPORT: false
-  NODE_VERSION: "20"
+# Static asset serving configuration
+serveConfig:
+  # Serve the Next.js standalone build
+  buildOutputDirectory: .next
+  
+  # Headers for static assets
+  headers:
+    - source: "/_next/static/**"
+      headers:
+        - key: "Cache-Control"
+          value: "public, max-age=31536000, immutable"
+    
+    - source: "/sw.js"
+      headers:
+        - key: "Cache-Control"
+          value: "public, max-age=0, must-revalidate"
+    
+    - source: "/**/*.js"
+      headers:
+        - key: "Cache-Control"
+          value: "public, max-age=31536000, immutable"
+    
+    - source: "/**/*.css"
+      headers:
+        - key: "Cache-Control"
+          value: "public, max-age=31536000, immutable"
+  
+  # Redirects and rewrites
+  rewrites:
+    - source: "**"
+      destination: "/index.html"
+  
+  # Clean URLs (remove .html extension)
+  cleanUrls: true
+  
+  # Trailing slash behavior
+  trailingSlash: false

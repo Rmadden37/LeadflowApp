@@ -212,20 +212,20 @@ export function MobileNavigation({ children }: MobileNavigationLayoutProps) {
               icon={<Trophy className="stroke-[1.5]" />} 
               label="Leaderboard" 
               href="/dashboard/leaderboard" 
-              isActive={pathname.includes('/leaderboard')}
+              isActive={pathname?.includes('/leaderboard') ?? false}
             />
             <BottomNavItem 
               icon={<MessageCircle className="stroke-[1.5]" />} 
               label="Chat" 
               href="/dashboard/chat" 
-              isActive={pathname.includes('/chat')}
+              isActive={pathname?.includes('/chat') ?? false}
             />
             
             {(user?.role === "manager" || user?.role === "admin") && (
               <BottomNavDropdownItem
                 icon={<Users className="stroke-[1.5]" />}
                 label="Manage"
-                isActive={pathname.includes('/manage') || pathname.includes('/lead-history') || pathname.includes('/manage-teams') || pathname.includes('/analytics')}
+                isActive={pathname?.includes('/manage') || pathname?.includes('/lead-history') || pathname?.includes('/manage-teams') || pathname?.includes('/analytics') || false}
                 menuItems={managerMenuItems}
               />
             )}
@@ -233,7 +233,7 @@ export function MobileNavigation({ children }: MobileNavigationLayoutProps) {
               icon={<User className="stroke-[1.5]" />} 
               label="Profile" 
               href="/dashboard/profile" 
-              isActive={pathname.includes('/profile')}
+              isActive={pathname?.includes('/profile') ?? false}
             />
           </BottomNavContent>
         </BottomNav>
@@ -293,14 +293,14 @@ export default function MobileNavigationLayout({ children }: MobileNavigationLay
             icon={<Trophy className="stroke-[1.5]" />} 
             label="Leaderboard" 
             href="/dashboard/leaderboard" 
-            isActive={pathname.includes('/leaderboard')}
+            isActive={pathname?.includes('/leaderboard') ?? false}
           />
           
           {isManagerOrAdmin && (
             <BottomNavDropdownItem
               icon={<Users className="stroke-[1.5]" />}
               label="Manage"
-              isActive={pathname.includes('/manage') || pathname.includes('/lead-history') || pathname.includes('/manage-teams') || pathname.includes('/analytics')}
+              isActive={pathname?.includes('/manage') || pathname?.includes('/lead-history') || pathname?.includes('/manage-teams') || pathname?.includes('/analytics') || false}
               menuItems={managerMenuItems}
             />
           )}
@@ -308,13 +308,13 @@ export default function MobileNavigationLayout({ children }: MobileNavigationLay
             icon={<MessageCircle className="stroke-[1.5]" />} 
             label="Chat" 
             href="/dashboard/chat" 
-            isActive={pathname.includes('/chat')}
+            isActive={pathname?.includes('/chat') ?? false}
           />
           <BottomNavItem 
             icon={<User className="stroke-[1.5]" />} 
             label="Profile" 
             href="/dashboard/profile" 
-            isActive={pathname.includes('/profile')}
+            isActive={pathname?.includes('/profile') ?? false}
           />
         </BottomNavContent>
       </BottomNav>

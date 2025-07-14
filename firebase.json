@@ -54,6 +54,30 @@
           }
         ]
       }
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "apphosting": {
+    "source": ".",
+    "ignorePatterns": [
+      "node_modules/**",
+      ".git/**",
+      "firebase-debug.log",
+      "firebase-debug.*.log",
+      "*.local",
+      ".env.local",
+      ".env.*.local",
+      "functions/**",
+      ".next/**",
+      "out/**",
+      "coverage/**",
+      "playwright-report/**",
+      "test-results/**"
     ]
   }
 }
