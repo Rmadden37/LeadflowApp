@@ -11,6 +11,7 @@
     "build:ci": "chmod +x ci-build-comprehensive.sh && ./ci-build-comprehensive.sh",
     "postbuild": "echo 'Build completed successfully'",
     "start": "next start -p 8080",
+    "start:standalone": "cd .next/standalone && node server.js",
     "lint": "next lint --fix",
     "lint:check": "next lint",
     "typecheck": "tsc --noEmit",

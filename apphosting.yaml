@@ -28,40 +28,30 @@ runConfig:
   # Timeout for build process (20 minutes)
   timeoutSeconds: 1200
 
-# Static asset serving configuration
+# Server-side rendering configuration for Next.js App Router
 serveConfig:
-  # Serve the Next.js standalone build
-  buildOutputDirectory: .next
+  # Use Node.js runtime for dynamic server rendering
+  runtime: nodejs20
   
-  # Headers for static assets
-  headers:
-    - source: "/_next/static/**"
-      headers:
-        - key: "Cache-Control"
-          value: "public, max-age=31536000, immutable"
+  # Start command for the Next.js standalone server
+  startCommand: cd .next/standalone && node server.js
+  
+  # Port configuration
+  port: 8080
+  
+  # Memory and CPU for production runtime
+  memory: 2GiB
+  cpu: 1
+  
+  # Health check endpoint
+  healthCheck:
+    path: /api/health
     
-    - source: "/sw.js"
-      headers:
-        - key: "Cache-Control"
-          value: "public, max-age=0, must-revalidate"
-    
-    - source: "/**/*.js"
-      headers:
-        - key: "Cache-Control"
-          value: "public, max-age=31536000, immutable"
-    
-    - source: "/**/*.css"
-      headers:
-        - key: "Cache-Control"
-          value: "public, max-age=31536000, immutable"
-  
-  # Redirects and rewrites
-  rewrites:
-    - source: "**"
-      destination: "/index.html"
-  
-  # Clean URLs (remove .html extension)
-  cleanUrls: true
-  
-  # Trailing slash behavior
-  trailingSlash: false
+  # Environment variables for production
+  env:
+    - variable: NODE_ENV
+      value: production
+    - variable: PORT
+      value: "8080"
+    - variable: HOSTNAME
+      value: "0.0.0.0"
