@@ -1,6 +1,3 @@
-const path = require('path');
-const webpack = require('webpack');
-
 const withPWA = require('next-pwa')({
   dest: 'public', // Changed from 'dist' to 'public' for App Hosting
   register: true,
@@ -56,26 +53,11 @@ const nextConfig = {
   
   // Webpack configuration
   webpack: (config, { isServer, webpack }) => {
-    // CRITICAL: Add path alias configuration for @/* imports
-    const srcPath = path.join(__dirname, 'src');
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': srcPath,
-    };
-
-    // Debug: Log the resolved path in CI
-    if (process.env.CI) {
-      console.log('🔧 CI Environment detected');
-      console.log('📁 __dirname:', __dirname);
-      console.log('📁 srcPath:', srcPath);
-      console.log('🔗 Alias configured:', config.resolve.alias['@']);
-    }
-
     // Exclude functions directory from webpack compilation
     config.externals = config.externals || [];
     
     if (!isServer) {
-      // Fix protobuf and gRPC issues in browser + Add Node.js polyfills
+      // Fix protobuf and gRPC issues in browser
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -83,17 +65,9 @@ const nextConfig = {
         crypto: false,
         stream: false,
         util: false,
-        buffer: require.resolve('buffer'),
-        process: require.resolve('process/browser'),
+        buffer: false,
+        process: false,
       };
-
-      // Add webpack plugins for Node.js polyfills
-      config.plugins.push(
-        new webpack.ProvidePlugin({
-          Buffer: ['buffer', 'Buffer'],
-          process: 'process/browser',
-        })
-      );
     }
 
     // SVG handling
