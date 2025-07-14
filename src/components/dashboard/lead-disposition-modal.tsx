@@ -132,8 +132,8 @@ const LeadDispositionModal: React.FC<LeadDispositionModalProps> = ({lead, isOpen
         where("status", "==", "On Duty")
       );
 
-      const unsubscribe = onSnapshot(closersQuery, (querySnapshot) => {
-        const closersData = querySnapshot.docs.map((doc) => {
+      const unsubscribe = onSnapshot(closersQuery, (querySnapshot: { docs: { data: () => any; id: any; }[]; }) => {
+        const closersData = querySnapshot.docs.map((doc: { data: () => any; id: any; }) => {
           const data = doc.data();
           return {
             uid: doc.id,

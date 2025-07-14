@@ -30,8 +30,8 @@ export default function PremiumAnalyticsPage() {
         where("createdAt", ">=", Timestamp.fromDate(thirtyDaysAgo)),
         orderBy("createdAt", "desc")
       ),
-      (snapshot) => {
-        const leadsData = snapshot.docs.map(doc => ({
+      (snapshot: { docs: { id: any; data: () => any; }[]; }) => {
+        const leadsData = snapshot.docs.map((doc: { id: any; data: () => any; }) => ({
           id: doc.id,
           ...doc.data()
         })) as Lead[];
@@ -46,8 +46,8 @@ export default function PremiumAnalyticsPage() {
         collection(db, "closers"),
         where("teamId", "==", user.teamId)
       ),
-      (snapshot) => {
-        const closersData = snapshot.docs.map(doc => ({
+      (snapshot: { docs: { id: any; data: () => any; }[]; }) => {
+        const closersData = snapshot.docs.map((doc: { id: any; data: () => any; }) => ({
           id: doc.id,
           ...doc.data()
         })) as unknown as Closer[];

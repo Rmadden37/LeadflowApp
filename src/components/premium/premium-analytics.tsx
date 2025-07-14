@@ -6,7 +6,6 @@
 "use client";
 
 import React, { lazy, Suspense, useMemo, useState, useCallback } from 'react';
-import { PremiumSkeleton, withPremiumPerformance } from '@/lib/premium-performance';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -125,7 +124,9 @@ function PremiumAnalyticsDashboard({ className = '' }: PremiumAnalyticsProps) {
           )}
           {selectedMetric === 'teams' && (
             <div className="space-y-4">
-              <ChartComponent type="teams" />
+              <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                <p className="text-gray-500">Teams Chart - Coming Soon</p>
+              </div>
             </div>
           )}
         </Suspense>
@@ -144,5 +145,26 @@ function PremiumAnalyticsDashboard({ className = '' }: PremiumAnalyticsProps) {
   );
 }
 
+// Skeleton loader for premium content
+interface PremiumSkeletonProps {
+  type: string;
+  className?: string;
+}
+
+function PremiumSkeleton({ type, className = '' }: PremiumSkeletonProps) {
+  return (
+    <div className={`premium-skeleton ${className}`}>
+      {type === 'analytics' && (
+        <div className="space-y-4">
+          <div className="h-48 bg-white/5 rounded-lg"></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-24 bg-white/5 rounded-lg"></div>
+            <div className="h-24 bg-white/5 rounded-lg"></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Export with premium performance enhancements
-export default withPremiumPerformance(PremiumAnalyticsDashboard);

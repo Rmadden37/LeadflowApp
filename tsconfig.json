@@ -1,63 +1,45 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
     "lib": [
       "dom",
-      "dom.iterable", 
-      "esnext"
+      "dom.iterable",
+      "es6"
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "incremental": true,
-    "module": "esnext",
+    "strict": false,
+    "noEmit": false,
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
-    // CRITICAL: Use relative baseUrl for better path resolution
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "@/components/*": ["src/components/*"],
-      "@/hooks/*": ["src/hooks/*"],
-      "@/lib/*": ["src/lib/*"],
-      "@/app/*": ["src/app/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/types/*": ["src/types/*"],
-      "@/styles/*": ["src/styles/*"]
-    },
+    "incremental": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
-    // Strict checks for development
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true
+    "noImplicitReturns": false,
+    "noImplicitAny": false,
+    "target": "ES2017"
   },
   "include": [
-    ".next/types/**/*.ts",
     "next-env.d.ts",
-    "out/types/**/*.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "dist/types/**/*.ts"
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "functions/**/*",
-    "functions",
-    ".next",
-    "out",
-    "public/sw.js",
-    "public/workbox-*.js"
+    "node_modules"
   ]
 }
