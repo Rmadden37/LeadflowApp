@@ -153,8 +153,8 @@ function getStatusEmoji(status) {
  * Priority order:
  * 1. On Duty closers only
  * 2. Same team as the lead
- * 3. Lowest lineup order (rotation system)
- * 4. Least number of current assignments
+ * 3. Only closers with ZERO current assignments (strict round-robin)
+ * 4. Lowest lineup order (rotation system)
  */
 async function getNextAvailableCloser(teamId) {
     try {
@@ -202,17 +202,11 @@ async function getNextAvailableCloser(teamId) {
             functions.logger.warn(`⚠️ All closers are assigned for team ${teamId}`);
             return null;
         }
-        // Sort by lineup order first, then by current assignments
+        // Sort by lineup order (since all have zero assignments)
         availableUnassignedClosers.sort((a, b) => {
             const orderA = a.lineupOrder || 999999;
             const orderB = b.lineupOrder || 999999;
-            if (orderA !== orderB) {
-                return orderA - orderB;
-            }
-            // If same lineup order, choose the one with fewer assignments
-            const assignmentsA = closerAssignments.get(a.uid) || 0;
-            const assignmentsB = closerAssignments.get(b.uid) || 0;
-            return assignmentsA - assignmentsB;
+            return orderA - orderB; // Primary sort by lineup order
         });
         const selectedCloser = availableUnassignedClosers[0];
         functions.logger.info(`✅ Selected closer ${selectedCloser.name} (order: ${selectedCloser.lineupOrder}) for team ${teamId}`);
@@ -302,8 +296,9 @@ exports.assignLeadOnCreate = functions.firestore
     }
 });
 /**
- * Accept a job (callable function)
+ * FIXED Accept a job (callable function)
  * Called when a closer clicks on their assigned lead for the first time
+ * Enhanced to support managers/admins accepting on behalf of closers
  */
 exports.acceptJob = functions.https.onCall(async (data, context) => {
     var _a;
@@ -315,43 +310,94 @@ exports.acceptJob = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError("invalid-argument", "Lead ID is required");
     }
     try {
-        // Get the lead
-        const leadDoc = await db.collection("leads").doc(leadId).get();
+        functions.logger.info(`🚀 AcceptJob called for lead ${leadId} by user ${context.auth.uid}`);
+        // Get the lead and user documents in parallel for efficiency
+        const [leadDoc, userDoc] = await Promise.all([
+            db.collection("leads").doc(leadId).get(),
+            db.collection("users").doc(context.auth.uid).get()
+        ]);
         if (!leadDoc.exists) {
             throw new functions.https.HttpsError("not-found", "Lead not found");
         }
+        if (!userDoc.exists) {
+            throw new functions.https.HttpsError("not-found", "User not found");
+        }
         const leadData = leadDoc.data();
-        // Verify the current user is the assigned closer
-        if (leadData.assignedCloserId !== context.auth.uid) {
-            throw new functions.https.HttpsError("permission-denied", "You are not assigned to this lead");
+        const userData = userDoc.data();
+        const userRole = userData === null || userData === void 0 ? void 0 : userData.role;
+        functions.logger.info(`User: ${context.auth.uid}, Role: ${userRole}, Team: ${userData === null || userData === void 0 ? void 0 : userData.teamId}`);
+        functions.logger.info(`Lead: ${leadId}, Status: ${leadData.status}, AssignedTo: ${leadData.assignedCloserId}, Team: ${leadData.teamId}`);
+        // ENHANCED PERMISSION LOGIC - This is the key fix
+        let hasPermission = false;
+        let permissionReason = "";
+        // Check permissions based on role
+        if (userRole === "admin") {
+            // Admins can accept ANY lead
+            hasPermission = true;
+            permissionReason = "Admin has unrestricted access";
+        }
+        else if (userRole === "manager") {
+            // Managers can accept leads in their team
+            if (leadData.teamId === (userData === null || userData === void 0 ? void 0 : userData.teamId)) {
+                hasPermission = true;
+                permissionReason = "Manager accepting lead in their team";
+            }
+            else {
+                hasPermission = false;
+                permissionReason = `Manager team mismatch: user team ${userData === null || userData === void 0 ? void 0 : userData.teamId} vs lead team ${leadData.teamId}`;
+            }
+        }
+        else if (userRole === "closer") {
+            // Closers can only accept leads assigned to them
+            if (leadData.assignedCloserId === context.auth.uid) {
+                hasPermission = true;
+                permissionReason = "Closer accepting their assigned lead";
+            }
+            else {
+                hasPermission = false;
+                permissionReason = `Closer not assigned: assigned to ${leadData.assignedCloserId}, user is ${context.auth.uid}`;
+            }
+        }
+        else {
+            hasPermission = false;
+            permissionReason = `Invalid role: ${userRole}`;
+        }
+        functions.logger.info(`Permission check: ${hasPermission}, Reason: ${permissionReason}`);
+        if (!hasPermission) {
+            throw new functions.https.HttpsError("permission-denied", permissionReason);
         }
         // Check if the job has already been accepted
         if (leadData.status === "accepted" || leadData.acceptedAt) {
-            functions.logger.info(`Lead ${leadId} already accepted by ${context.auth.uid}`);
-            return { success: true, alreadyAccepted: true };
+            functions.logger.info(`Lead ${leadId} already accepted`);
+            return {
+                success: true,
+                alreadyAccepted: true,
+                message: "Job was already accepted"
+            };
         }
-        // Only accept jobs that are in waiting_assignment or scheduled status
-        // For scheduled leads, they must be verified before they can be accepted
-        if (leadData.status !== "waiting_assignment" && leadData.status !== "scheduled") {
-            throw new functions.https.HttpsError("failed-precondition", `Cannot accept job with status: ${leadData.status}`);
+        // Validate lead status for acceptance
+        const validStatuses = ["waiting_assignment", "scheduled"];
+        if (!validStatuses.includes(leadData.status)) {
+            throw new functions.https.HttpsError("failed-precondition", `Cannot accept job with status: ${leadData.status}. Valid statuses: ${validStatuses.join(", ")}`);
         }
         // Additional check for scheduled leads - they must be verified
         if (leadData.status === "scheduled" && !leadData.setterVerified) {
             throw new functions.https.HttpsError("failed-precondition", "Cannot accept scheduled appointment - setter verification required");
         }
         // Update the lead to accepted status
-        await db.collection("leads").doc(leadId).update({
+        const updateData = {
             status: "accepted",
             acceptedAt: admin.firestore.FieldValue.serverTimestamp(),
             acceptedBy: context.auth.uid,
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-        functions.logger.info(`Lead ${leadId} accepted by closer ${context.auth.uid}`);
+        };
+        await db.collection("leads").doc(leadId).update(updateData);
+        functions.logger.info(`✅ Lead ${leadId} accepted by user ${context.auth.uid} (${userRole})`);
         // Send notification to the setter if setterId exists
         if (leadData.setterId) {
             try {
-                // Get closer info for notification
-                const closerDoc = await db.collection("closers").doc(context.auth.uid).get();
+                // Get closer info for notification - use assigned closer's name, not the accepter
+                const closerDoc = await db.collection("closers").doc(leadData.assignedCloserId).get();
                 const closerName = closerDoc.exists ? ((_a = closerDoc.data()) === null || _a === void 0 ? void 0 : _a.name) || "Closer" : "Closer";
                 await LeadNotifications.jobAccepted(Object.assign(Object.assign({}, leadData), { id: leadId, status: "accepted", acceptedAt: admin.firestore.Timestamp.now(), acceptedBy: context.auth.uid }), leadData.setterId, closerName);
             }
@@ -360,28 +406,40 @@ exports.acceptJob = functions.https.onCall(async (data, context) => {
                 // Don't fail the function if notification fails
             }
         }
-        // Create activity log
+        // Create activity log with enhanced metadata
         await db.collection("activities").add({
             type: "job_accepted",
             leadId: leadId,
-            closerId: context.auth.uid,
+            closerId: leadData.assignedCloserId, // The actual assigned closer
+            acceptedBy: context.auth.uid, // Who performed the acceptance (could be admin/manager)
+            acceptedByRole: userRole, // Role of person who accepted
             closerName: leadData.assignedCloserName,
             customerName: leadData.customerName,
             teamId: leadData.teamId,
+            isManagerAcceptance: userRole === "manager",
+            isAdminAcceptance: userRole === "admin",
+            onBehalfOf: (userRole === "manager" || userRole === "admin") ? leadData.assignedCloserId : null,
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
         });
+        const successMessage = (userRole === "manager" || userRole === "admin")
+            ? `Job accepted on behalf of ${leadData.assignedCloserName || "closer"}`
+            : "Job accepted successfully";
         return {
             success: true,
             alreadyAccepted: false,
-            acceptedAt: new Date().toISOString()
+            acceptedAt: new Date().toISOString(),
+            acceptedBy: context.auth.uid,
+            acceptedByRole: userRole,
+            onBehalfOf: (userRole === "manager" || userRole === "admin") ? leadData.assignedCloserId : null,
+            message: successMessage
         };
     }
     catch (error) {
-        functions.logger.error(`Error in acceptJob for lead ${leadId}:`, error);
+        functions.logger.error(`❌ Error in acceptJob for lead ${leadId}:`, error);
         if (error instanceof functions.https.HttpsError) {
             throw error;
         }
-        throw new functions.https.HttpsError("internal", "Internal server error");
+        throw new functions.https.HttpsError("internal", "Internal server error occurred");
     }
 });
 /**

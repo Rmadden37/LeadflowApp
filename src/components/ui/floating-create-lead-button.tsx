@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
-import { useHapticFeedback } from "@/lib/haptic-feedback";
+import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -129,7 +129,7 @@ export default function FloatingCreateLeadButton({
         
         // 📱 iOS FOUNDATION - Native Button Architecture
         "ios-button-base ios-button-interactive ios-touch-target",
-        "w-16 h-16 rounded-full flex items-center justify-center",
+        "w-20 h-20 rounded-full flex items-center justify-center",
         
         // 🌈 PREMIUM VISUAL DESIGN - iOS 17+ Aesthetics
         "bg-gradient-to-br from-[#007AFF] via-[#0056CC] to-[#003D99]",
@@ -194,7 +194,7 @@ export default function FloatingCreateLeadButton({
       {/* 🎯 PREMIUM PLUS ICON - Enhanced Visual Hierarchy */}
       <Plus 
         className={cn(
-          "w-8 h-8 text-white stroke-[2.5] transition-all duration-200",
+          "w-11 h-11 text-white stroke-[2.5] transition-all duration-200",
           isPressed ? "scale-85" : isHovered ? "scale-110" : "scale-100",
           "drop-shadow-sm"
         )} 

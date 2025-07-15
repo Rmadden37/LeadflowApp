@@ -223,7 +223,6 @@ export default function DaylightArcCard() {
   let progress = 0;
   let isGoldenHour = false;
   let goldenHourMinutesLeft = 0;
-  let isDayComplete = false;
   
   if (totalMinutes < sunriseMinutes) {
     progress = 0; // Before sunrise
@@ -233,9 +232,6 @@ export default function DaylightArcCard() {
     if (minutesAfterSunset >= 5 && minutesAfterSunset <= 35) {
       isGoldenHour = true;
       goldenHourMinutesLeft = 35 - minutesAfterSunset; // 30-minute window
-    } else if (minutesAfterSunset > 35) {
-      // Golden hour is over - day is complete
-      isDayComplete = true;
     }
     progress = 1; // After sunset
   } else {
@@ -317,7 +313,7 @@ export default function DaylightArcCard() {
 
   return (
     <div 
-      className="frosted-glass-card px-4 py-6 overflow-hidden relative h-[240px] max-w-full transition-all duration-200 active:scale-[0.98]"
+      className="frosted-glass-card px-4 py-3 overflow-hidden relative h-[200px] max-w-full transition-all duration-200 active:scale-[0.98]"
       onClick={triggerHapticFeedback}
       style={{
         background: 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
@@ -338,20 +334,15 @@ export default function DaylightArcCard() {
           Golden Hour ✨
         </div>
       )}
-      {isDayComplete && (
-        <div className="absolute top-2 right-2 bg-purple-500 text-white px-2 py-1 text-xs rounded-full font-medium z-50">
-          Day Complete 🌙
-        </div>
-      )}
       
       <div className="flex flex-col items-center justify-between h-full w-full max-w-full">
         
         {/* Dynamic Content Section - Golden Hour Timer/Day Complete Only */}
-        <div className="h-[50px] flex flex-col justify-center items-center relative">
+        <div className="h-[40px] flex flex-col justify-center items-center relative">
           
           {/* Golden Hour Timer */}
           <div className={`absolute inset-0 flex flex-col justify-center items-center transition-all duration-700 ${
-            isGoldenHour && !isDayComplete ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+            isGoldenHour ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
           }`} style={{
             transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
           }}>
@@ -379,39 +370,18 @@ export default function DaylightArcCard() {
               Golden Hour
             </div>
           </div>
-
-          {/* Day Complete State */}
-          <div className={`absolute inset-0 flex flex-col justify-center items-center transition-all duration-1000 ${
-            isDayComplete ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
-          }`} style={{
-            transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-          }}>
-            <div 
-              className="text-2xl font-semibold text-white tracking-tight leading-none animate-pulse"
-              style={{
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-                fontWeight: 600,
-                filter: 'drop-shadow(0 0 12px rgba(147, 51, 234, 0.6))',
-                textShadow: '0 0 25px rgba(147, 51, 234, 0.4), 0 0 40px rgba(147, 51, 234, 0.2)',
-                animationDuration: '3s'
-              }}
-            >
-              Day Complete
-            </div>
-
-          </div>
         </div>
 
         {/* Arc Section - Transforms based on state */}
-        <div className={`h-[100px] relative w-full max-w-[180px] transition-all duration-700 ${
-          isGoldenHour ? 'opacity-30 scale-95' : isDayComplete ? 'opacity-20 scale-90' : 'opacity-100 scale-100'
+        <div className={`h-[90px] relative w-full max-w-[180px] transition-all duration-700 ${
+          isGoldenHour ? 'opacity-30 scale-95' : 'opacity-100 scale-100'
         }`} style={{
           transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
         }}>
           <svg
             width="100%"
-            height="100"
-            viewBox="0 0 180 100"
+            height="90"
+            viewBox="0 0 180 90"
             className="absolute inset-0 overflow-visible"
             preserveAspectRatio="xMidYMid meet"
           >
@@ -442,7 +412,7 @@ export default function DaylightArcCard() {
             <path
               d={`M 25 80 A 65 65 0 0 1 155 80`}
               fill="none"
-              stroke={isDayComplete ? "rgba(147, 51, 234, 0.12)" : "url(#backgroundGradient)"}
+              stroke="url(#backgroundGradient)"
               strokeWidth="2"
               strokeLinecap="round"
               style={{ 
@@ -454,7 +424,7 @@ export default function DaylightArcCard() {
             <path
               d={`M 25 80 A 65 65 0 0 1 155 80`}
               fill="none"
-              stroke={isDayComplete ? "rgba(147, 51, 234, 0.25)" : "url(#progressGradient)"}
+              stroke="url(#progressGradient)"
               strokeWidth="2"
               strokeLinecap="round"
               strokeDasharray={Math.PI * 65}
@@ -477,17 +447,15 @@ export default function DaylightArcCard() {
               style={{ filter: 'drop-shadow(0 0 4px rgba(255, 200, 50, 0.3))' }} 
             />
             
-            {/* Enhanced Sunset Icon - Moon when day complete */}
+            {/* Enhanced Sunset Icon */}
             <circle 
               cx="155" 
               cy="80" 
               r="3" 
-              fill={isDayComplete ? "rgba(147, 51, 234, 0.8)" : "rgba(200, 200, 255, 0.7)"}
+              fill="rgba(200, 200, 255, 0.7)"
               style={{ 
                 transition: 'fill 1s ease-out',
-                filter: isDayComplete 
-                  ? `drop-shadow(0 0 8px rgba(147, 51, 234, 0.6)) drop-shadow(0 1px 2px rgba(0,0,0,0.2))` 
-                  : `drop-shadow(0 0 6px rgba(200, 200, 255, 0.5)) drop-shadow(0 1px 2px rgba(0,0,0,0.2))`
+                filter: `drop-shadow(0 0 6px rgba(200, 200, 255, 0.5)) drop-shadow(0 1px 2px rgba(0,0,0,0.2))`
               }}
             />
             <circle 
@@ -495,7 +463,7 @@ export default function DaylightArcCard() {
               cy="80" 
               r="5" 
               fill="none" 
-              stroke={isDayComplete ? "rgba(147, 51, 234, 0.5)" : "rgba(200, 200, 255, 0.4)"} 
+              stroke="rgba(200, 200, 255, 0.4)" 
               strokeWidth="2"
               style={{ 
                 transition: 'stroke 1s ease-out',
@@ -503,23 +471,14 @@ export default function DaylightArcCard() {
               }}
             />
             
-            {/* Add stars when day is complete */}
-            {isDayComplete && (
-              <g className="animate-pulse" style={{ animationDuration: '4s' }}>
-                <circle cx="60" cy="30" r="1" fill="rgba(255, 255, 255, 0.8)" />
-                <circle cx="140" cy="25" r="1" fill="rgba(255, 255, 255, 0.6)" />
-                <circle cx="100" cy="20" r="1.5" fill="rgba(255, 255, 255, 0.9)" />
-                <circle cx="80" cy="35" r="0.8" fill="rgba(255, 255, 255, 0.7)" />
-                <circle cx="120" cy="40" r="1" fill="rgba(255, 255, 255, 0.5)" />
-              </g>
-            )}
+            {/* Add stars when day is complete - removed */}
           </svg>
           
           {/* Sun Marker - Enhanced with more subtle glow and shadow */}
           <svg
             width="100%"
-            height="100"
-            viewBox="0 0 180 100"
+            height="90"
+            viewBox="0 0 180 90"
             className="absolute inset-0 pointer-events-none z-10 overflow-visible"
             preserveAspectRatio="xMidYMid meet"
           >
@@ -568,7 +527,7 @@ export default function DaylightArcCard() {
 
         {/* Labels Section - Enhanced Typography */}
         <div className={`h-[50px] w-full flex justify-center items-center transition-all duration-700 ${
-          isGoldenHour ? 'opacity-30 scale-95' : isDayComplete ? 'opacity-40 scale-95' : 'opacity-100 scale-100'
+          isGoldenHour ? 'opacity-30 scale-95' : 'opacity-100 scale-100'
         }`} style={{
           transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
         }}>
@@ -585,7 +544,7 @@ export default function DaylightArcCard() {
                     textShadow: '0 1px 2px rgba(0,0,0,0.4)'
                   }}
                 >
-                  {isDayComplete ? 'Yesterday' : 'Sunrise'}
+                  'Sunrise'
                 </div>
                 <div 
                   className="text-sm font-semibold text-white"
@@ -611,7 +570,7 @@ export default function DaylightArcCard() {
                     textShadow: '0 1px 2px rgba(0,0,0,0.4)'
                   }}
                 >
-                  {isDayComplete ? 'Rest Time' : 'Sunset'}
+                  'Sunset'
                 </div>
                 <div 
                   className="text-sm font-semibold text-white"
@@ -622,10 +581,7 @@ export default function DaylightArcCard() {
                     fontFeatureSettings: '"tnum"'
                   }}
                 >
-                  {isDayComplete 
-                    ? currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    : (loading ? '...' : formatTime(sunset[0], sunset[1]))
-                  }
+                  {loading ? '...' : formatTime(sunset[0], sunset[1])}
                 </div>
               </div>
             </div>

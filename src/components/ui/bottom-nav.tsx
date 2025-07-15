@@ -84,22 +84,28 @@ const BottomNav = React.forwardRef<
       className={cn(
         // Clean, iOS-native positioning with iPhone-specific safe area
         "fixed left-0 right-0 z-[1000]",
-        // iPhone-specific bottom positioning - higher up for home indicator
+        // iPhone-specific bottom positioning - optimized for newer models
         "bottom-[env(safe-area-inset-bottom)] sm:bottom-0", 
-        // Proper iOS heights with safe area
-        "h-20 sm:h-16",
+        // Enhanced iOS heights with safe area
+        "h-[66px] sm:h-16",
         // Enhanced padding for iPhone safe area
-        "pb-[calc(env(safe-area-inset-bottom)+8px)] sm:pb-safe-bottom",
-        // Simplified iOS glass morphism
-        "bg-black/80 backdrop-blur-xl border-t border-white/10",
+        "pb-[calc(env(safe-area-inset-bottom)+10px)] sm:pb-safe-bottom",
+        // Enhanced iOS glass morphism with modern blur
+        "bg-black/88 backdrop-blur-[24px] border-t border-white/15",
         // Smooth entrance animation
         "animate-in slide-in-from-bottom-2 duration-300",
         className
       )}
       style={{
-        // Native iOS blur effect
-        backdropFilter: "blur(20px) saturate(180%)",
-        WebkitBackdropFilter: "blur(20px) saturate(180%)",
+        // Enhanced iOS 17+ blur effect with saturation and brightness
+        backdropFilter: "blur(24px) saturate(200%) brightness(110%)",
+        WebkitBackdropFilter: "blur(24px) saturate(200%) brightness(110%)",
+        // Enhanced shadow depth for modern iOS look
+        boxShadow: `
+          0 -1px 0 rgba(255, 255, 255, 0.1) inset,
+          0 -8px 32px rgba(0, 0, 0, 0.4),
+          0 -2px 8px rgba(0, 0, 0, 0.2)
+        `,
         // iPhone-specific bottom positioning for home indicator
         bottom: "calc(env(safe-area-inset-bottom, 34px) + 16px)",
         ...({} as React.CSSProperties),
@@ -133,13 +139,13 @@ const BottomNavContent = React.forwardRef<
 BottomNavContent.displayName = "BottomNavContent";
 
 const bottomNavItemVariants = cva(
-  // Base styles with iOS-native touch targets and animations
-  "flex flex-col items-center justify-center gap-1 px-3 py-2 min-h-[44px] min-w-[60px] transition-all duration-200 ease-out outline-none focus-visible:ring-0 disabled:pointer-events-none disabled:opacity-50 rounded-lg relative group",
+  // Enhanced base styles with iOS 17+ touch targets and animations
+  "flex flex-col items-center justify-center gap-1 px-3 py-3 min-h-[48px] min-w-[64px] transition-all duration-200 ease-out outline-none focus-visible:ring-0 disabled:pointer-events-none disabled:opacity-50 rounded-lg relative group",
   {
     variants: {
       variant: {
-        default: "text-white/60 hover:text-white/80",
-        active: "text-white scale-105",
+        default: "text-white/60 hover:text-white/85",
+        active: "text-[#0A84FF] scale-105",
       },
       size: {
         default: "gap-1",
@@ -189,8 +195,8 @@ const BottomNavItem = React.forwardRef<
     const activeVariant = isActive ? "active" : variant;
 
     const handleClick = (e: React.MouseEvent) => {
-      // iOS-style haptic feedback
-      haptic.selection();
+      // Enhanced iOS-style haptic feedback
+      haptic.light();
       
       // If we have an href and it's not asChild, use router navigation for better performance
       if (href && !asChild) {
@@ -208,7 +214,7 @@ const BottomNavItem = React.forwardRef<
             "relative flex items-center justify-center transition-transform duration-200 ease-out",
             isActive && "scale-110"
           )}>
-            <div className="[&>svg]:size-[24px] [&>svg]:shrink-0 [&>svg]:stroke-[1.5px] transition-transform duration-150 ease-out group-active:scale-95">
+            <div className="[&>svg]:size-[26px] [&>svg]:shrink-0 [&>svg]:stroke-[1.75px] transition-transform duration-150 ease-out group-active:scale-95">
               {icon}
             </div>
             {/* iOS-native notification badge */}

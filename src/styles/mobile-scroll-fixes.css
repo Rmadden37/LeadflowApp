@@ -9,7 +9,7 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   
-  /* Container sizing for proper scroll behavior */
+  /* Container sizing for proper scroll behavior - adjusted for reduced nav height */
   height: calc(100vh - var(--header-height, 4rem) - var(--bottom-nav-height, 4rem));
   max-height: calc(100vh - var(--header-height, 4rem) - var(--bottom-nav-height, 4rem));
   
@@ -26,7 +26,7 @@
   /* Prevent overscroll bounce interfering with gestures */
   overscroll-behavior: contain;
   
-  /* Safe area handling */
+  /* Safe area handling - adjusted for reduced nav */
   padding-top: env(safe-area-inset-top, 0);
   padding-bottom: calc(env(safe-area-inset-bottom, 0) + 4rem);
 }
@@ -51,7 +51,7 @@
 /* Mobile-specific scroll optimizations */
 @media (max-width: 768px) {
   .native-scroll-container {
-    /* Optimize for mobile viewports */
+    /* Optimize for mobile viewports - adjusted for reduced nav height */
     height: calc(100vh - 4rem - 4rem - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
     max-height: calc(100vh - 4rem - 4rem - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
     

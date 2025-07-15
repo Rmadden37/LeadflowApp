@@ -148,16 +148,21 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     };
 
     // Copy error details to clipboard for easy reporting
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(JSON.stringify(errorDetails, null, 2))
-        .then(() => {
-          console.log('✅ Error details copied to clipboard');
-          alert('Error details copied to clipboard. Please send this to support.');
-        })
-        .catch(() => {
-          console.log('❌ Failed to copy error details');
-          alert(`Error ID: ${this.state.errorId}\nPlease report this to support.`);
-        });
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        navigator.clipboard.writeText(JSON.stringify(errorDetails, null, 2))
+          .then(() => {
+            console.log('✅ Error details copied to clipboard');
+            alert('Error details copied to clipboard. Please send this to support.');
+          })
+          .catch(() => {
+            console.log('❌ Failed to copy error details');
+            alert(`Error ID: ${this.state.errorId}\nPlease report this to support.`);
+          });
+      } catch (clipboardError) {
+        console.log('❌ Clipboard API not available or blocked');
+        alert(`Error ID: ${this.state.errorId}\nPlease report this to support.`);
+      }
     } else {
       alert(`Error ID: ${this.state.errorId}\nPlease report this to support.`);
     }

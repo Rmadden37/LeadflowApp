@@ -12,10 +12,10 @@ export default function AetherHeader() {
         {/* Create Lead Button */}
         <Link href="/dashboard/create-lead">
           <button 
-            className="w-10 h-10 rounded-full frosted-glass-card flex items-center justify-center hover:scale-105 transition-transform duration-200 hover:bg-white/5"
+            className="w-12 h-12 rounded-full frosted-glass-card flex items-center justify-center hover:scale-105 transition-transform duration-200 hover:bg-white/5"
             aria-label="Create New Lead"
           >
-            <Plus className="w-5 h-5 text-[var(--text-primary)]" />
+            <Plus className="w-6 h-6 text-[var(--text-primary)]" />
           </button>
         </Link>
       </div>
