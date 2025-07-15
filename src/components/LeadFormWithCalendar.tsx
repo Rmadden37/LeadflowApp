@@ -29,7 +29,7 @@ const LeadFormWithCalendar: React.FC<LeadFormWithCalendarProps> = ({ scheduledLe
   return (
     <Dialog open>
       <DialogContent
-        className="fixed inset-0 flex items-center justify-center bg-white z-50 p-0 overflow-y-auto"
+        className="fixed inset-0 flex items-center justify-center lead-form-calendar-content z-50 p-0 overflow-y-auto"
         style={{ height: 'calc(var(--vh, 1vh) * 100)', maxHeight: '100dvh' }}
       >
         <DialogTitle>
@@ -48,10 +48,10 @@ const LeadFormWithCalendar: React.FC<LeadFormWithCalendarProps> = ({ scheduledLe
             <input
               type="text"
               placeholder="Lead Name"
-              className="block w-full border rounded p-2 text-base mobile:text-sm mobile:p-2"
+              className="block w-full border rounded p-2 text-base mobile:text-sm mobile:p-2 form-input-fix"
               autoComplete="off"
             />
-            <button type="submit" className="w-full bg-blue-600 text-white rounded p-2 font-semibold text-base mobile:text-sm">Create Lead</button>
+            <button type="submit" className="w-full rounded p-2 font-semibold text-base mobile:text-sm form-button-primary">Create Lead</button>
           </form>
           {/* Scheduled leads for selected date */}
           <div className="w-full mt-4">

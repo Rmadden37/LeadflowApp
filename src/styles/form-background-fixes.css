@@ -1,0 +1,255 @@
+/**
+ * Form Background Transparency Fixes
+ * Addresses bleeding/transparent backgrounds in forms and calendars
+ * Maintains iOS glassmorphism aesthetic while ensuring proper visibility
+ */
+
+/* ===================================================================
+   SIGNUP FORM BACKGROUND FIXES
+   =================================================================== */
+
+/* Signup form card - ensure proper background */
+.signup-form-card {
+  background: rgba(30, 30, 30, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+}
+
+/* ===================================================================
+   CREATE LEAD FORM BACKGROUND FIXES
+   =================================================================== */
+
+/* Pure form container - fix transparency bleeding */
+.pure-form-container {
+  background: rgba(30, 30, 30, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 20px !important;
+  padding: 24px !important;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+}
+
+/* Pure form fields - ensure backgrounds are not completely transparent */
+.pure-field {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+/* Pure input backgrounds */
+.pure-input {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.pure-input:focus {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: #007AFF !important;
+}
+
+/* Radio and checkbox groups */
+.pure-radio-group,
+.pure-checkbox-group {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Scheduled section */
+.pure-scheduled-section {
+  background: rgba(0, 122, 255, 0.08) !important;
+  border: 1px solid rgba(0, 122, 255, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+/* ===================================================================
+   CALENDAR COMPONENT BACKGROUND FIXES
+   =================================================================== */
+
+/* React DatePicker calendar */
+.react-datepicker {
+  background: rgba(30, 30, 30, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 16px !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+}
+
+.react-datepicker__header {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.react-datepicker__day {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.react-datepicker__day:hover {
+  background: rgba(0, 122, 255, 0.2) !important;
+}
+
+.react-datepicker__day--selected {
+  background: #007AFF !important;
+  color: white !important;
+}
+
+/* LeadFormWithCalendar dialog content */
+.lead-form-calendar-content {
+  background: rgba(30, 30, 30, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Scheduled leads calendar */
+.scheduled-leads-calendar {
+  background: rgba(30, 30, 30, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+/* Calendar popover content */
+.calendar-popover-content {
+  background: rgba(30, 30, 30, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+}
+
+/* ===================================================================
+   MODAL DIALOG BACKGROUND FIXES
+   =================================================================== */
+
+/* Ensure all modals have proper backgrounds */
+.modal-background-fix {
+  background: rgba(30, 30, 30, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Form inputs within modals */
+.modal-background-fix input,
+.modal-background-fix textarea,
+.modal-background-fix select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.modal-background-fix input:focus,
+.modal-background-fix textarea:focus,
+.modal-background-fix select:focus {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: #007AFF !important;
+}
+
+/* ===================================================================
+   FORM LABEL AND TEXT FIXES
+   =================================================================== */
+
+/* Ensure form labels are visible */
+.form-label-fix,
+.pure-label {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500 !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+/* Form descriptions and helper text */
+.form-description-fix {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Error messages */
+.form-error-fix {
+  color: #FF3B30 !important;
+  background: rgba(255, 59, 48, 0.1) !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 59, 48, 0.2) !important;
+}
+
+/* ===================================================================
+   RESPONSIVE FIXES
+   =================================================================== */
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .pure-form-container {
+    margin: 16px !important;
+    padding: 20px !important;
+  }
+  
+  .signup-form-card {
+    margin: 16px !important;
+  }
+  
+  .react-datepicker {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+/* iPad specific fixes */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .pure-form-container,
+  .signup-form-card {
+    max-width: 500px !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* ===================================================================
+   PLACEHOLDER TEXT FIXES
+   =================================================================== */
+
+/* Ensure placeholder text is visible but not too prominent */
+.form-input-fix::placeholder,
+.pure-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ===================================================================
+   BUTTON BACKGROUND FIXES
+   =================================================================== */
+
+/* Primary buttons in forms */
+.form-button-primary {
+  background: linear-gradient(135deg, #1A8CFF 0%, #007AFF 100%) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 
+    0 4px 16px rgba(0, 122, 255, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+}
+
+/* Secondary buttons in forms */
+.form-button-secondary {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.form-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}

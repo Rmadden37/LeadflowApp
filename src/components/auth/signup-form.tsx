@@ -164,10 +164,10 @@ export default function SignupForm() {
   }
 
   return (
-    <Card className="w-full max-w-lg shadow-xl">
+    <Card className="w-full max-w-lg shadow-xl signup-form-card">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Create Account</CardTitle>
-        <CardDescription>Join LeadFlow and start managing your leads effectively.</CardDescription>
+        <CardTitle className="font-headline text-2xl form-label-fix">Create Account</CardTitle>
+        <CardDescription className="form-description-fix">Join LeadFlow and start managing your leads effectively.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -178,11 +178,11 @@ export default function SignupForm() {
               name="fullName"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel className="form-label-fix">Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder="John Doe" className="form-input-fix" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="form-error-fix" />
                 </FormItem>
               )}
             />
@@ -192,11 +192,11 @@ export default function SignupForm() {
               name="email"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Email Address</FormLabel>
+                  <FormLabel className="form-label-fix">Email Address</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="you@example.com" {...field} />
+                    <Input type="email" placeholder="you@example.com" className="form-input-fix" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="form-error-fix" />
                 </FormItem>
               )}
             />
@@ -206,11 +206,11 @@ export default function SignupForm() {
               name="phoneNumber"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
+                  <FormLabel className="form-label-fix">Phone Number</FormLabel>
                   <FormControl>
-                    <Input type="tel" placeholder="(555) 123-4567" {...field} />
+                    <Input type="tel" placeholder="(555) 123-4567" className="form-input-fix" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="form-error-fix" />
                 </FormItem>
               )}
             />
@@ -220,36 +220,36 @@ export default function SignupForm() {
               name="password"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="form-label-fix">Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder="••••••••" className="form-input-fix" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="form-error-fix" />
                 </FormItem>
               )}
             />
 
             {/* Organization Information */}
             <div className="pt-4 border-t">
-              <h3 className="text-sm font-medium text-muted-foreground mb-4">Organization Details</h3>
+              <h3 className="text-sm font-medium form-label-fix mb-4">Organization Details</h3>
               
               <FormField
                 control={form.control}
                 name="company"
                 render={({field}) => (
                   <FormItem>
-                    <FormLabel>Company</FormLabel>
+                    <FormLabel className="form-label-fix">Company</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="form-input-fix">
                           <SelectValue placeholder="Select a company" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="modal-background-fix">
                         <SelectItem value="freedom-pros">Freedom Pros</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage className="form-error-fix" />
                   </FormItem>
                 )}
               />
@@ -259,18 +259,18 @@ export default function SignupForm() {
                 name="region"
                 render={({field}) => (
                   <FormItem>
-                    <FormLabel>Region</FormLabel>
+                    <FormLabel className="form-label-fix">Region</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="form-input-fix">
                           <SelectValue placeholder="Select a region" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="modal-background-fix">
                         <SelectItem value="empire">Empire</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage className="form-error-fix" />
                   </FormItem>
                 )}
               />
@@ -280,20 +280,20 @@ export default function SignupForm() {
                 name="team"
                 render={({field}) => (
                   <FormItem>
-                    <FormLabel>Team</FormLabel>
+                    <FormLabel className="form-label-fix">Team</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="form-input-fix">
                           <SelectValue placeholder="Select a team" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="modal-background-fix">
                         <SelectItem value="empire">Empire</SelectItem>
                         <SelectItem value="takeover-pros">Takeover Pros</SelectItem>
                         <SelectItem value="revolution">Revolution</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage className="form-error-fix" />
                   </FormItem>
                 )}
               />
@@ -301,7 +301,7 @@ export default function SignupForm() {
 
             <Button 
               type="submit" 
-              className="w-full mt-6" 
+              className="w-full mt-6 form-button-primary" 
               disabled={isLoading}
               hapticFeedback="heavy"
               ios={true}

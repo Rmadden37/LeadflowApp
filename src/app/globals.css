@@ -7,6 +7,9 @@
 /* Custom iPad modal positioning fixes */
 @import '../styles/ipad-modal-fixes.css';
 
+/* Form background transparency fixes */
+@import '../styles/form-background-fixes.css';
+
 /* COMPREHENSIVE RESET - FIX HARD LINES BY REMOVING ALL GAPS */
 * {
   margin: 0;

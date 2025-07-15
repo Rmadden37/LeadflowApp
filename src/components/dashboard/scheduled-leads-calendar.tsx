@@ -73,7 +73,7 @@ export default function ScheduledLeadsCalendar({ scheduledLeads, loading, isExpa
                   {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 calendar-popover-content" align="start">
                 <CalendarComponent
                   mode="single"
                   selected={selectedDate}
