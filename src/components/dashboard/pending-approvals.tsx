@@ -111,6 +111,7 @@ export default function PendingApprovals() {
       batch.update(userRef, {
         role: "setter", // Default role for new users
         status: "active",
+        teamId: approval.teamId, // CRITICAL FIX: Preserve the teamId from signup
         approvedBy: managerUser.uid,
         approvedAt: serverTimestamp(),
         updatedAt: serverTimestamp()

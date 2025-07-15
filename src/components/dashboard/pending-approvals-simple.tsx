@@ -137,6 +137,7 @@ function PendingApprovalsSimple() {
       batch.update(userRef, {
         role: selectedRole,
         status: "active",
+        teamId: approval.teamId, // CRITICAL FIX: Preserve the teamId from signup
         approvedBy: managerUser.uid,
         approvedAt: serverTimestamp(),
         updatedAt: serverTimestamp()
