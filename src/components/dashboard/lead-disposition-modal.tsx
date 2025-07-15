@@ -286,10 +286,12 @@ const LeadDispositionModal: React.FC<LeadDispositionModalProps> = ({lead, isOpen
       <DialogContent className={cn(
         // 🌟 PREMIUM iOS MODAL STYLING - Solid, Non-Transparent
         "manager-disposition-modal sm:max-w-md max-w-[95vw]",
-        // 📱 MOBILE POSITIONING FIX - Better viewport handling
-        "max-h-[80vh] sm:max-h-[90vh] overflow-y-auto",
-        // 🎯 MOBILE CENTER POSITIONING - Account for bottom nav and smaller screens
-        "fixed inset-x-4 top-[10%] sm:top-[50%] sm:left-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%]",
+        // 📱 IMPROVED VIEWPORT HANDLING - Better support for iPad and mobile
+        "max-h-[85vh] md:max-h-[90vh] overflow-y-auto",
+        // 🎯 ENHANCED POSITIONING - Optimized for iPad/tablet devices
+        "fixed inset-x-4 top-[8%] md:top-[50%] md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%]",
+        // 🔧 Safe area accounting for mobile devices with increased nav height
+        "bottom-auto",
         "bg-white dark:bg-gray-900 border-0",
         "shadow-2xl shadow-black/50",
         "rounded-3xl p-0",

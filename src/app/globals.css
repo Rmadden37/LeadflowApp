@@ -4,6 +4,9 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+/* Custom iPad modal positioning fixes */
+@import '../styles/ipad-modal-fixes.css';
+
 /* COMPREHENSIVE RESET - FIX HARD LINES BY REMOVING ALL GAPS */
 * {
   margin: 0;

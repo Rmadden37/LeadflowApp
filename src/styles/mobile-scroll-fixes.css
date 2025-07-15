@@ -9,9 +9,9 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   
-  /* Container sizing for proper scroll behavior - adjusted for reduced nav height */
-  height: calc(100vh - var(--header-height, 4rem) - var(--bottom-nav-height, 4rem));
-  max-height: calc(100vh - var(--header-height, 4rem) - var(--bottom-nav-height, 4rem));
+  /* Container sizing for proper scroll behavior - adjusted for increased nav height */
+  height: calc(100vh - var(--header-height, 4rem) - var(--bottom-nav-height, 4.3rem));
+  max-height: calc(100vh - var(--header-height, 4rem) - var(--bottom-nav-height, 4.3rem));
   
   /* Prevent horizontal scrolling */
   overflow-x: hidden;
@@ -26,9 +26,9 @@
   /* Prevent overscroll bounce interfering with gestures */
   overscroll-behavior: contain;
   
-  /* Safe area handling - adjusted for reduced nav */
+  /* Safe area handling - adjusted for increased nav */
   padding-top: env(safe-area-inset-top, 0);
-  padding-bottom: calc(env(safe-area-inset-bottom, 0) + 4rem);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0) + 4.3rem);
 }
 
 /* iOS-specific optimizations */
@@ -89,7 +89,7 @@
 /* Dashboard content spacing adjustments */
 .dashboard-safe-content {
   /* Ensure content doesn't overlap with fixed navigation */
-  padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0));
+  padding-bottom: calc(4.3rem + env(safe-area-inset-bottom, 0));
 }
 
 /* Remove conflicting scroll behaviors */
