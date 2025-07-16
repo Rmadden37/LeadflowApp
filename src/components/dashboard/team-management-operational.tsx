@@ -9,6 +9,7 @@ import {Button} from "@/components/ui/button";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {SimpleAvatar} from "@/components/ui/simple-avatar";
 import {Switch} from "@/components/ui/switch";
+import {IOSToggle} from "@/components/ui/ios-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -262,15 +263,27 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
     const isToggling = togglingUsers.has(user.uid);
     
     return (
-      <div key={user.uid} className="frosted-glass-card p-4">
+      <div key={user.uid} className={`frosted-glass-card p-4 transition-all duration-200 hover:bg-white/[0.02] ${
+        showToggle && closerStatus === "On Duty" ? 'ring-1 ring-green-500/20' : ''
+      }`}>
         <div className="flex items-center gap-4">
-          {/* Avatar */}
-          <SimpleAvatar 
-            className="ring-2 ring-[var(--glass-border)] hover:ring-[var(--accent-primary)] transition-all duration-200"
-            onClick={() => setSelectedUserForProfile(user)}
-            user={user}
-            size="md"
-          />
+          {/* Avatar with enhanced styling */}
+          <div className="relative">
+            <SimpleAvatar 
+              className={`ring-2 transition-all duration-200 hover:ring-[var(--accent-primary)] cursor-pointer ${
+                showToggle && closerStatus === "On Duty" 
+                  ? 'ring-green-500/30 hover:ring-green-400' 
+                  : 'ring-[var(--glass-border)]'
+              }`}
+              onClick={() => setSelectedUserForProfile(user)}
+              user={user}
+              size="md"
+            />
+            {/* Status indicator overlay for active closers */}
+            {showToggle && closerStatus === "On Duty" && (
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-[var(--background)] animate-pulse shadow-sm shadow-green-400/50" />
+            )}
+          </div>
 
           {/* User Info */}
           <div className="flex-1 min-w-0">
@@ -292,72 +305,69 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
                 <RoleIcon className="mr-1 h-3 w-3" />
                 {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
               </span>
-              
-              {showToggle && (
-                <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${
-                  closerStatus === "On Duty" 
-                    ? "bg-green-500/10 text-green-400 border border-green-500/20" 
-                    : "bg-gray-500/10 text-gray-400 border border-gray-500/20"
-                }`}>
-                  {closerStatus === "On Duty" ? (
-                    <>
-                      <Eye className="mr-1 h-3 w-3" />
-                      Active
-                    </>
-                  ) : (
-                    <>
-                      <EyeOff className="mr-1 h-3 w-3" />
-                      Inactive
-                    </>
-                  )}
-                </span>
-              )}
             </div>
           </div>
 
-          {/* Toggle Switch for Closers */}
+          {/* iOS-Style Toggle Switch for Closers */}
           {showToggle && (
             <div className="flex items-center gap-3">
-              <div className="flex flex-col items-center gap-1">
-                <label className="text-xs font-medium text-[var(--text-secondary)]">
-                  Lineup
-                </label>
-                <Switch
-                  checked={closerStatus === "On Duty"}
-                  onCheckedChange={() => handleToggleCloserStatus(user)}
-                  disabled={isToggling}
-                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-500"
-                />
+              {/* Status Label */}
+              <div className="text-right">
+                <div className={`text-xs font-semibold transition-colors duration-200 ${
+                  closerStatus === "On Duty" 
+                    ? "text-green-400" 
+                    : "text-gray-400"
+                }`}>
+                  {closerStatus === "On Duty" ? "In Lineup" : "Off Duty"}
+                </div>
               </div>
               
-              {isToggling && (
-                <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-light)]" />
-              )}
+              {/* Custom iOS Toggle Switch */}
+              <div className="relative">
+                <IOSToggle
+                  checked={closerStatus === "On Duty"}
+                  onChange={() => handleToggleCloserStatus(user)}
+                  disabled={isToggling}
+                  className="focus:ring-green-500/30"
+                />
+                
+                {/* Loading overlay */}
+                {isToggling && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full">
+                    <Loader2 className="h-3 w-3 animate-spin text-white" />
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
-          {/* Action Menu */}
+          {/* Enhanced Action Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="bg-white/10 border border-[var(--glass-border)] text-[var(--text-primary)] hover:bg-white/20"
+                className={`
+                  bg-white/10 border border-[var(--glass-border)] text-[var(--text-primary)] 
+                  hover:bg-white/20 hover:border-[var(--accent-primary)]/30
+                  transition-all duration-200 hover:scale-105 active:scale-95
+                  shadow-sm hover:shadow-md
+                `}
               >
                 <UserCog className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-[var(--background)]/95 backdrop-blur-lg border border-[var(--glass-border)]">
+            <DropdownMenuContent align="end" className="bg-[var(--background)]/95 backdrop-blur-lg border border-[var(--glass-border)] shadow-xl">
               <DropdownMenuItem 
                 onClick={() => setSelectedUserForRoleChange(user)}
-                className="text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/10"
+                className="text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/10 transition-colors duration-150"
               >
                 <UserCog className="mr-2 h-4 w-4" /> Change Role
               </DropdownMenuItem>
               {(managerUser?.role === "admin" || managerUser?.role === "manager") && user.uid !== managerUser.uid && (
                 <DropdownMenuItem 
                   onClick={() => setSelectedUserForDelete(user)}
-                  className="text-red-400 hover:bg-red-500/10"
+                  className="text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors duration-150"
                 >
                   <Trash2 className="mr-2 h-4 w-4" /> Delete User
                 </DropdownMenuItem>

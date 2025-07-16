@@ -239,7 +239,7 @@ async function getNextAvailableCloser(teamId: string): Promise<Closer | null> {
         return;
       }
       
-      availableClosers.push({ uid: doc.id, ...closerData });
+      availableClosers.push({ ...closerData, uid: doc.id });
     });
 
     functions.logger.info(`👥 Found ${availableClosers.length} on-duty closers for team ${teamId}`);

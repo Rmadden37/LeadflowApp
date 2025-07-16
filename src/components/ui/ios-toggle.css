@@ -1,0 +1,63 @@
+/* iOS Toggle Styles */
+.ios-toggle {
+  position: relative;
+  display: inline-flex;
+  width: 2.75rem; /* w-11 */
+  height: 1.5rem; /* h-6 */
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-color: rgb(75, 85, 99); /* Gray background */
+  transition: all 300ms ease-out;
+}
+
+.ios-toggle:hover {
+  transform: scale(1.05);
+}
+
+.ios-toggle:active {
+  transform: scale(0.95);
+}
+
+.ios-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ios-toggle-green-reveal {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  bottom: 4px;
+  border-radius: 9999px;
+  background-color: #10b981;
+  width: 0%;
+  opacity: 0;
+  transition: all 300ms ease-out;
+  transform-origin: left center;
+}
+
+.ios-toggle.checked .ios-toggle-green-reveal {
+  width: calc(60% - 4px);
+  opacity: 1;
+}
+
+.ios-toggle-thumb {
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  width: 1rem; /* w-4 */
+  height: 1rem; /* h-4 */
+  border-radius: 9999px;
+  background-color: #ffffff;
+  margin-top: 2px;
+  margin-left: 2px;
+  transition: all 300ms ease-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateX(0px);
+}
+
+.ios-toggle.checked .ios-toggle-thumb {
+  transform: translateX(1.25rem); /* translate-x-5 for md size */
+}
