@@ -248,17 +248,29 @@ const UpdateUserProfileModal = ({ isOpen, onClose, user }: UpdateUserProfileModa
         updatedAt: new Date()
       });
 
-      // If deactivating a closer/manager/admin, set their duty status to Off Duty
+      // If deactivating a closer/manager/admin, set their duty status to Off Duty and mark as deactivated
       const isCloserRole = ["closer", "manager", "admin"].includes(user.role);
-      if (newStatus === "deactivated" && isCloserRole) {
+      if (isCloserRole) {
         const closerDocRef = doc(db, "closers", user.uid);
-        await updateDoc(closerDocRef, {
-          status: "Off Duty",
-          deactivatedAt: new Date(),
-          updatedAt: new Date()
-        }).catch(() => {
-          // Closer record might not exist, ignore error
-        });
+        if (newStatus === "deactivated") {
+          await updateDoc(closerDocRef, {
+            status: "Off Duty",
+            deactivated: true,
+            deactivatedAt: new Date(),
+            updatedAt: new Date()
+          }).catch(() => {
+            // Closer record might not exist, ignore error
+          });
+        } else {
+          // Reactivating user - remove deactivated flag
+          await updateDoc(closerDocRef, {
+            deactivated: false,
+            reactivatedAt: new Date(),
+            updatedAt: new Date()
+          }).catch(() => {
+            // Closer record might not exist, ignore error
+          });
+        }
       }
 
       toast({

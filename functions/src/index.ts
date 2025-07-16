@@ -198,6 +198,7 @@ interface Closer {
   avatarUrl?: string;
   phone?: string;
   lineupOrder?: number;
+  deactivated?: boolean;
   lastExceptionTimestamp?: admin.firestore.Timestamp;
   lastExceptionReason?: string;
   normalizedAt?: admin.firestore.Timestamp;
@@ -230,7 +231,15 @@ async function getNextAvailableCloser(teamId: string): Promise<Closer | null> {
 
     const availableClosers: Closer[] = [];
     closersSnapshot.forEach((doc) => {
-      availableClosers.push({ uid: doc.id, ...doc.data() } as Closer);
+      const closerData = doc.data() as Closer;
+      
+      // Skip deactivated users
+      if (closerData.deactivated === true) {
+        functions.logger.info(`⏭️ Skipping deactivated closer ${closerData.name}`);
+        return;
+      }
+      
+      availableClosers.push({ uid: doc.id, ...closerData });
     });
 
     functions.logger.info(`👥 Found ${availableClosers.length} on-duty closers for team ${teamId}`);

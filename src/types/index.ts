@@ -63,6 +63,7 @@ export interface Closer {
   avatarUrl?: string;
   phone?: string;
   lineupOrder?: number; // Field for managing closer lineup order
+  deactivated?: boolean; // Whether the user account is deactivated
   lastExceptionTimestamp?: Timestamp; // Timestamp of last exception (canceled/rescheduled lead)
   lastExceptionReason?: string; // Reason for last exception ("canceled" or "rescheduled")
   normalizedAt?: Timestamp; // Timestamp when lineup order was last normalized
