@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import TeamMembersDropdown from "@/components/dashboard/team-members-dropdown";
 import TeamManagementOperational from "@/components/dashboard/team-management-operational";
-import PendingApprovalsModal from "@/components/dashboard/pending-approvals-modal";
+import PendingApprovalsSimpleModal from "@/components/dashboard/pending-approvals-simple-modal";
 
 interface Team {
   id: string;
@@ -126,7 +126,7 @@ export default function ManageTeamsPage() {
             </div>
             
             {/* Single Pending Approvals - Always Top Right */}
-            <PendingApprovalsModal 
+            <PendingApprovalsSimpleModal 
               triggerClassName="bg-gradient-to-r from-orange-500/20 to-amber-600/20 border border-orange-500/30 text-orange-300 hover:bg-orange-500/30 hover:text-orange-200 backdrop-blur-sm transition-all duration-200"
               triggerVariant="outline"
               triggerSize="sm"
@@ -196,7 +196,7 @@ export default function ManageTeamsPage() {
               <>
                 {/* Pending Approvals for Non-Admins */}
                 <div className="mb-4 flex justify-end">
-                  <PendingApprovalsModal 
+                  <PendingApprovalsSimpleModal 
                     triggerClassName="bg-gradient-to-r from-orange-500/20 to-amber-600/20 border border-orange-500/30 text-orange-300 hover:bg-orange-500/30 hover:text-orange-200 backdrop-blur-sm transition-all duration-200"
                     triggerVariant="outline"
                     triggerSize="sm"

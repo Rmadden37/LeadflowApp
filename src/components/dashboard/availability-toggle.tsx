@@ -97,7 +97,7 @@ export default function AvailabilityToggle() {
         checked={isUIDuty}
         onCheckedChange={handleToggleAvailability}
         disabled={isLoading}
-        aria-label={isUIDuty ? "Set to Off Duty" : "Set to On Duty"}
+        aria-label={isUIDuty ? "Set to Self-Gen" : "Set to On Duty"}
         className={`
           data-[state=checked]:bg-[#007AFF]
           shadow-lg hover:shadow-xl transition-all duration-300
@@ -122,7 +122,7 @@ export default function AvailabilityToggle() {
           }
         `}
       >
-        {isUIDuty ? "🟢 On Duty" : "🔴 Off Duty"}
+        {isUIDuty ? "🟢 On Duty" : "🔴 Self-Gen"}
       </Label>
     </div>
   );

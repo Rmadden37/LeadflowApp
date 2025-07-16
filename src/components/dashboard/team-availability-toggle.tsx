@@ -78,7 +78,7 @@ export default function TeamAvailabilityToggle({
         checked={isOnDuty}
         onCheckedChange={handleToggleAvailability}
         disabled={isLoading || disabled}
-        aria-label={isOnDuty ? `Set ${targetUser.displayName || targetUser.email} to Off Duty` : `Set ${targetUser.displayName || targetUser.email} to On Duty`}
+        aria-label={isOnDuty ? `Set ${targetUser.displayName || targetUser.email} to Self-Gen` : `Set ${targetUser.displayName || targetUser.email} to On Duty`}
         className="scale-75"
       />
       <Label
@@ -91,7 +91,7 @@ export default function TeamAvailabilityToggle({
           <Loader2 className="h-3 w-3 animate-spin" />
         ) : (
           <>
-            {isOnDuty ? "🟢 On Duty" : "🔴 Off Duty"}
+            {isOnDuty ? "🟢 On Duty" : "🔴 Self-Gen"}
           </>
         )}
       </Label>

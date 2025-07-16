@@ -142,6 +142,12 @@ service cloud.firestore {
          // Closers can only update their own status and basic info
          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
            'status', 'updatedAt', 'phone', 'avatarUrl'
+         ])) ||
+        // Allow managers/admins to update lineup order for drag-and-drop reordering
+        (isManagerOrAdmin() && 
+         resource.data.teamId == getUserTeamId() &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+           'lineupOrder', 'updatedAt'
          ]))
       );
       

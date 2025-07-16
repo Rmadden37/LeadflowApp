@@ -62,6 +62,7 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
   const [selectedUserForDelete, setSelectedUserForDelete] = useState<AppUser | null>(null);
   const [selectedUserForProfile, setSelectedUserForProfile] = useState<AppUser | null>(null);
   const [settersExpanded, setSettersExpanded] = useState(false);
+  const [closersExpanded, setClosersExpanded] = useState(true); // New state for closers collapse/expand
   const [togglingUsers, setTogglingUsers] = useState<Set<string>>(new Set());
 
   // Load teams
@@ -315,7 +316,7 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
                         ? "text-green-400" 
                         : "text-gray-400"
                     }`}>
-                      {closerStatus === "On Duty" ? "In Lineup" : "Off Duty"}
+                      {closerStatus === "On Duty" ? "In Lineup" : "Self-Gen"}
                     </div>
                     
                     <div className="relative">
@@ -356,51 +357,37 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
   return (
     <>
       <div className="space-y-4">
-        {/* Active Closers Section - Optimized Layout */}
-        {activeClosers.length > 0 && (
+        {/* Closers Section (Collapsible) - Optimized Layout */}
+        {(activeClosers.length > 0 || inactiveClosers.length > 0) && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
+            <button
+              onClick={() => setClosersExpanded(!closersExpanded)}
+              className="flex items-center gap-2 w-full text-left group"
+            >
               <div className="p-1.5 rounded-lg bg-green-500/10">
                 <Eye className="h-4 w-4 text-green-400" />
               </div>
-              <div>
-                <h3 className="text-base font-semibold text-[var(--text-primary)]">
+              <div className="flex-1">
+                <h3 className="text-base font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-light)] transition-colors">
                   Closers ({activeClosers.length + inactiveClosers.length})
                 </h3>
                 <p className="text-xs text-[var(--text-secondary)]">
                   Toggle availability status
                 </p>
               </div>
-            </div>
+              {closersExpanded ? (
+                <ChevronUp className="h-4 w-4 text-[var(--text-secondary)]" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-[var(--text-secondary)]" />
+              )}
+            </button>
             
-            {/* Responsive Grid Layout for Better Space Usage */}
-            <div className="grid gap-1.5 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-              {activeClosers.map(user => renderUserCard(user, true))}
-              {inactiveClosers.map(user => renderUserCard(user, true))}
-            </div>
-          </div>
-        )}
-
-        {/* Show all closers if no active ones but there are inactive ones */}
-        {activeClosers.length === 0 && inactiveClosers.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-gray-500/10">
-                <Eye className="h-4 w-4 text-gray-400" />
+            {closersExpanded && (
+              <div className="grid gap-1.5 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+                {activeClosers.map(user => renderUserCard(user, true))}
+                {inactiveClosers.map(user => renderUserCard(user, true))}
               </div>
-              <div>
-                <h3 className="text-base font-semibold text-[var(--text-primary)]">
-                  Closers ({inactiveClosers.length})
-                </h3>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Toggle availability status
-                </p>
-              </div>
-            </div>
-            
-            <div className="grid gap-1.5 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-              {inactiveClosers.map(user => renderUserCard(user, true))}
-            </div>
+            )}
           </div>
         )}
 

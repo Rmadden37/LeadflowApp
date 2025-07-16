@@ -1,0 +1,53 @@
+#!/bin/bash
+
+echo "🔍 PENDING APPROVALS FIX VERIFICATION"
+echo "====================================="
+
+# Check if dev server is running
+if lsof -i :9003 > /dev/null 2>&1; then
+    echo "✅ Development server is running on port 9003"
+    echo "🌐 Access URL: http://localhost:9003/dashboard/manage-teams"
+else
+    echo "❌ Development server is NOT running"
+    echo "💡 Start it with: npm run dev"
+    exit 1
+fi
+
+echo ""
+echo "🧪 TESTING CHECKLIST:"
+echo "====================="
+echo ""
+echo "1. 🔐 LOGIN VERIFICATION:"
+echo "   □ Navigate to: http://localhost:9003/login"
+echo "   □ Login as Admin or Manager account"
+echo "   □ Verify you can access dashboard"
+echo ""
+echo "2. 📊 PENDING APPROVALS BUTTON:"
+echo "   □ Go to: http://localhost:9003/dashboard/manage-teams"
+echo "   □ Look for 'Pending Approvals' button in top-right"
+echo "   □ Verify button shows count: 'Pending Approvals (X)'"
+echo "   □ Button should show count immediately (not 0)"
+echo ""
+echo "3. 🎯 MODAL FUNCTIONALITY:"
+echo "   □ Click the 'Pending Approvals' button"
+echo "   □ Modal should open with glassmorphism overlay"
+echo "   □ Verify pending users are displayed (if any exist)"
+echo "   □ Test approve/reject functionality"
+echo ""
+echo "4. 🔧 BROWSER CONSOLE CHECK:"
+echo "   □ Open Developer Tools (F12)"
+echo "   □ Check Console tab for errors"
+echo "   □ Check Network tab for failed requests"
+echo ""
+echo "5. 📱 RESPONSIVE TEST:"
+echo "   □ Test on mobile screen size"
+echo "   □ Verify modal adjusts properly"
+echo "   □ Buttons remain accessible"
+echo ""
+echo "🎉 If all checks pass, the fix is working correctly!"
+echo ""
+echo "🚨 If issues persist:"
+echo "   - Check browser console for errors"
+echo "   - Verify user has admin/manager role"
+echo "   - Ensure Firestore permissions are correct"
+echo "   - Check that pending approvals exist in database"

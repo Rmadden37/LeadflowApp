@@ -86,6 +86,7 @@ function PendingApprovalsModal({
   const [processingApproval, setProcessingApproval] = useState<string | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<Record<string, string>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Available roles for assignment (filtered based on manager's role)
   const getAvailableRoles = () => {
@@ -106,7 +107,7 @@ function PendingApprovalsModal({
   };
 
   useEffect(() => {
-    if (!managerUser || !isModalOpen) return;
+    if (!managerUser) return;
 
     // For admins, show all pending approvals
     // For managers, show only approvals for their team
@@ -128,20 +129,40 @@ function PendingApprovalsModal({
     }
 
     const unsubscribe = onSnapshot(approvalsQuery, (snapshot: any) => {
-      const approvals: PendingApproval[] = [];
-      snapshot.forEach((docSnap: any) => {
-        approvals.push({ id: docSnap.id, ...docSnap.data() } as PendingApproval);
-      });
-      
-      // Sort by most recent first
-      approvals.sort((a, b) => (b.requestedAt?.seconds || 0) - (a.requestedAt?.seconds || 0));
-      
-      setPendingApprovals(approvals);
+      try {
+        const approvals: PendingApproval[] = [];
+        snapshot.forEach((docSnap: any) => {
+          const data = docSnap.data();
+          // Validate that required fields exist
+          if (data && data.userName && data.userEmail && data.teamName) {
+            approvals.push({ id: docSnap.id, ...data } as PendingApproval);
+          } else {
+            console.warn('Invalid pending approval data:', docSnap.id, data);
+          }
+        });
+        
+        // Sort by most recent first
+        approvals.sort((a, b) => (b.requestedAt?.seconds || 0) - (a.requestedAt?.seconds || 0));
+        
+        setPendingApprovals(approvals);
+        setLoading(false);
+        setDataLoaded(true);
+        
+        // Debug logging
+        console.log('Pending approvals loaded:', approvals.length, approvals);
+      } catch (error) {
+        console.error('Error processing pending approvals:', error);
+        setLoading(false);
+        setDataLoaded(true);
+      }
+    }, (error) => {
+      console.error('Error fetching pending approvals:', error);
       setLoading(false);
+      setDataLoaded(true);
     });
 
     return () => unsubscribe();
-  }, [managerUser, isModalOpen]);
+  }, [managerUser]);
 
   const handleApproveUser = async (approval: PendingApproval) => {
     if (!managerUser) return;
@@ -267,166 +288,171 @@ function PendingApprovalsModal({
           size={triggerSize}
           className={triggerClassName}
         >
-          <UserPlus className="h-4 w-4 mr-2" />
-          Pending Approvals {loading ? "" : `(${pendingApprovals.length})`}
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <UserPlus className="h-4 w-4" />
+              {!loading && pendingApprovals.length > 0 && (
+                <div className="absolute -top-2 -right-2 min-w-[18px] h-[18px] bg-red-500 rounded-full text-white text-xs font-bold flex items-center justify-center px-1 border-2 border-white shadow-sm">
+                  {pendingApprovals.length > 99 ? '99+' : pendingApprovals.length}
+                </div>
+              )}
+            </div>
+            <span className="hidden sm:inline font-medium">
+              Pending Approvals
+            </span>
+          </div>
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="max-w-4xl max-h-[90vh] bg-[var(--background)]/95 backdrop-blur-xl border-[var(--glass-border)] shadow-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 text-xl">
-            <div className="p-2 rounded-lg bg-orange-500/10">
-              <Clock className="h-5 w-5 text-orange-400" />
-            </div>
-            Pending Approvals
-          </DialogTitle>
-          <DialogDescription className="text-[var(--text-secondary)]">
-            Review and approve new user signup requests
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-md max-h-[85vh] bg-white/95 backdrop-blur-2xl border-0 shadow-2xl rounded-3xl overflow-hidden p-0">
+        {/* iOS-style header */}
+        <div className="relative bg-gradient-to-b from-white to-gray-50/80 px-6 py-6 border-b border-gray-200/30">
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-colors"
+          >
+            <XCircle className="h-5 w-5 text-gray-600" />
+          </button>
+          
+          <div className="pr-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">
+              New Requests
+            </h2>
+            <p className="text-gray-600 text-sm">
+              {loading ? "Loading..." : `${pendingApprovals.length} team member${pendingApprovals.length !== 1 ? 's' : ''} waiting for approval`}
+            </p>
+          </div>
+        </div>
 
-        <ScrollArea className="max-h-[600px] pr-4">
+        {/* Content area */}
+        <div className="bg-white">
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="flex flex-col items-center gap-3">
-                <Loader2 className="h-8 w-8 animate-spin text-[var(--accent-light)]" />
-                <p className="text-sm text-[var(--text-secondary)]">Loading pending approvals...</p>
+            <div className="flex items-center justify-center py-20">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
+                  <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                </div>
+                <p className="text-gray-600 font-medium">Loading requests...</p>
               </div>
             </div>
           ) : pendingApprovals.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <CheckCircle className="h-12 w-12 text-green-400 mb-4" />
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
-                No Pending Approvals
+            <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+              <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mb-6">
+                <CheckCircle className="h-10 w-10 text-green-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                All Set!
               </h3>
-              <p className="text-[var(--text-secondary)] text-sm">
-                All signup requests have been processed.
+              <p className="text-gray-600 text-sm leading-relaxed max-w-xs">
+                No pending approvals right now. New signup requests will appear here.
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {pendingApprovals.map((approval) => (
-                <div key={approval.id} className="frosted-glass-card border border-[var(--glass-border)]">
-                  <div className="p-6">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                      {/* User Info */}
-                      <div className="flex items-start gap-4">
-                        <Avatar className="h-12 w-12 ring-2 ring-[var(--glass-border)]">
-                          <AvatarImage src={undefined} alt={approval.userName} />
-                          <AvatarFallback className="bg-gradient-to-br from-[var(--accent-primary)]/20 to-blue-500/10 text-[var(--accent-light)] font-semibold">
-                            {approval.userName.split(' ').map(n => n[0]).join('').toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-3">
-                            <h4 className="text-lg font-semibold text-[var(--text-primary)] truncate">
-                              {approval.userName}
-                            </h4>
-                            <Badge variant="outline" className="bg-orange-500/10 text-orange-400 border-orange-500/20">
-                              <Clock className="h-3 w-3 mr-1.5" />
-                              Pending
-                            </Badge>
-                          </div>
-                          
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                            <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                              <Mail className="h-4 w-4 text-[var(--accent-light)]" />
-                              <span className="truncate">{approval.userEmail}</span>
-                            </div>
-                            
-                            {approval.userData.phoneNumber && (
-                              <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                                <Phone className="h-4 w-4 text-[var(--accent-light)]" />
-                                <span>{approval.userData.phoneNumber}</span>
-                              </div>
-                            )}
-                            
-                            <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                              <Building2 className="h-4 w-4 text-[var(--accent-light)]" />
-                              <span className="truncate">{approval.userData.company} • {approval.userData.region}</span>
-                            </div>
-                            
-                            <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                              <Users className="h-4 w-4 text-[var(--accent-light)]" />
-                              <span>Team: {approval.teamName}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="mt-3 text-xs text-[var(--text-secondary)]/70">
-                            Requested: {approval.requestedAt?.toDate?.()?.toLocaleDateString() || 'Recently'}
-                          </div>
+            <ScrollArea className="max-h-[55vh]">
+              <div className="px-6 py-4 space-y-6">
+                {pendingApprovals.map((approval) => (
+                  <div key={approval.id} className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100/50">
+                    {/* Person info */}
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="relative">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                          {approval.userName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-orange-500 rounded-full border-3 border-white flex items-center justify-center">
+                          <Clock className="h-3 w-3 text-white" />
                         </div>
                       </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex flex-col gap-4 min-w-[200px]">
-                        {/* Role Selection */}
+                      
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-bold text-gray-900 mb-1 truncate">
+                          {approval.userName}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-3 truncate">
+                          {approval.userEmail}
+                        </p>
+                        
+                        {/* Info grid */}
                         <div className="space-y-2">
-                          <label className="text-xs font-medium text-[var(--text-primary)] block">
-                            Assign Role
-                          </label>
-                          <Select
-                            value={selectedRoles[approval.id] || "setter"}
-                            onValueChange={(value: string) => 
-                              setSelectedRoles(prev => ({ ...prev, [approval.id]: value }))
-                            }
-                          >
-                            <SelectTrigger className="w-full h-9 bg-[var(--background)]/20 border-[var(--glass-border)] backdrop-blur-sm hover:bg-[var(--background)]/30 transition-colors">
-                              <SelectValue placeholder="Select role" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-[var(--background)]/95 backdrop-blur-xl border-[var(--glass-border)] shadow-2xl">
-                              {getAvailableRoles().map((role: { value: string; label: string }) => (
-                                <SelectItem 
-                                  key={role.value} 
-                                  value={role.value}
-                                  className="text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/10 focus:bg-[var(--accent-primary)]/10"
-                                >
-                                  {role.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {/* Approval Buttons */}
-                        <div className="flex flex-col gap-2">
-                          <Button
-                            onClick={() => handleRejectUser(approval)}
-                            disabled={processingApproval === approval.id}
-                            size="sm"
-                            className="w-full bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/30 backdrop-blur-sm transition-all duration-200"
-                          >
-                            {processingApproval === approval.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            ) : (
-                              <XCircle className="h-4 w-4 mr-2" />
-                            )}
-                            Reject
-                          </Button>
-                          
-                          <Button
-                            onClick={() => handleApproveUser(approval)}
-                            disabled={processingApproval === approval.id}
-                            size="sm"
-                            className="w-full bg-green-500/10 border border-green-500/20 text-green-400 hover:bg-green-500/20 hover:border-green-500/30 backdrop-blur-sm transition-all duration-200"
-                          >
-                            {processingApproval === approval.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            ) : (
-                              <UserCheck className="h-4 w-4 mr-2" />
-                            )}
-                            Approve as {selectedRoles[approval.id] || "Setter"}
-                          </Button>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-gray-500 text-sm font-medium">Company</span>
+                            <span className="text-gray-900 text-sm font-semibold">{approval.userData.company}</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-gray-500 text-sm font-medium">Team</span>
+                            <span className="text-blue-600 text-sm font-semibold">{approval.teamName}</span>
+                          </div>
+                          {approval.userData.phoneNumber && (
+                            <div className="flex justify-between items-center py-2">
+                              <span className="text-gray-500 text-sm font-medium">Phone</span>
+                              <span className="text-gray-900 text-sm">{approval.userData.phoneNumber}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Role selection */}
+                    <div className="mb-6">
+                      <label className="block text-gray-900 font-semibold text-sm mb-3">
+                        Assign Role
+                      </label>
+                      <Select
+                        value={selectedRoles[approval.id] || "setter"}
+                        onValueChange={(value: string) => 
+                          setSelectedRoles(prev => ({ ...prev, [approval.id]: value }))
+                        }
+                      >
+                        <SelectTrigger className="w-full h-14 bg-white/90 backdrop-blur-xl border border-gray-300/60 text-gray-900 rounded-xl hover:bg-white hover:border-gray-400/80 transition-all duration-200 text-base font-medium shadow-md">
+                          <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-300/60 shadow-2xl rounded-xl overflow-hidden z-50">
+                          {getAvailableRoles().map((role: { value: string; label: string }) => (
+                            <SelectItem 
+                              key={role.value} 
+                              value={role.value}
+                              className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100 rounded-lg text-base font-medium py-3 transition-colors duration-150 cursor-pointer"
+                            >
+                              {role.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Action buttons */}
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => handleApproveUser(approval)}
+                        disabled={processingApproval === approval.id}
+                        className="w-full h-14 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white rounded-xl font-bold text-base shadow-lg transition-all duration-200 hover:shadow-xl disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                      >
+                        {processingApproval === approval.id ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <UserCheck className="h-5 w-5" />
+                        )}
+                        Add to Team as {selectedRoles[approval.id] || "Setter"}
+                      </button>
+                      
+                      <button
+                        onClick={() => handleRejectUser(approval)}
+                        disabled={processingApproval === approval.id}
+                        className="w-full h-12 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 text-gray-700 rounded-xl font-semibold text-base transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                      >
+                        {processingApproval === approval.id ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <XCircle className="h-5 w-5" />
+                        )}
+                        Decline Request
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </ScrollArea>
           )}
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );

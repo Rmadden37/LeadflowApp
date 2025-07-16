@@ -356,7 +356,7 @@ const CloserCard = memo(function CloserCard({
                 onCheckedChange={handleToggleCloserAvailability}
                 disabled={isUpdatingStatus || isUpdatingOrder}
                 hapticPattern="medium"
-                aria-label={currentStatusIsOnDuty ? `Set ${closer.name || "Closer"} to Off Duty` : `Set ${closer.name || "Closer"} to On Duty`}
+                aria-label={currentStatusIsOnDuty ? `Set ${closer.name || "Closer"} to Self-Gen` : `Set ${closer.name || "Closer"} to On Duty`}
                 className="scale-75"
               />
               <Label
@@ -366,7 +366,7 @@ const CloserCard = memo(function CloserCard({
                 {isUpdatingStatus ? (
                   <Loader2 className="h-3 w-3 animate-spin" />
                 ) : (
-                  currentStatusIsOnDuty ? "Available" : "Off Duty"
+                  currentStatusIsOnDuty ? "Available" : "Self-Gen"
                 )}
               </Label>
             </div>
@@ -377,7 +377,7 @@ const CloserCard = memo(function CloserCard({
               ) : (
                 <UserX className="mr-1 h-3 w-3" />
               )}
-              <span className="font-medium">{currentStatusIsOnDuty ? "Available" : "Off Duty"}</span>
+              <span className="font-medium">{currentStatusIsOnDuty ? "Available" : "Self-Gen"}</span>
             </div>
           )}
         </div>
