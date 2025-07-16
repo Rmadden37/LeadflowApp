@@ -5,10 +5,31 @@ import type { Closer, Lead } from "@/types";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc, writeBatch } from "firebase/firestore";
 import { Users, Settings } from "lucide-react";
 import ManageClosersModal from "./off-duty-closers-modal";
 import Image from 'next/image';
+
+// Import dnd-kit components for drag and drop
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 // Performance-optimized skeleton component
 const SkeletonCloserLineup = memo(() => (
@@ -195,6 +216,58 @@ const CloserCard = memo(({
 );
 CloserCard.displayName = 'CloserCard';
 
+// Sortable wrapper component for drag and drop functionality with long press
+interface SortableCloserCardProps {
+  closer: Closer;
+  index: number;
+  isCloser: boolean;
+  isDragMode: boolean;
+}
+
+const SortableCloserCard = memo(({ closer, index, isCloser, isDragMode }: SortableCloserCardProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: closer.uid,
+    disabled: !isDragMode
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1000 : 'auto',
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...(isDragMode ? listeners : {})}
+      className={`
+        ${isDragMode ? 'touch-manipulation cursor-move' : ''} 
+        ${isDragging ? 'dragging-item' : ''} 
+        ${isDragMode && !isDragging ? 'drag-mode-active' : ''}
+        transition-all duration-200 ease-out
+      `}
+    >
+      <CloserCard closer={closer} index={index} isCloser={isCloser} />
+    </div>
+  );
+}, (prev, next) => 
+  prev.closer.uid === next.closer.uid && 
+  prev.closer.status === next.closer.status &&
+  prev.index === next.index &&
+  prev.isCloser === next.isCloser &&
+  prev.isDragMode === next.isDragMode
+);
+SortableCloserCard.displayName = 'SortableCloserCard';
+
 // Optimized hook for closer data with caching
 const useOptimizedClosers = (teamId: string) => {
   const [closersInLineup, setClosersInLineup] = useState<Closer[]>([]);
@@ -343,13 +416,130 @@ const useIntersectionObserver = (options: {
 
 export default function CloserLineupOptimized() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const { ref, isIntersecting } = useIntersectionObserver({ threshold: 0.1 });
   const { closersInLineup, allOnDutyClosers, isLoading } = useOptimizedClosers(user?.teamId || '');
   const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+  const [isDragMode, setIsDragMode] = useState(false);
+  const [isUpdatingOrder, setIsUpdatingOrder] = useState(false);
 
   // Check permissions
   const canManageClosers = user?.role === "manager" || user?.role === "admin";
   const isCloser = user?.role === "closer";
+
+  // Configure drag sensors with long press activation for mobile
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 500, // 500ms long press to activate drag
+        tolerance: 5, // Allow 5px movement during press
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag end
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const closers = isCloser ? allOnDutyClosers : closersInLineup;
+    const oldIndex = closers.findIndex((closer) => closer.uid === active.id);
+    const newIndex = closers.findIndex((closer) => closer.uid === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
+
+    // Update local state immediately for smooth UX
+    const newClosers = arrayMove(closers, oldIndex, newIndex);
+    
+    if (isCloser) {
+      // For closers viewing the full lineup, we'd need to update allOnDutyClosers
+      // But this is view-only, so we won't actually persist changes
+      toast({
+        title: "View Only",
+        description: "Contact your manager to reorder the lineup.",
+        variant: "default",
+      });
+      return;
+    } else {
+      // For managers, update the lineup order in Firestore
+      setIsUpdatingOrder(true);
+      
+      try {
+        const batch = writeBatch(db);
+        
+        // Update lineup orders with proper spacing
+        newClosers.forEach((closer, index) => {
+          const closerRef = doc(db, "closers", closer.uid);
+          const newLineupOrder = (index + 1) * 1000; // Space orders by 1000
+          batch.update(closerRef, { lineupOrder: newLineupOrder });
+        });
+        
+        await batch.commit();
+        
+        // Provide haptic feedback on mobile
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+        
+        toast({
+          title: "Lineup Updated",
+          description: "Closer order has been successfully updated.",
+          variant: "default",
+        });
+        
+        // Auto-exit drag mode after successful reorder
+        setTimeout(() => setIsDragMode(false), 1000);
+        
+      } catch (error) {
+        console.error("Error updating lineup order:", error);
+        toast({
+          title: "Update Failed",
+          description: "Could not update lineup order. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsUpdatingOrder(false);
+      }
+    }
+  };
+
+  // Handle long press to enter drag mode
+  const handleLongPress = () => {
+    if (canManageClosers && !isDragMode) {
+      setIsDragMode(true);
+      
+      // Provide haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate([50, 25, 50]); // Double buzz pattern
+      }
+      
+      toast({
+        title: "Drag Mode Active",
+        description: "Long press and drag to reorder closers. Tap outside to exit.",
+        variant: "default",
+      });
+    }
+  };
+
+  // Exit drag mode when clicking outside
+  const handleClickOutside = () => {
+    if (isDragMode) {
+      setIsDragMode(false);
+      toast({
+        title: "Drag Mode Disabled",
+        description: "Lineup reordering is now disabled.",
+        variant: "default",
+      });
+    }
+  };
 
   // Early return with intersection observer for performance
   if (!isIntersecting) {
@@ -404,26 +594,75 @@ export default function CloserLineupOptimized() {
             </div>
           </div>
         ) : displayClosers.length > 0 ? (
-          <div className="relative overflow-visible">
-            {/* Optimized closer lineup grid */}
-            <div 
-              className="grid grid-cols-3 gap-4 py-6 px-4 items-start justify-items-center min-h-[120px] closer-lineup-grid"
-              style={{
-                WebkitUserSelect: 'none',
-                WebkitTouchCallout: 'none',
-                WebkitTapHighlightColor: 'transparent',
-                isolation: 'isolate',
-              }}
+          <div className="relative overflow-visible" onClick={handleClickOutside}>
+            {/* Drag mode indicator */}
+            {isDragMode && (
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500/20 text-blue-400 text-xs px-3 py-1 rounded-full font-medium z-10">
+                Long press and drag to reorder
+              </div>
+            )}
+            
+            {/* Loading overlay during updates */}
+            {isUpdatingOrder && (
+              <div className="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-lg flex items-center justify-center z-20">
+                <div className="text-white text-sm">Updating order...</div>
+              </div>
+            )}
+
+            <DndContext 
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              {displayClosers.slice(0, 6).map((closer, index) => (
-                <CloserCard 
-                  key={closer.uid} 
-                  closer={closer} 
-                  index={index}
-                  isCloser={isCloser}
-                />
-              ))}
-            </div>
+              <SortableContext 
+                items={displayClosers.slice(0, 6).map(closer => closer.uid)}
+                strategy={rectSortingStrategy}
+              >
+                <div 
+                  className="grid grid-cols-3 gap-4 py-6 px-4 items-start justify-items-center min-h-[120px] closer-lineup-grid"
+                  style={{
+                    WebkitUserSelect: 'none',
+                    WebkitTouchCallout: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                    isolation: 'isolate',
+                  }}
+                  onTouchStart={(e) => {
+                    // Check if this is a long press candidate
+                    if (canManageClosers && !isDragMode) {
+                      const touchStartTime = Date.now();
+                      const longPressTimer = setTimeout(() => {
+                        handleLongPress();
+                      }, 500);
+                      
+                      const handleTouchEnd = () => {
+                        clearTimeout(longPressTimer);
+                        e.currentTarget.removeEventListener('touchend', handleTouchEnd);
+                        e.currentTarget.removeEventListener('touchmove', handleTouchMove);
+                      };
+                      
+                      const handleTouchMove = () => {
+                        clearTimeout(longPressTimer);
+                        e.currentTarget.removeEventListener('touchend', handleTouchEnd);
+                        e.currentTarget.removeEventListener('touchmove', handleTouchMove);
+                      };
+                      
+                      e.currentTarget.addEventListener('touchend', handleTouchEnd);
+                      e.currentTarget.addEventListener('touchmove', handleTouchMove);
+                    }
+                  }}
+                >
+                  {displayClosers.slice(0, 6).map((closer, index) => (
+                    <SortableCloserCard
+                      key={closer.uid} 
+                      closer={closer} 
+                      index={index}
+                      isCloser={isCloser}
+                      isDragMode={isDragMode && canManageClosers}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
             
             {/* More indicator */}
             {displayClosers.length > 6 && (
