@@ -2,10 +2,28 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, ShieldAlert, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { db } from "@/lib/firebase";
+import { collection, query, onSnapshot } from "firebase/firestore";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import TeamMembersDropdown from "@/components/dashboard/team-members-dropdown";
+import TeamManagementOperational from "@/components/dashboard/team-management-operational";
+import PendingApprovalsModal from "@/components/dashboard/pending-approvals-modal";
+
+interface Team {
+  id: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+}
 
 /**
  * 🌟 AURELIAN'S PREMIUM iOS MANAGE TEAMS PAGE
@@ -39,6 +57,21 @@ import TeamMembersDropdown from "@/components/dashboard/team-members-dropdown";
 export default function ManageTeamsPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<string>("all");
+
+  // Load teams data
+  useEffect(() => {
+    const teamsQuery = query(collection(db, "teams"));
+    const unsubscribe = onSnapshot(teamsQuery, (snapshot) => {
+      const teamsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Team));
+      setTeams(teamsData.filter(team => team.isActive));
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Redirect non-managers/admins away from this page
   useEffect(() => {
@@ -98,6 +131,73 @@ export default function ManageTeamsPage() {
 
       {/* 🎨 MAIN CONTENT - iOS Settings Layout */}
       <div className="container py-6 space-y-6">
+        {/* 🎯 TEAM SELECTION SECTION - Only show for admins */}
+        {user.role === "admin" && (
+          <div className={cn(
+            // 🌟 PREMIUM CARD STYLING
+            "bg-white/[0.08] backdrop-blur-xl border border-white/20",
+            "rounded-3xl shadow-2xl",
+            "shadow-[0_20px_60px_rgba(0,0,0,0.3)]",
+            
+            // ✨ iOS DEPTH EFFECTS
+            "before:absolute before:inset-0 before:rounded-3xl",
+            "before:bg-gradient-to-b before:from-white/10 before:via-white/5 before:to-transparent",
+            "before:pointer-events-none relative"
+          )}>
+            {/* 🎯 SECTION HEADER - iOS Style */}
+            <div className="p-6 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-[#007AFF]/20">
+                  <Users className="h-5 w-5 text-[#007AFF]" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-white">
+                    Team Selection
+                  </h2>
+                  <p className="text-white/70 text-sm">
+                    Choose a team to view and manage its members
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* 📱 TEAM SELECTION CONTENT */}
+            <div className="p-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">
+                  Select Team
+                </label>
+                <Select value={selectedTeam} onValueChange={setSelectedTeam}>
+                  <SelectTrigger className="w-full modal-background-fix bg-white/10 border border-white/20 backdrop-blur-md text-white hover:bg-white/20 focus:bg-white/20 focus:border-[#007AFF] transition-all duration-200">
+                    <SelectValue placeholder="Choose a team...">
+                      {selectedTeam === "all" ? "All Teams" : teams.find(t => t.id === selectedTeam)?.name || "Select Team"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="modal-background-fix bg-black/95 backdrop-blur-lg border border-white/20 shadow-2xl">
+                    <SelectItem 
+                      value="all"
+                      className="text-white hover:bg-[#007AFF]/10 focus:bg-[#007AFF]/10 cursor-pointer"
+                    >
+                      All Teams
+                    </SelectItem>
+                    {teams
+                      .filter(team => ['empire-team', 'takeoverpros', 'revolution'].includes(team.id))
+                      .map((team) => (
+                      <SelectItem 
+                        key={team.id} 
+                        value={team.id}
+                        className="text-white hover:bg-[#007AFF]/10 focus:bg-[#007AFF]/10 cursor-pointer"
+                      >
+                        {team.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 📋 TEAM MANAGEMENT SECTION */}
         <div className={cn(
           // 🌟 PREMIUM CARD STYLING
@@ -112,24 +212,42 @@ export default function ManageTeamsPage() {
         )}>
           {/* 🎯 SECTION HEADER - iOS Style */}
           <div className="p-6 border-b border-white/10">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-[#007AFF]/20">
-                <Users className="h-5 w-5 text-[#007AFF]" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-[#007AFF]/20">
+                  <Users className="h-5 w-5 text-[#007AFF]" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-white">
+                    Team Members & Roles
+                  </h2>
+                  <p className="text-white/70 text-sm">
+                    {user.role === "admin" && selectedTeam !== "all" 
+                      ? `Managing ${teams.find(t => t.id === selectedTeam)?.name || "Selected Team"} members`
+                      : user.role === "admin" 
+                      ? "Managing all team members across all teams"
+                      : "Manage access, permissions, and team assignments"
+                    }
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">
-                  Team Members & Roles
-                </h2>
-                <p className="text-white/70 text-sm">
-                  Manage access, permissions, and team assignments
-                </p>
-              </div>
+              
+              {/* Pending Approvals Modal Button */}
+              <PendingApprovalsModal 
+                triggerClassName="bg-gradient-to-r from-orange-500/20 to-amber-600/20 border border-orange-500/30 text-orange-300 hover:bg-orange-500/30 hover:text-orange-200 backdrop-blur-sm transition-all duration-200"
+                triggerVariant="outline"
+                triggerSize="sm"
+              />
             </div>
           </div>
           
           {/* 📱 TEAM MANAGEMENT CONTENT */}
           <div className="p-6">
-            <TeamMembersDropdown />
+            {user.role === "admin" ? (
+              <TeamManagementOperational selectedTeam={selectedTeam} />
+            ) : (
+              <TeamMembersDropdown />
+            )}
           </div>
         </div>
       </div>

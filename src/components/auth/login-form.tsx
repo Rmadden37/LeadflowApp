@@ -56,6 +56,31 @@ export default function LoginForm() {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       console.log('✅ Login successful', userCredential.user?.uid);
       
+      // Check if user is deactivated by reading their document
+      const { doc, getDoc } = await import("firebase/firestore");
+      const { db } = await import("@/lib/firebase");
+      
+      const userDocRef = doc(db, "users", userCredential.user.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        if (userData.status === "deactivated") {
+          console.log('🚫 User is deactivated, preventing login');
+          // Sign them out immediately
+          await auth.signOut();
+          
+          if (isMountedRef.current) {
+            toast({
+              title: "Account Deactivated",
+              description: "Your account has been deactivated. Please contact your administrator for assistance.",
+              variant: "destructive",
+            });
+          }
+          return;
+        }
+      }
+      
       if (isMountedRef.current) {
         toast({
           title: "Login Successful",

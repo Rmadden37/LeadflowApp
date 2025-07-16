@@ -105,7 +105,7 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
     const unsubscribe = onSnapshot(usersQuery, (snapshot) => {
       const usersData = snapshot.docs
         .map((doc) => ({uid: doc.id, ...doc.data()} as AppUser))
-        .filter(user => user.status !== "pending_approval"); // Exclude pending users
+        .filter(user => user.status !== "pending_approval" && user.status !== "deactivated"); // Exclude pending and deactivated users
 
       setTeamUsers(usersData);
       setLoading(false);

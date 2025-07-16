@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import AdminOrganizationSwitcher from "@/components/ui/admin-organization-switcher";
 
 // Import crop types and functions
 import type { Crop, PixelCrop } from "react-image-crop";
@@ -585,61 +586,73 @@ export default function ProfilePage() {
 
       {/* Admin Tools Group - Only for Admin Users */}
       {user.role === 'admin' && (
-        <div className="ios-settings-group-enhanced">
-          <div className="ios-settings-group-title-enhanced">Administration</div>
-          <div className="ios-settings-card-enhanced">
-            <div 
-              className="ios-settings-row-enhanced ios-settings-row-interactive" 
-              onClick={() => router.push('/dashboard/admin-tools')}
-              role="button"
-              tabIndex={0}
-              aria-label="System administration"
-            >
-              <div className="ios-settings-icon-enhanced" style={{ background: 'var(--ios-red)' }}>
-                <Settings size={16} />
+        <>
+          {/* Admin Organization Switcher */}
+          <div className="ios-settings-group-enhanced">
+            <div className="ios-settings-group-title-enhanced">Organization Management</div>
+            <div className="ios-settings-card-enhanced">
+              <div className="p-4">
+                <AdminOrganizationSwitcher />
               </div>
-              <div className="ios-settings-content-enhanced">
-                <div className="ios-settings-title-enhanced">System Administration</div>
-                <div className="ios-settings-subtitle-enhanced">Manage system settings</div>
-              </div>
-              <ChevronRight className="ios-settings-chevron-enhanced" />
-            </div>
-            
-            <div 
-              className="ios-settings-row-enhanced ios-settings-row-interactive" 
-              onClick={() => router.push('/dashboard/manage-teams')}
-              role="button"
-              tabIndex={0}
-              aria-label="User management"
-            >
-              <div className="ios-settings-icon-enhanced" style={{ background: 'var(--ios-blue)' }}>
-                <UserCheck size={16} />
-              </div>
-              <div className="ios-settings-content-enhanced">
-                <div className="ios-settings-title-enhanced">User Management</div>
-                <div className="ios-settings-subtitle-enhanced">Manage accounts and permissions</div>
-              </div>
-              <ChevronRight className="ios-settings-chevron-enhanced" />
-            </div>
-            
-            <div 
-              className="ios-settings-row-enhanced ios-settings-row-interactive" 
-              onClick={() => router.push('/dashboard/admin-tools/database')}
-              role="button"
-              tabIndex={0}
-              aria-label="Database management"
-            >
-              <div className="ios-settings-icon-enhanced" style={{ background: 'var(--ios-purple)' }}>
-                <Database size={16} />
-              </div>
-              <div className="ios-settings-content-enhanced">
-                <div className="ios-settings-title-enhanced">Database Management</div>
-                <div className="ios-settings-subtitle-enhanced">Database maintenance tools</div>
-              </div>
-              <ChevronRight className="ios-settings-chevron-enhanced" />
             </div>
           </div>
-        </div>
+
+          <div className="ios-settings-group-enhanced">
+            <div className="ios-settings-group-title-enhanced">Administration</div>
+            <div className="ios-settings-card-enhanced">
+              <div 
+                className="ios-settings-row-enhanced ios-settings-row-interactive" 
+                onClick={() => router.push('/dashboard/admin-tools')}
+                role="button"
+                tabIndex={0}
+                aria-label="System administration"
+              >
+                <div className="ios-settings-icon-enhanced" style={{ background: 'var(--ios-red)' }}>
+                  <Settings size={16} />
+                </div>
+                <div className="ios-settings-content-enhanced">
+                  <div className="ios-settings-title-enhanced">System Administration</div>
+                  <div className="ios-settings-subtitle-enhanced">Manage system settings</div>
+                </div>
+                <ChevronRight className="ios-settings-chevron-enhanced" />
+              </div>
+              
+              <div 
+                className="ios-settings-row-enhanced ios-settings-row-interactive" 
+                onClick={() => router.push('/dashboard/manage-teams')}
+                role="button"
+                tabIndex={0}
+                aria-label="User management"
+              >
+                <div className="ios-settings-icon-enhanced" style={{ background: 'var(--ios-blue)' }}>
+                  <UserCheck size={16} />
+                </div>
+                <div className="ios-settings-content-enhanced">
+                  <div className="ios-settings-title-enhanced">User Management</div>
+                  <div className="ios-settings-subtitle-enhanced">Manage accounts and permissions</div>
+                </div>
+                <ChevronRight className="ios-settings-chevron-enhanced" />
+              </div>
+              
+              <div 
+                className="ios-settings-row-enhanced ios-settings-row-interactive" 
+                onClick={() => router.push('/dashboard/admin-tools/database')}
+                role="button"
+                tabIndex={0}
+                aria-label="Database management"
+              >
+                <div className="ios-settings-icon-enhanced" style={{ background: 'var(--ios-purple)' }}>
+                  <Database size={16} />
+                </div>
+                <div className="ios-settings-content-enhanced">
+                  <div className="ios-settings-title-enhanced">Database Management</div>
+                  <div className="ios-settings-subtitle-enhanced">Database maintenance tools</div>
+                </div>
+                <ChevronRight className="ios-settings-chevron-enhanced" />
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Account Actions Group */}

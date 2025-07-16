@@ -28,7 +28,8 @@ import UploadAvatarModal from "./upload-avatar-modal";
 import TeamAvailabilityToggle from "./team-availability-toggle";
 import TeamSelector from "./team-selector";
 import InviteNewUserButton from "./invite-new-user-button";
-import PendingApprovalsDropdown from "./pending-approvals-dropdown";
+import PendingApprovalsSimple from "./pending-approvals-simple";
+import PendingApprovalsModal from "./pending-approvals-modal";
 import {initializeTeams} from "@/utils/init-teams";
 
 interface Team {
@@ -95,8 +96,8 @@ export default function TeamUserManagement() {
       );
       const unsubscribe = onSnapshot(usersQuery, (snapshot) => {
         const usersData = snapshot.docs
-          .map((doc) => ({uid: doc.id, ...doc.data()} as AppUser));
-        // Removed filter that excluded the manager
+          .map((doc) => ({uid: doc.id, ...doc.data()} as AppUser))
+          .filter(user => user.status !== "pending_approval" && user.status !== "deactivated"); // Exclude pending and deactivated users
 
         // Sort client-side
         usersData.sort((a, b) => {
@@ -301,18 +302,30 @@ export default function TeamUserManagement() {
             </div>
           </div>
           
-          {/* Compact Pending Approvals and Invite Button */}
+          {/* Invite Button */}
           <div className="flex items-center gap-3">
-            <PendingApprovalsDropdown />
             <InviteNewUserButton 
               variant="primary-solid"
               className="bg-gradient-to-r from-[var(--accent-primary)] to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 rounded-lg px-4 lg:px-6 py-2 lg:py-2.5 text-sm flex items-center gap-2 w-full lg:w-auto justify-center"
+            />
+            
+            {/* Pending Approvals Modal Button */}
+            <PendingApprovalsModal 
+              triggerClassName="bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 rounded-lg px-4 lg:px-6 py-2 lg:py-2.5 text-sm"
+              triggerVariant="default"
             />
           </div>
         </div>
         
         <div className="mt-4">
           <TeamSelector />
+        </div>
+      </div>
+
+      {/* Pending User Approvals Section */}
+      <div className="frosted-glass-card">
+        <div className="p-4 lg:p-6">
+          <PendingApprovalsSimple />
         </div>
       </div>
 

@@ -322,3 +322,36 @@
 .dark [data-calendar-portal] .nav_button {
   color: rgba(255, 255, 255, 0.8) !important;
 }
+
+/* ===================================================================
+   DROPDOWN/SELECT MENU BACKGROUND FIXES
+   =================================================================== */
+
+/* Ensure dropdown menus have proper backgrounds and visibility */
+[data-radix-select-content] {
+  background: rgba(30, 30, 30, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+}
+
+/* Select menu items */
+[data-radix-select-item] {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: transparent !important;
+}
+
+[data-radix-select-item]:hover,
+[data-radix-select-item][data-highlighted] {
+  background: rgba(0, 122, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 1) !important;
+}
+
+[data-radix-select-item][data-state="checked"] {
+  background: rgba(0, 122, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 1) !important;
+}

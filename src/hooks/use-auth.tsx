@@ -158,7 +158,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     if (user) {
-      // User is authenticated
+      // Check if user is deactivated
+      if (user.status === "deactivated") {
+        console.log('🚫 User is deactivated, logging out');
+        logout();
+        return;
+      }
+      
+      // User is authenticated and active
       if (isAuthRoute) {
         // User is on login/signup but already authenticated
         console.log('➡️ Redirecting authenticated user from auth page to dashboard');

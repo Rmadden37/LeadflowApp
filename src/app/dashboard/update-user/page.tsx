@@ -374,7 +374,7 @@ export default function UpdateUserPage() {
         </div>
 
         {/* Avatar Section */}
-        <Card className="mb-6">
+        <Card className="mb-6 modal-background-fix">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Camera className="h-5 w-5 text-blue-600" />
@@ -453,7 +453,7 @@ export default function UpdateUserPage() {
         </Card>
 
         {/* Personal Information */}
-        <Card className="mb-6">
+        <Card className="mb-6 modal-background-fix">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5 text-blue-600" />
@@ -463,7 +463,7 @@ export default function UpdateUserPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name *</Label>
+                <Label htmlFor="displayName" className="form-label-fix">Display Name *</Label>
                 <Input
                   id="displayName"
                   value={formData.displayName}
@@ -471,11 +471,12 @@ export default function UpdateUserPage() {
                   placeholder="Enter display name"
                   disabled={saving}
                   required
+                  className="form-input-fix"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address *</Label>
+                <Label htmlFor="email" className="form-label-fix">Email Address *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -484,6 +485,7 @@ export default function UpdateUserPage() {
                   placeholder="Enter email address"
                   disabled={saving}
                   required
+                  className="form-input-fix"
                 />
               </div>
 
@@ -496,6 +498,7 @@ export default function UpdateUserPage() {
                   onChange={(e) => handleFormChange("phoneNumber", e.target.value)}
                   placeholder="Enter phone number"
                   disabled={saving}
+                  className="form-input-fix"
                 />
               </div>
 
@@ -546,7 +549,7 @@ export default function UpdateUserPage() {
         </Card>
 
         {/* Action Buttons */}
-        <Card>
+        <Card className="modal-background-fix">
           <CardContent className="pt-6">
             <div className="flex flex-col gap-3">
               <div className="flex flex-col-reverse sm:flex-row gap-3">
