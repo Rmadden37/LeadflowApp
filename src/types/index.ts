@@ -46,6 +46,7 @@ export interface Lead {
   scheduledAppointmentTime?: Timestamp | null; // Will be used for scheduled dispatch time as well
   setterId?: string;
   setterName?: string;
+  setter?: string; // Alternative property name for setter identification
   setterLocation?: GeoPoint | null;
   photoUrls?: string[]; // New field for photo URLs (placeholder for now)
   setterVerified?: boolean; // Whether setter has verified the scheduled appointment
@@ -67,6 +68,15 @@ export interface Closer {
   lastExceptionTimestamp?: Timestamp; // Timestamp of last exception (canceled/rescheduled lead)
   lastExceptionReason?: string; // Reason for last exception ("canceled" or "rescheduled")
   normalizedAt?: Timestamp; // Timestamp when lineup order was last normalized
+  isAvailable?: boolean; // Whether the closer is available
+  stats?: {
+    totalAssigned?: number;
+    totalSold?: number;
+    totalLeads?: number;
+    closedDeals?: number;
+    revenue?: number;
+    conversionRate?: number;
+  };
 }
 
 // Chat types for team messaging

@@ -1,0 +1,64 @@
+// Backup of original firestore.rules before fixing permissions issue
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    function getUserRole() {
+      return getUserData().role;
+    }
+    
+    function getUserTeamId() {
+      return getUserData().teamId;
+    }
+    
+    function isAdmin() {
+      return getUserRole() == 'admin';
+    }
+    
+    function isManager() {
+      return getUserRole() == 'manager';
+    }
+    
+    function isManagerOrAdmin() {
+      return getUserRole() in ['manager', 'admin'];
+    }
+    
+    function isCloser() {
+      return getUserRole() == 'closer';
+    }
+    
+    function isSetter() {
+      return getUserRole() == 'setter';
+    }
+    
+    function isSameTeam(teamId) {
+      return getUserTeamId() == teamId;
+    }
+
+    // Users collection - PROBLEMATIC RULE CAUSING PERMISSIONS LOOP
+    match /users/{userId} {
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == userId || 
+         isManagerOrAdmin() || 
+         (resource.data.teamId == getUserTeamId()));
+      
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      
+      allow update: if isAuthenticated() && 
+        (request.auth.uid == userId || isManagerOrAdmin());
+      
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+
+    // [REST OF RULES CONTINUE...]
+  }
+}

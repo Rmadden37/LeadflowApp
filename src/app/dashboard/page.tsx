@@ -22,7 +22,7 @@ const InProcessLeads = dynamic(() => import("@/components/dashboard/in-process-l
   ssr: false
 });
 
-const CloserLineup = dynamic(() => import("@/components/dashboard/closer-lineup"), {
+const CloserLineup = dynamic(() => import("@/components/dashboard/closer-lineup-optimized"), {
   loading: () => <div className="frosted-glass-card p-6 animate-pulse h-48 ios-skeleton"></div>,
   ssr: false
 });

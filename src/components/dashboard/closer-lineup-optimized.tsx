@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot, doc, writeBatch } from "firebase/firestore";
 import { Users, Settings, MessageCircle, UserX, Star } from "lucide-react";
-import ManageClosersModal from "./off-duty-closers-modal";
 import Image from 'next/image';
 
 // iOS Native Enhancements
@@ -17,11 +16,14 @@ import { useIOSSwipeActions, type SwipeAction } from "@/hooks/use-ios-swipe-acti
 import {
   DndContext,
   closestCenter,
+  closestCorners,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
   DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -41,7 +43,7 @@ const SkeletonCloserLineup = memo(() => (
     <div className="grid grid-cols-3 gap-4 py-6 px-4">
       {[1,2,3,4,5,6].map(i => (
         <div key={i} className="flex flex-col items-center">
-          <div className="loading-skeleton w-12 h-12 rounded-full mb-2"></div>
+          <div className="loading-skeleton w-16 h-16 rounded-full mb-2"></div>
           <div className="loading-skeleton h-3 w-16"></div>
         </div>
       ))}
@@ -55,12 +57,14 @@ const SwipeableCloserCard = memo(({
   closer, 
   index, 
   isCloser,
-  canManageClosers 
+  canManageClosers,
+  isDragMode 
 }: { 
   closer: Closer; 
   index: number; 
   isCloser: boolean;
   canManageClosers: boolean;
+  isDragMode?: boolean;
 }) => {
   const { toast } = useToast();
 
@@ -125,10 +129,29 @@ const SwipeableCloserCard = memo(({
   });
 
   return (
-    <div className="ios-swipe-container" ref={elementRef}>
+    <div 
+      className="ios-swipe-container" 
+      ref={elementRef}
+      style={{
+        // Ensure swipe actions aren't clipped
+        overflow: 'visible',
+        position: 'relative',
+        zIndex: 1
+      }}
+    >
       {/* Swipe Actions Background */}
       {isSwipeActive && visibleActions.length > 0 && (
-        <div className="ios-swipe-actions">
+        <div 
+          className="ios-swipe-actions"
+          style={{
+            // Ensure actions are above other content
+            zIndex: 10,
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            height: '100%'
+          }}
+        >
           {visibleActions.map((action, actionIndex) => (
             <div
               key={action.id}
@@ -148,8 +171,8 @@ const SwipeableCloserCard = memo(({
       )}
       
       {/* Main Content */}
-      <div style={swipeContainerStyle}>
-        <CloserCard closer={closer} index={index} isCloser={isCloser} />
+      <div style={swipeContainerStyle} className={`${isDragMode ? 'drag-mode-active' : ''}`}>
+        <CloserCard closer={closer} index={index} isCloser={isCloser} isDragMode={isDragMode} />
       </div>
     </div>
   );
@@ -160,11 +183,13 @@ SwipeableCloserCard.displayName = 'SwipeableCloserCard';
 const CloserCard = memo(({ 
   closer, 
   index, 
-  isCloser 
+  isCloser,
+  isDragMode 
 }: { 
   closer: Closer; 
   index: number; 
   isCloser: boolean;
+  isDragMode?: boolean;
 }) => {
   const [imageError, setImageError] = useState(false);
   
@@ -185,10 +210,10 @@ const CloserCard = memo(({
     >
       {/* iOS-optimized avatar container */}
       <div 
-        className="relative mb-3 closer-lineup-avatar-container"
+        className={`relative mb-3 closer-lineup-avatar-container ${isDragMode ? 'jiggle-animation' : ''}`}
         style={{
-          width: '48px',
-          height: '48px',
+          width: '64px',
+          height: '64px',
           isolation: 'isolate',
           position: 'relative',
           zIndex: 1
@@ -208,7 +233,7 @@ const CloserCard = memo(({
         >
           {/* Optimized avatar with Next.js Image */}
           <div 
-            className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center shadow-md border-2 border-white/20 overflow-hidden"
+            className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center shadow-md border-2 border-white/20 overflow-hidden"
             style={{
               position: 'relative',
               zIndex: 2,
@@ -222,8 +247,8 @@ const CloserCard = memo(({
               <Image 
                 src={closer.avatarUrl}
                 alt={closer.name}
-                width={48}
-                height={48}
+                width={64}
+                height={64}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 onError={handleImageError}
@@ -237,10 +262,10 @@ const CloserCard = memo(({
               />
             ) : (
               <Image 
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(closer.name)}&background=4F46E5&color=fff&size=48&format=png`}
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(closer.name)}&background=4F46E5&color=fff&size=64&format=png`}
                 alt={closer.name}
-                width={48}
-                height={48}
+                width={64}
+                height={64}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 style={{
@@ -321,7 +346,8 @@ const CloserCard = memo(({
   prev.closer.uid === next.closer.uid && 
   prev.closer.status === next.closer.status &&
   prev.index === next.index &&
-  prev.isCloser === next.isCloser
+  prev.isCloser === next.isCloser &&
+  prev.isDragMode === next.isDragMode
 );
 CloserCard.displayName = 'CloserCard';
 
@@ -342,6 +368,7 @@ const SortableCloserCard = memo(({ closer, index, isCloser, isDragMode, canManag
     transform,
     transition,
     isDragging,
+    isOver,
   } = useSortable({ 
     id: closer.uid,
     disabled: !isDragMode
@@ -361,7 +388,8 @@ const SortableCloserCard = memo(({ closer, index, isCloser, isDragMode, canManag
       {...(isDragMode ? listeners : {})}
       className={`
         ${isDragMode ? 'touch-manipulation cursor-move' : ''} 
-        ${isDragging ? 'dragging-item' : ''} 
+        ${isDragging ? 'dragging-item opacity-50' : ''} 
+        ${isOver && !isDragging ? 'drop-zone-active scale-105 animate-pulse' : ''}
         ${isDragMode && !isDragging ? 'drag-mode-active' : ''}
         transition-all duration-200 ease-out
       `}
@@ -371,6 +399,7 @@ const SortableCloserCard = memo(({ closer, index, isCloser, isDragMode, canManag
         index={index} 
         isCloser={isCloser} 
         canManageClosers={canManageClosers && !isDragMode}
+        isDragMode={isDragMode}
       />
     </div>
   );
@@ -535,20 +564,23 @@ export default function CloserLineupOptimized() {
   const { toast } = useToast();
   const { ref, isIntersecting } = useIntersectionObserver({ threshold: 0.1 });
   const { closersInLineup, allOnDutyClosers, isLoading } = useOptimizedClosers(user?.teamId || '');
-  const [isManageModalOpen, setIsManageModalOpen] = useState(false);
   const [isDragMode, setIsDragMode] = useState(false);
   const [isUpdatingOrder, setIsUpdatingOrder] = useState(false);
+  
+  // Drag state management for better visual feedback
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [draggedCloser, setDraggedCloser] = useState<Closer | null>(null);
 
   // Check permissions
   const canManageClosers = user?.role === "manager" || user?.role === "admin";
   const isCloser = user?.role === "closer";
 
-  // Configure drag sensors with long press activation for mobile
+  // Configure drag sensors with optimized mobile handling
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 500, // 500ms long press to activate drag
-        tolerance: 5, // Allow 5px movement during press
+        delay: 300, // Reduced from 500ms for better responsiveness
+        tolerance: 8, // Increased tolerance for mobile touches
       },
     }),
     useSensor(KeyboardSensor, {
@@ -556,9 +588,29 @@ export default function CloserLineupOptimized() {
     })
   );
 
+  // Handle drag start - set active dragged item
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveId(active.id as string);
+    
+    // Find the closer being dragged for the overlay
+    const closers = isCloser ? allOnDutyClosers : closersInLineup;
+    const draggedCloser = closers.find(closer => closer.uid === active.id);
+    setDraggedCloser(draggedCloser || null);
+    
+    // Haptic feedback on drag start
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+  };
+
   // Handle drag end
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+
+    // Always clear drag state first
+    setActiveId(null);
+    setDraggedCloser(null);
 
     if (!over || active.id === over.id) {
       return;
@@ -627,24 +679,6 @@ export default function CloserLineupOptimized() {
     }
   };
 
-  // Handle long press to enter drag mode
-  const handleLongPress = () => {
-    if (canManageClosers && !isDragMode) {
-      setIsDragMode(true);
-      
-      // Provide haptic feedback
-      if (navigator.vibrate) {
-        navigator.vibrate([50, 25, 50]); // Double buzz pattern
-      }
-      
-      toast({
-        title: "Drag Mode Active",
-        description: "Long press and drag to reorder closers. Tap outside to exit.",
-        variant: "default",
-      });
-    }
-  };
-
   // Exit drag mode when clicking outside
   const handleClickOutside = () => {
     if (isDragMode) {
@@ -667,12 +701,6 @@ export default function CloserLineupOptimized() {
     );
   }
 
-  const handleCardClick = () => {
-    if (canManageClosers) {
-      setIsManageModalOpen(true);
-    }
-  };
-
   // Determine which closers to display
   const displayClosers = isCloser ? allOnDutyClosers : closersInLineup;
   const emptyMessage = isCloser 
@@ -683,41 +711,83 @@ export default function CloserLineupOptimized() {
     <div ref={ref}>
       <h2 className="text-2xl font-lora text-white mb-4">Up Next</h2>
       
-      <div 
-        className="frosted-glass-card p-2 relative ios-slide-up"
-        data-testid="closer-lineup-card"
-      >
-        {/* Management gear icon */}
-        {canManageClosers && (
-          <button
-            onClick={handleCardClick}
-            className="absolute top-2 right-2 z-20 p-1 hover:bg-white/10 transition-all duration-200 rounded-sm gear-icon-btn ios-button-press ios-focus"
-            title="Manage Closers"
-          >
-            <Settings className="w-4 h-4 text-white opacity-70 hover:opacity-100" />
-          </button>
+      {/* Add container for drag mode indicator outside the card */}
+      <div className="relative">
+        {/* Drag mode indicator - moved outside card container */}
+        {isDragMode && (
+          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-blue-500/20 text-blue-400 text-xs px-3 py-1 rounded-full font-medium z-30">
+            Drag to reorder
+          </div>
         )}
+        
+        <div 
+          className="frosted-glass-card relative ios-slide-up"
+          style={{ 
+            padding: '8px',
+            // Ensure no overflow clipping
+            overflow: 'visible',
+            // Add extra padding when in drag mode to prevent clipping
+            paddingTop: isDragMode ? '24px' : '8px',
+            // Add margin top to compensate for indicator
+            marginTop: isDragMode ? '16px' : '0'
+          }}
+          data-testid="closer-lineup-card"
+        >
+          {/* Reorder gear icon */}
+          {canManageClosers && (
+            <button
+              onClick={() => {
+                const newDragMode = !isDragMode;
+                setIsDragMode(newDragMode);
+                
+                // Provide haptic feedback
+                if (navigator.vibrate) {
+                  navigator.vibrate(newDragMode ? [50, 25, 50] : 50);
+                }
+                
+                // Show toast notification
+                toast({
+                  title: newDragMode ? "Drag Mode Active" : "Drag Mode Disabled",
+                  description: newDragMode ? "Drag avatars to reorder closers" : "Lineup reordering is now disabled",
+                  variant: "default",
+                });
+              }}
+              className={`absolute top-2 right-2 z-20 p-1 transition-all duration-200 rounded-sm gear-icon-btn ios-button-press ios-focus ${
+                isDragMode 
+                  ? 'gear-icon-reorder-mode hover:bg-blue-500/20' 
+                  : 'hover:bg-white/10'
+              }`}
+              title={isDragMode ? "Stop Reordering" : "Reorder Lineup"}
+            >
+              <Settings className={`w-4 h-4 transition-all duration-200 ${
+                isDragMode 
+                  ? 'text-blue-400 opacity-100' 
+                  : 'text-white opacity-70 hover:opacity-100'
+              }`} />
+            </button>
+          )}
 
-        {isLoading ? (
+          {isLoading ? (
           <div className="py-6 px-4">
             <div className="grid grid-cols-3 gap-4 items-start justify-items-center min-h-[120px]">
               {[1,2,3,4,5,6].map(i => (
                 <div key={i} className="flex flex-col items-center">
-                  <div className="loading-skeleton w-12 h-12 rounded-full mb-2"></div>
+                  <div className="loading-skeleton w-16 h-16 rounded-full mb-2"></div>
                   <div className="loading-skeleton h-3 w-16"></div>
                 </div>
               ))}
             </div>
           </div>
         ) : displayClosers.length > 0 ? (
-          <div className="relative overflow-visible" onClick={handleClickOutside}>
-            {/* Drag mode indicator */}
-            {isDragMode && (
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500/20 text-blue-400 text-xs px-3 py-1 rounded-full font-medium z-10">
-                Long press and drag to reorder
-              </div>
-            )}
-            
+          <div 
+            className="relative" 
+            onClick={handleClickOutside}
+            style={{ 
+              overflow: 'visible',
+              // Add padding to prevent position badges from being clipped
+              padding: '8px 4px'
+            }}
+          >
             {/* Loading overlay during updates */}
             {isUpdatingOrder && (
               <div className="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-lg flex items-center justify-center z-20">
@@ -727,7 +797,8 @@ export default function CloserLineupOptimized() {
 
             <DndContext 
               sensors={sensors}
-              collisionDetection={closestCenter}
+              collisionDetection={closestCorners}
+              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
               <SortableContext 
@@ -741,30 +812,8 @@ export default function CloserLineupOptimized() {
                     WebkitTouchCallout: 'none',
                     WebkitTapHighlightColor: 'transparent',
                     isolation: 'isolate',
-                  }}
-                  onTouchStart={(e) => {
-                    // Check if this is a long press candidate
-                    if (canManageClosers && !isDragMode) {
-                      const touchStartTime = Date.now();
-                      const longPressTimer = setTimeout(() => {
-                        handleLongPress();
-                      }, 500);
-                      
-                      const handleTouchEnd = () => {
-                        clearTimeout(longPressTimer);
-                        e.currentTarget.removeEventListener('touchend', handleTouchEnd);
-                        e.currentTarget.removeEventListener('touchmove', handleTouchMove);
-                      };
-                      
-                      const handleTouchMove = () => {
-                        clearTimeout(longPressTimer);
-                        e.currentTarget.removeEventListener('touchend', handleTouchEnd);
-                        e.currentTarget.removeEventListener('touchmove', handleTouchMove);
-                      };
-                      
-                      e.currentTarget.addEventListener('touchend', handleTouchEnd);
-                      e.currentTarget.addEventListener('touchmove', handleTouchMove);
-                    }
+                    // Ensure grid doesn't clip children
+                    overflow: 'visible',
                   }}
                 >
                   {displayClosers.slice(0, 6).map((closer, index) => (
@@ -779,6 +828,50 @@ export default function CloserLineupOptimized() {
                   ))}
                 </div>
               </SortableContext>
+              
+              {/* Drag Overlay for better visual feedback */}
+              <DragOverlay>
+                {activeId && draggedCloser ? (
+                  <div className="drag-overlay-item">
+                    <div className="flex flex-col items-center w-full max-w-[85px]">
+                      {/* Avatar */}
+                      <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center shadow-md border-2 border-white/20 overflow-hidden relative">
+                        {draggedCloser.avatarUrl ? (
+                          <Image 
+                            src={draggedCloser.avatarUrl}
+                            alt={draggedCloser.name}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <Image 
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(draggedCloser.name)}&background=4F46E5&color=fff&size=64&format=png`}
+                            alt={draggedCloser.name}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        )}
+                        
+                        {/* Position badge */}
+                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white/80">
+                          <span className="text-xs font-bold text-white">
+                            {displayClosers.findIndex(c => c.uid === draggedCloser.uid) + 1}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Name */}
+                      <p className="text-xs font-medium text-white text-center leading-tight px-1 truncate mt-2">
+                        {draggedCloser.name}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+              </DragOverlay>
             </DndContext>
             
             {/* More indicator */}
@@ -796,14 +889,8 @@ export default function CloserLineupOptimized() {
             <p>{emptyMessage}</p>
           </div>
         )}
+        </div>
       </div>
-      
-      {canManageClosers && (
-        <ManageClosersModal
-          isOpen={isManageModalOpen}
-          onClose={() => setIsManageModalOpen(false)}
-        />
-      )}
     </div>
   );
 }

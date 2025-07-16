@@ -46,6 +46,7 @@ export function PerformanceCharts({
   // Prepare setter chart data
   const setterChartData = setterPerformance.map(setter => ({
     name: setter.name.split(" ")[0], // Use first name for chart
+    value: setter.sitRate, // Add required value property
     sitRate: setter.sitRate,
     failedCreditRate: setter.failedCreditRate,
     cancelNoShowRate: setter.cancelNoShowRate,
@@ -85,15 +86,8 @@ export function PerformanceCharts({
         <CardContent>
           <PremiumBarChart 
             data={setterChartData} 
-            categories={[
-              { key: 'sitRate', label: 'Sit Rate %', color: '#0088FE' },
-              { key: 'failedCreditRate', label: 'Failed Credit Rate %', color: '#00C49F' },
-              { key: 'cancelNoShowRate', label: 'Cancel/No Show Rate %', color: '#FFBB28' }
-            ]}
-            xAxisKey="name"
             height={350}
-            showTooltip={true}
-            showLegend={true}
+            showValues={true}
           />
         </CardContent>
       </Card>

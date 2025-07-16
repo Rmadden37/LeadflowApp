@@ -1584,6 +1584,80 @@ body::before {
   user-select: none;
 }
 
+/* ===================================================================
+   ENHANCED DRAG AND DROP VISUAL FEEDBACK
+   =================================================================== */
+
+/* Drop zone active state - when dragging over a valid drop target */
+.drop-zone-active {
+  transform: scale(1.05) translateZ(0) !important;
+  background: rgba(0, 122, 255, 0.1) !important;
+  border: 2px dashed rgba(0, 122, 255, 0.5) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 0 20px rgba(0, 122, 255, 0.3) !important;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Enhanced dragging item appearance */
+.dragging-item {
+  animation: drag-lift 0.2s ease-out forwards;
+  z-index: 1000 !important;
+  opacity: 0.8 !important;
+  transform: rotate(5deg) scale(1.05) translateZ(0) !important;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.4)) !important;
+}
+
+/* Drag overlay styling */
+.drag-overlay-item {
+  pointer-events: none;
+  transform: rotate(8deg) scale(1.1) translateZ(0);
+  filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.5));
+  opacity: 0.95;
+  transition: none !important;
+  z-index: 2000 !important;
+  will-change: transform;
+}
+
+/* Smooth position shifting for other items */
+.drag-mode-active:not(.dragging-item) {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Enhanced jiggle animation for drag mode */
+@keyframes enhanced-jiggle {
+  0%, 100% { 
+    transform: rotate(0deg) scale(1) translateZ(0); 
+  }
+  25% { 
+    transform: rotate(1.5deg) scale(1.02) translateZ(0); 
+  }
+  50% { 
+    transform: rotate(0deg) scale(1.01) translateZ(0); 
+  }
+  75% { 
+    transform: rotate(-1.5deg) scale(1.02) translateZ(0); 
+  }
+}
+
+.drag-mode-active .closer-lineup-avatar-container {
+  animation: enhanced-jiggle 0.6s ease-in-out infinite;
+}
+
+/* Hover states for better affordance */
+.drag-mode-active:hover:not(.dragging-item) {
+  transform: scale(1.02) translateZ(0) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px !important;
+  transition: all 0.2s ease-out !important;
+}
+
+/* Position indicator enhancement during drag */
+.drag-mode-active .closer-lineup-position-badge {
+  background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%) !important;
+  animation: subtle-pulse 1s ease-in-out infinite reverse;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4) !important;
+}
+
 /* iOS-style haptic feedback simulation */
 @keyframes haptic-feedback {
   0% { transform: scale(1); }

@@ -182,7 +182,7 @@ function PremiumLeaderboardEntry({
           {entry.avatarUrl ? (
             <PremiumProfileImage
               src={entry.avatarUrl}
-              alt={entry.name}
+              name={entry.name}
               className="w-full h-full object-cover"
             />
           ) : (

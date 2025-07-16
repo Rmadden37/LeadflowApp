@@ -6,6 +6,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { 
   Home, 
@@ -27,7 +28,7 @@ interface PremiumMobileNavProps {
 interface NavItem {
   id: string;
   label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: React.ComponentType<any>;
   href?: string;
   badge?: number;
 }

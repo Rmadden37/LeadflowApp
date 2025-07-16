@@ -31,8 +31,8 @@ export function useFastAvatar(
     isLoading: true
   });
 
-  const generateFallback = useCallback((user: NonNullable<typeof user>) => {
-    const name = user.displayName || user.email || 'User';
+  const generateFallback = useCallback((userData: NonNullable<typeof user>) => {
+    const name = userData.displayName || userData.email || 'User';
     const initials = name
       .split(' ')
       .map(word => word.charAt(0))
