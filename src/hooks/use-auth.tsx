@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
 
   // Routes that don't require authentication
-  const publicRoutes = ['/login', '/signup', '/forgot-password'];
+  const publicRoutes = ['/login', '/signup', '/forgot-password', '/pending-approval'];
   // Routes that should redirect if already authenticated
   const authRoutes = ['/login', '/signup'];
 
@@ -162,6 +162,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (user.status === "deactivated") {
         console.log('🚫 User is deactivated, logging out');
         logout();
+        return;
+      }
+      
+      // Check if user is pending approval
+      if (user.status === "pending_approval") {
+        console.log('⏳ User is pending approval, redirecting to waiting page');
+        if (pathname !== '/pending-approval') {
+          router.replace('/pending-approval');
+        }
         return;
       }
       
