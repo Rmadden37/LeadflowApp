@@ -250,7 +250,7 @@ export default function CloserManagementContent() {
       )}
       
       <ScrollArea className="h-[calc(60vh)] max-h-[400px] pr-3">
-        <div className="space-y-3">
+        <div className="space-y-2">
           {closers.map((closer, index) => (
             <CloserCard
               key={closer.uid}

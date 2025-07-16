@@ -254,7 +254,7 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
     }
   };
 
-  // Render user card
+  // Render compact user card for grid layout
   const renderUserCard = (user: AppUser, showToggle = false) => {
     const roleDetails = getRoleDetails(user.role);
     const RoleIcon = roleDetails.icon;
@@ -263,117 +263,80 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
     const isToggling = togglingUsers.has(user.uid);
     
     return (
-      <div key={user.uid} className={`frosted-glass-card p-4 transition-all duration-200 hover:bg-white/[0.02] ${
+      <div key={user.uid} className={`frosted-glass-card p-3 transition-all duration-200 hover:bg-white/[0.02] min-h-[100px] ${
         showToggle && closerStatus === "On Duty" ? 'ring-1 ring-green-500/20' : ''
       }`}>
-        <div className="flex items-center gap-4">
-          {/* Avatar with enhanced styling */}
-          <div className="relative">
-            <SimpleAvatar 
-              className={`ring-2 transition-all duration-200 hover:ring-[var(--accent-primary)] cursor-pointer ${
-                showToggle && closerStatus === "On Duty" 
-                  ? 'ring-green-500/30 hover:ring-green-400' 
-                  : 'ring-[var(--glass-border)]'
-              }`}
-              onClick={() => setSelectedUserForProfile(user)}
-              user={user}
-              size="md"
-            />
-            {/* Status indicator overlay for active closers */}
-            {showToggle && closerStatus === "On Duty" && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-[var(--background)] animate-pulse shadow-sm shadow-green-400/50" />
-            )}
-          </div>
-
-          {/* User Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h4 className="font-semibold text-[var(--text-primary)] truncate">
-                {user.displayName || user.email || "Unnamed User"}
-              </h4>
-              {isCurrentUser && (
-                <span className="px-2 py-0.5 text-xs rounded-md bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] font-medium">
-                  You
-                </span>
+        <div className="flex flex-col gap-3 h-full">
+          {/* Top Row: Larger Avatar + User Info */}
+          <div className="flex items-start gap-3 flex-1">
+            {/* Larger Avatar */}
+            <div className="relative flex-shrink-0">
+              <SimpleAvatar 
+                className={`ring-2 transition-all duration-200 hover:ring-[var(--accent-primary)] cursor-pointer ${
+                  showToggle && closerStatus === "On Duty" 
+                    ? 'ring-green-500/30 hover:ring-green-400' 
+                    : 'ring-[var(--glass-border)]'
+                }`}
+                onClick={() => setSelectedUserForProfile(user)}
+                user={user}
+                size="md"
+              />
+              {/* Status indicator for active closers */}
+              {showToggle && closerStatus === "On Duty" && (
+                <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-[var(--background)] animate-pulse" />
               )}
             </div>
-            
-            <p className="text-sm text-[var(--text-secondary)] mb-2 truncate">{user.email}</p>
-            
-            <div className="flex items-center gap-2">
-              <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium border ${roleDetails.bgColor} ${roleDetails.textColor} ${roleDetails.borderColor}`}>
-                <RoleIcon className="mr-1 h-3 w-3" />
-                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-              </span>
-            </div>
-          </div>
 
-          {/* iOS-Style Toggle Switch for Closers */}
-          {showToggle && (
-            <div className="flex items-center gap-3">
-              {/* Status Label */}
-              <div className="text-right">
-                <div className={`text-xs font-semibold transition-colors duration-200 ${
-                  closerStatus === "On Duty" 
-                    ? "text-green-400" 
-                    : "text-gray-400"
-                }`}>
-                  {closerStatus === "On Duty" ? "In Lineup" : "Off Duty"}
-                </div>
+            {/* User Info - Allow for wrapping */}
+            <div className="flex-1 min-w-0 space-y-1">
+              <div className="flex items-start flex-col gap-1">
+                <h4 className="font-semibold text-[var(--text-primary)] text-base break-words leading-tight">
+                  {user.displayName || user.email?.split('@')[0] || "Unnamed"}
+                </h4>
+                {isCurrentUser && (
+                  <span className="px-2 py-1 text-xs rounded bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] font-medium">
+                    You
+                  </span>
+                )}
               </div>
               
-              {/* Custom iOS Toggle Switch */}
-              <div className="relative">
-                <IOSToggle
-                  checked={closerStatus === "On Duty"}
-                  onChange={() => handleToggleCloserStatus(user)}
-                  disabled={isToggling}
-                  className="focus:ring-green-500/30"
-                />
+              {/* Role Assignment - Replaces Email */}
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${roleDetails.bgColor} ${roleDetails.textColor} ${roleDetails.borderColor}`}>
+                  <RoleIcon className="mr-1 h-3 w-3" />
+                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                </span>
                 
-                {/* Loading overlay */}
-                {isToggling && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full">
-                    <Loader2 className="h-3 w-3 animate-spin text-white" />
+                {/* iOS Toggle for Closers - Inline */}
+                {showToggle && (
+                  <div className="flex items-center gap-2 ml-auto">
+                    <div className={`text-xs font-medium transition-colors duration-200 ${
+                      closerStatus === "On Duty" 
+                        ? "text-green-400" 
+                        : "text-gray-400"
+                    }`}>
+                      {closerStatus === "On Duty" ? "In Lineup" : "Off Duty"}
+                    </div>
+                    
+                    <div className="relative">
+                      <IOSToggle
+                        checked={closerStatus === "On Duty"}
+                        onChange={() => handleToggleCloserStatus(user)}
+                        disabled={isToggling}
+                        className="focus:ring-green-500/30 scale-90"
+                      />
+                      
+                      {isToggling && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full">
+                          <Loader2 className="h-2.5 w-2.5 animate-spin text-white" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
             </div>
-          )}
-
-          {/* Enhanced Action Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className={`
-                  bg-white/10 border border-[var(--glass-border)] text-[var(--text-primary)] 
-                  hover:bg-white/20 hover:border-[var(--accent-primary)]/30
-                  transition-all duration-200 hover:scale-105 active:scale-95
-                  shadow-sm hover:shadow-md
-                `}
-              >
-                <UserCog className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-[var(--background)]/95 backdrop-blur-lg border border-[var(--glass-border)] shadow-xl">
-              <DropdownMenuItem 
-                onClick={() => setSelectedUserForRoleChange(user)}
-                className="text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/10 transition-colors duration-150"
-              >
-                <UserCog className="mr-2 h-4 w-4" /> Change Role
-              </DropdownMenuItem>
-              {(managerUser?.role === "admin" || managerUser?.role === "manager") && user.uid !== managerUser.uid && (
-                <DropdownMenuItem 
-                  onClick={() => setSelectedUserForDelete(user)}
-                  className="text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors duration-150"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" /> Delete User
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          </div>
         </div>
       </div>
     );
@@ -392,94 +355,96 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
 
   return (
     <>
-      <div className="space-y-6">
-        {/* Active Closers Section */}
+      <div className="space-y-4">
+        {/* Active Closers Section - Optimized Layout */}
         {activeClosers.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-500/10">
-                <Eye className="h-5 w-5 text-green-400" />
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-green-500/10">
+                <Eye className="h-4 w-4 text-green-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
-                  Active Closers ({activeClosers.length})
+                <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                  Closers ({activeClosers.length + inactiveClosers.length})
                 </h3>
-                <p className="text-sm text-[var(--text-secondary)]">
-                  Currently available in the closer lineup
+                <p className="text-xs text-[var(--text-secondary)]">
+                  Toggle availability status
                 </p>
               </div>
             </div>
             
-            <div className="grid gap-3">
+            {/* Responsive Grid Layout for Better Space Usage */}
+            <div className="grid gap-1.5 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
               {activeClosers.map(user => renderUserCard(user, true))}
-            </div>
-          </div>
-        )}
-
-        {/* Inactive Closers Section */}
-        {inactiveClosers.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gray-500/10">
-                <EyeOff className="h-5 w-5 text-gray-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
-                  Inactive Closers ({inactiveClosers.length})
-                </h3>
-                <p className="text-sm text-[var(--text-secondary)]">
-                  Not currently available in the closer lineup
-                </p>
-              </div>
-            </div>
-            
-            <div className="grid gap-3">
               {inactiveClosers.map(user => renderUserCard(user, true))}
             </div>
           </div>
         )}
 
-        {/* Setters Section (Collapsible) */}
+        {/* Show all closers if no active ones but there are inactive ones */}
+        {activeClosers.length === 0 && inactiveClosers.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-gray-500/10">
+                <Eye className="h-4 w-4 text-gray-400" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                  Closers ({inactiveClosers.length})
+                </h3>
+                <p className="text-xs text-[var(--text-secondary)]">
+                  Toggle availability status
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid gap-1.5 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+              {inactiveClosers.map(user => renderUserCard(user, true))}
+            </div>
+          </div>
+        )}
+
+        {/* Setters Section (Collapsible) - Optimized */}
         {setters.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <button
               onClick={() => setSettersExpanded(!settersExpanded)}
-              className="flex items-center gap-3 w-full text-left group"
+              className="flex items-center gap-2 w-full text-left group"
             >
-              <div className="p-2 rounded-lg bg-blue-500/10">
-                <Users className="h-5 w-5 text-blue-400" />
+              <div className="p-1.5 rounded-lg bg-blue-500/10">
+                <Users className="h-4 w-4 text-blue-400" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-light)] transition-colors">
+                <h3 className="text-base font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-light)] transition-colors">
                   Setters ({setters.length})
                 </h3>
-                <p className="text-sm text-[var(--text-secondary)]">
-                  Lead generation team members
+                <p className="text-xs text-[var(--text-secondary)]">
+                  Lead generation team
                 </p>
               </div>
               {settersExpanded ? (
-                <ChevronUp className="h-5 w-5 text-[var(--text-secondary)]" />
+                <ChevronUp className="h-4 w-4 text-[var(--text-secondary)]" />
               ) : (
-                <ChevronDown className="h-5 w-5 text-[var(--text-secondary)]" />
+                <ChevronDown className="h-4 w-4 text-[var(--text-secondary)]" />
               )}
             </button>
             
             {settersExpanded && (
-              <div className="grid gap-3">
+              <div className="grid gap-1.5 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                 {setters.map(user => renderUserCard(user, false))}
               </div>
             )}
           </div>
         )}
 
-        {/* Empty State */}
+        {/* Compact Empty State */}
         {teamUsers.length === 0 && (
-          <div className="frosted-glass-card p-8 text-center">
-            <Users className="h-12 w-12 text-[var(--text-secondary)] mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+          <div className="frosted-glass-card p-6 text-center">
+            <Users className="h-8 w-8 text-[var(--text-secondary)] mx-auto mb-3" />
+            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
               No Team Members Found
             </h3>
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-sm text-[var(--text-secondary)]">
               Start by inviting users to your team.
             </p>
           </div>

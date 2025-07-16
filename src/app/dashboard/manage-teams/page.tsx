@@ -107,146 +107,103 @@ export default function ManageTeamsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black">
-      {/* 🎯 PREMIUM iOS HEADER - Settings Style */}
+      {/* 🎯 STREAMLINED HEADER */}
       <div className="sticky top-0 z-10 backdrop-blur-xl bg-black/30 border-b border-white/10">
-        <div className="container py-4 lg:py-6">
-          <div className="flex items-center gap-4">
-            {/* 📱 iOS ICON CONTAINER */}
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-[#007AFF]/20 via-[#007AFF]/10 to-transparent ring-1 ring-[#007AFF]/30 backdrop-blur-xl">
-              <Users className="h-8 w-8 text-[#007AFF]" />
-            </div>
-            
-            {/* 🏷️ HEADER CONTENT */}
-            <div className="flex-1">
-              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-1">
+        <div className="container py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl font-bold text-white mb-0.5">
                 Team Management
               </h1>
-              <p className="text-white/70 text-sm lg:text-base font-medium">
-                Organize your team • Assign roles • Control permissions
+              <p className="text-white/60 text-sm font-medium">
+                {user.role === "admin" && selectedTeam !== "all" 
+                  ? `Managing ${teams.find(t => t.id === selectedTeam)?.name || "Selected"} Team`
+                  : user.role === "admin" 
+                  ? "Cross-team overview and administration"
+                  : "Your team permissions and members"
+                }
               </p>
             </div>
+            
+            {/* Single Pending Approvals - Always Top Right */}
+            <PendingApprovalsModal 
+              triggerClassName="bg-gradient-to-r from-orange-500/20 to-amber-600/20 border border-orange-500/30 text-orange-300 hover:bg-orange-500/30 hover:text-orange-200 backdrop-blur-sm transition-all duration-200"
+              triggerVariant="outline"
+              triggerSize="sm"
+            />
           </div>
         </div>
       </div>
 
-      {/* 🎨 MAIN CONTENT - iOS Settings Layout */}
-      <div className="container py-6 space-y-6">
-        {/* 🎯 TEAM SELECTION SECTION - Only show for admins */}
+      {/* 🎨 MAIN CONTENT - Optimized Layout */}
+      <div className="container py-4 space-y-4">
+        {/* 🎯 ADMIN TEAM SELECTOR - Simplified */}
         {user.role === "admin" && (
-          <div className={cn(
-            // 🌟 PREMIUM CARD STYLING
-            "bg-white/[0.08] backdrop-blur-xl border border-white/20",
-            "rounded-3xl shadow-2xl",
-            "shadow-[0_20px_60px_rgba(0,0,0,0.3)]",
-            
-            // ✨ iOS DEPTH EFFECTS
-            "before:absolute before:inset-0 before:rounded-3xl",
-            "before:bg-gradient-to-b before:from-white/10 before:via-white/5 before:to-transparent",
-            "before:pointer-events-none relative"
-          )}>
-            {/* 🎯 SECTION HEADER - iOS Style */}
-            <div className="p-6 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-[#007AFF]/20">
-                  <Users className="h-5 w-5 text-[#007AFF]" />
+          <div className="bg-white/[0.08] backdrop-blur-xl border border-white/20 rounded-2xl p-4">
+            <Select value={selectedTeam} onValueChange={setSelectedTeam}>
+              <SelectTrigger className="h-12 modal-background-fix bg-white/10 border border-white/20 backdrop-blur-md text-white hover:bg-white/20 focus:bg-white/20 focus:border-[#007AFF] transition-all duration-200">
+                <div className="flex items-center gap-3">
+                  <div className="p-1.5 rounded-lg bg-[#007AFF]/20">
+                    <Users className="h-4 w-4 text-[#007AFF]" />
+                  </div>
+                  <SelectValue placeholder="Choose team scope...">
+                    {selectedTeam === "all" ? "All Teams View" : teams.find(t => t.id === selectedTeam)?.name + " Team" || "Select Team"}
+                  </SelectValue>
                 </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    Team Selection
-                  </h2>
-                  <p className="text-white/70 text-sm">
-                    Choose a team to view and manage its members
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* 📱 TEAM SELECTION CONTENT */}
-            <div className="p-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-white">
-                  Select Team
-                </label>
-                <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-                  <SelectTrigger className="w-full modal-background-fix bg-white/10 border border-white/20 backdrop-blur-md text-white hover:bg-white/20 focus:bg-white/20 focus:border-[#007AFF] transition-all duration-200">
-                    <SelectValue placeholder="Choose a team...">
-                      {selectedTeam === "all" ? "All Teams" : teams.find(t => t.id === selectedTeam)?.name || "Select Team"}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent className="modal-background-fix bg-black/95 backdrop-blur-lg border border-white/20 shadow-2xl">
-                    <SelectItem 
-                      value="all"
-                      className="text-white hover:bg-[#007AFF]/10 focus:bg-[#007AFF]/10 cursor-pointer"
-                    >
-                      All Teams
-                    </SelectItem>
-                    {teams
-                      .filter(team => ['empire-team', 'takeoverpros', 'revolution'].includes(team.id))
-                      .map((team) => (
-                      <SelectItem 
-                        key={team.id} 
-                        value={team.id}
-                        className="text-white hover:bg-[#007AFF]/10 focus:bg-[#007AFF]/10 cursor-pointer"
-                      >
-                        {team.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+              </SelectTrigger>
+              <SelectContent className="modal-background-fix bg-black/95 backdrop-blur-lg border border-white/20 shadow-2xl">
+                <SelectItem 
+                  value="all"
+                  className="text-white hover:bg-[#007AFF]/10 focus:bg-[#007AFF]/10 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#007AFF]" />
+                    All Teams View
+                  </div>
+                </SelectItem>
+                {teams
+                  .filter(team => ['empire-team', 'takeoverpros', 'revolution'].includes(team.id))
+                  .map((team) => (
+                  <SelectItem 
+                    key={team.id} 
+                    value={team.id}
+                    className="text-white hover:bg-[#007AFF]/10 focus:bg-[#007AFF]/10 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-400" />
+                      {team.name} Team
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
 
-        {/* 📋 TEAM MANAGEMENT SECTION */}
+        {/* 📋 TEAM CONTENT - Simplified */}
         <div className={cn(
-          // 🌟 PREMIUM CARD STYLING
           "bg-white/[0.08] backdrop-blur-xl border border-white/20",
-          "rounded-3xl shadow-2xl",
-          "shadow-[0_20px_60px_rgba(0,0,0,0.3)]",
-          
-          // ✨ iOS DEPTH EFFECTS
-          "before:absolute before:inset-0 before:rounded-3xl",
-          "before:bg-gradient-to-b before:from-white/10 before:via-white/5 before:to-transparent",
+          "rounded-2xl shadow-xl overflow-hidden",
+          "before:absolute before:inset-0 before:rounded-2xl",
+          "before:bg-gradient-to-b before:from-white/5 before:to-transparent",
           "before:pointer-events-none relative"
-        )}>
-          {/* 🎯 SECTION HEADER - iOS Style */}
-          <div className="p-6 border-b border-white/10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-[#007AFF]/20">
-                  <Users className="h-5 w-5 text-[#007AFF]" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    Team Members & Roles
-                  </h2>
-                  <p className="text-white/70 text-sm">
-                    {user.role === "admin" && selectedTeam !== "all" 
-                      ? `Managing ${teams.find(t => t.id === selectedTeam)?.name || "Selected Team"} members`
-                      : user.role === "admin" 
-                      ? "Managing all team members across all teams"
-                      : "Manage access, permissions, and team assignments"
-                    }
-                  </p>
-                </div>
-              </div>
-              
-              {/* Pending Approvals Modal Button */}
-              <PendingApprovalsModal 
-                triggerClassName="bg-gradient-to-r from-orange-500/20 to-amber-600/20 border border-orange-500/30 text-orange-300 hover:bg-orange-500/30 hover:text-orange-200 backdrop-blur-sm transition-all duration-200"
-                triggerVariant="outline"
-                triggerSize="sm"
-              />
-            </div>
-          </div>
-          
-          {/* 📱 TEAM MANAGEMENT CONTENT */}
-          <div className="p-6">
+        )}>          
+          {/* 📱 CONTENT */}
+          <div className="p-4">
             {user.role === "admin" ? (
               <TeamManagementOperational selectedTeam={selectedTeam} />
             ) : (
-              <TeamMembersDropdown />
+              <>
+                {/* Pending Approvals for Non-Admins */}
+                <div className="mb-4 flex justify-end">
+                  <PendingApprovalsModal 
+                    triggerClassName="bg-gradient-to-r from-orange-500/20 to-amber-600/20 border border-orange-500/30 text-orange-300 hover:bg-orange-500/30 hover:text-orange-200 backdrop-blur-sm transition-all duration-200"
+                    triggerVariant="outline"
+                    triggerSize="sm"
+                  />
+                </div>
+                <TeamMembersDropdown />
+              </>
             )}
           </div>
         </div>

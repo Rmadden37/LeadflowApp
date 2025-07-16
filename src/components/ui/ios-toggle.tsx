@@ -26,9 +26,6 @@ const IOSToggle = React.forwardRef<HTMLButtonElement, IOSToggleProps>(({
       onClick={() => !disabled && onChange(!checked)}
       className={`ios-toggle ${checked ? 'checked' : ''} ${className || ''}`}
     >
-      {/* Green reveal area */}
-      <div className="ios-toggle-green-reveal" />
-      
       {/* Toggle thumb */}
       <span className="ios-toggle-thumb" />
     </button>

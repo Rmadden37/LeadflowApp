@@ -284,7 +284,7 @@ export default function TeamMembersDropdown() {
               className="w-full bg-gradient-to-r from-[var(--accent-primary)] to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               <UserCog className="mr-2 h-4 w-4" />
-              Update Profile
+              Edit User Profile
             </Button>
           </div>
 

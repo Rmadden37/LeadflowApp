@@ -457,7 +457,7 @@ export default function TeamUserManagement() {
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="font-semibold text-base lg:text-lg text-[var(--text-primary)] truncate">
+                            <p className="font-semibold text-base lg:text-lg text-[var(--text-primary)] break-words">
                               {teamMember.displayName || teamMember.email || "Unnamed User"}
                             </p>
                             {isCurrentUser && (
@@ -471,7 +471,7 @@ export default function TeamUserManagement() {
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-[var(--text-secondary)] mb-2 truncate">{teamMember.email}</p>
+                          <p className="text-sm text-[var(--text-secondary)] mb-2 break-all">{teamMember.email}</p>
                           
                           {/* Enhanced Role and Team Badges */}
                           <div className="flex flex-wrap gap-2">
@@ -510,8 +510,8 @@ export default function TeamUserManagement() {
                           aria-label={`Manage profile for ${teamMember.displayName || teamMember.email}`}
                         >
                           <UserCog className="mr-2 h-4 w-4" />
-                          <span className="hidden lg:inline">Manage Profile</span>
-                          <span className="lg:hidden">Manage</span>
+                          <span className="hidden lg:inline">Edit Profile</span>
+                          <span className="lg:hidden">Edit</span>
                         </Button>
                       </div>
                     </div>

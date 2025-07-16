@@ -293,17 +293,17 @@ const CloserCard = memo(function CloserCard({
   // Main content that will be rendered with or without card wrapper
   const cardContent = (
     <>
-      <div className="flex items-start space-x-3 w-full">
+      <div className="flex items-center space-x-2.5 w-full">
         {/* Position indicator */}
         {position && (
-          <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 text-slate-600 text-xs font-bold rounded-full border border-slate-300 closer-position-badge">
+          <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 text-slate-600 text-xs font-bold rounded-full border border-slate-300 closer-position-badge">
             {position}
           </div>
         )}
         
         <Avatar 
           ref={ref}
-          className="h-16 w-16 border-2 shadow-md flex-shrink-0 cursor-pointer transition-all duration-300 border-slate-200 closer-avatar"
+          className="h-12 w-12 border-2 shadow-md flex-shrink-0 cursor-pointer transition-all duration-300 border-slate-200 closer-avatar"
           onClick={handleProfileClick}
         >
           {inView ? (
@@ -318,21 +318,21 @@ const CloserCard = memo(function CloserCard({
           ) : (
             <div className="w-full h-full bg-slate-100"></div>
           )}
-          <AvatarFallback className="font-bold text-sm bg-blue-100 text-blue-900">
+          <AvatarFallback className="font-bold text-xs bg-blue-100 text-blue-900">
             {closer.name ? closer.name.substring(0, 2).toUpperCase() : "N/A"}
           </AvatarFallback>
         </Avatar>
         
-        <div className="flex-1 min-w-0 pl-1 closer-content">
+        <div className="flex-1 min-w-0 closer-content">
           <div className="flex items-center justify-start">
-            <p className="text-lg font-bold font-headline text-gray-900 truncate closer-name">
+            <p className="text-base font-semibold font-headline text-gray-900 break-words closer-name leading-tight">
               {closer.name || "Unnamed Closer"}
             </p>
           </div>
           
           {assignedLeadName ? (
             <div 
-              className={`flex items-start text-xs ${onLeadClick ? 'cursor-pointer hover:text-blue-600 transition-colors' : ''} text-blue-700 closer-working-indicator`}
+              className={`flex items-start text-xs mt-1 ${onLeadClick ? 'cursor-pointer hover:text-blue-600 transition-colors' : ''} text-blue-700 closer-working-indicator`}
               onClick={handleLeadClickMemo}
               role={onLeadClick ? "button" : undefined}
               tabIndex={onLeadClick ? 0 : undefined}
@@ -349,7 +349,7 @@ const CloserCard = memo(function CloserCard({
               </span>
             </div>
           ) : showInteractiveSwitch ? (
-            <div className="flex items-center space-x-2 closer-status-controls">
+            <div className="flex items-center space-x-2 mt-1 closer-status-controls">
               <PremiumSwitch
                 id={`status-toggle-${closer.uid}`}
                 checked={currentStatusIsOnDuty}
@@ -371,7 +371,7 @@ const CloserCard = memo(function CloserCard({
               </Label>
             </div>
           ) : (
-            <div className={`flex items-center text-xs ${currentStatusIsOnDuty ? "text-green-700" : "text-red-600"} closer-status-indicator`}>
+            <div className={`flex items-center text-xs mt-1 ${currentStatusIsOnDuty ? "text-green-700" : "text-red-600"} closer-status-indicator`}>
               {currentStatusIsOnDuty ? (
                 <UserCheck className="mr-1 h-3 w-3" />
               ) : (
@@ -386,7 +386,7 @@ const CloserCard = memo(function CloserCard({
       {/* Action buttons and move controls */}
       {((isWaitingAssignmentLead || isScheduledLead || isAcceptedLead) && onDispositionChange) || 
        (showMoveControls && onMove && !assignedLeadName) ? (
-        <div className="flex items-center justify-end space-x-1 mt-1.5 pt-1.5 border-t border-slate-200 closer-actions">
+        <div className="flex items-center justify-end space-x-1 mt-2 pt-2 border-t border-slate-200 closer-actions">
           {/* Accept & Start button for managers/admins on waiting_assignment and scheduled leads */}
           {(isWaitingAssignmentLead || isScheduledLead) && (user?.role === "manager" || user?.role === "admin") && onDispositionChange && (
             <EnhancedButton 
@@ -491,7 +491,7 @@ const CloserCard = memo(function CloserCard({
   if (renderAsCardContent) {
     return (
       <>
-        <div className="p-2.5">
+        <div className="p-2">
           {cardContent}
         </div>
         {profileModal}
@@ -500,8 +500,8 @@ const CloserCard = memo(function CloserCard({
   }
 
   return (
-    <Card className="transition-all duration-300 min-h-[100px] flex flex-col w-full max-w-full overflow-hidden">
-      <CardContent className="p-2.5 flex-1 w-full max-w-full overflow-hidden">
+    <Card className="transition-all duration-300 min-h-[80px] flex flex-col w-full max-w-full overflow-hidden">
+      <CardContent className="p-2 flex-1 w-full max-w-full overflow-hidden">
         {cardContent}
       </CardContent>
       {profileModal}

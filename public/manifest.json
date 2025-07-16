@@ -1,7 +1,7 @@
 {
-  "name": "LeadFlow",
+  "name": "LeadFlow CRM",
   "short_name": "LeadFlow",
-  "description": "Lead history and assignment system for sales teams",
+  "description": "Mobile-first CRM for lead management and team coordination",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#0F1419",
@@ -33,6 +33,25 @@
       "src": "favicon-32x32.png",
       "sizes": "32x32",
       "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/dashboard",
+      "description": "View your lead dashboard"
+    },
+    {
+      "name": "Team Management",
+      "url": "/dashboard/team-management",
+      "description": "Manage your team lineup"
+    }
+  ],
+  "prefer_related_applications": false
 }

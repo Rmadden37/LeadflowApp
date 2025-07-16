@@ -389,7 +389,7 @@ const UpdateUserProfileModal = ({ isOpen, onClose, user }: UpdateUserProfileModa
             <div className="p-2 rounded-lg bg-[var(--accent-primary)]/10">
               <User className="h-5 w-5 text-[var(--accent-light)]" />
             </div>
-            Update User Profile
+            Edit User Profile
           </DialogTitle>
           <DialogDescription>
             Manage profile information and settings for {user.displayName || user.email}
@@ -469,40 +469,6 @@ const UpdateUserProfileModal = ({ isOpen, onClose, user }: UpdateUserProfileModa
                   </p>
                 </div>
               </div>
-              
-              {(currentUser?.role === "manager" || currentUser?.role === "admin") && currentUser.uid !== user.uid && (
-                <Button
-                  onClick={handleDeactivateUser}
-                  disabled={isDeactivating}
-                  variant={user.status === "deactivated" ? "default" : "destructive"}
-                  size="sm"
-                  className={user.status === "deactivated" 
-                    ? "bg-green-600 hover:bg-green-700" 
-                    : "bg-red-600 hover:bg-red-700"
-                  }
-                >
-                  {isDeactivating ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {user.status === "deactivated" ? "Reactivating..." : "Deactivating..."}
-                    </>
-                  ) : (
-                    <>
-                      {user.status === "deactivated" ? (
-                        <>
-                          <User className="mr-2 h-4 w-4" />
-                          Reactivate User
-                        </>
-                      ) : (
-                        <>
-                          <UserX className="mr-2 h-4 w-4" />
-                          Deactivate User
-                        </>
-                      )}
-                    </>
-                  )}
-                </Button>
-              )}
             </div>
             
             {user.status === "deactivated" && (
@@ -702,7 +668,8 @@ const UpdateUserProfileModal = ({ isOpen, onClose, user }: UpdateUserProfileModa
 
         {/* Action Buttons - Fixed at bottom */}
         <div className="sticky bottom-0 bg-[var(--background)]/95 backdrop-blur-lg border-t border-[var(--glass-border)] p-4 -mx-6 -mb-6">
-          <div className="flex flex-col-reverse sm:flex-row gap-3">
+          {/* Main Action Buttons */}
+          <div className="flex flex-col-reverse sm:flex-row gap-3 mb-4">
             <Button
               variant="outline"
               onClick={onClose}
@@ -719,19 +686,57 @@ const UpdateUserProfileModal = ({ isOpen, onClose, user }: UpdateUserProfileModa
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Updating...
+                  Saving Profile...
                 </>
               ) : (
                 <>
                   <Save className="mr-2 h-4 w-4" />
-                  Save Changes
+                  Save Profile Changes
                 </>
               )}
             </Button>
           </div>
+
+          {/* Deactivate User Button - Prominently placed at bottom */}
+          {(currentUser?.role === "manager" || currentUser?.role === "admin") && currentUser.uid !== user.uid && (
+            <div className="border-t border-[var(--glass-border)] pt-4">
+              <Button
+                onClick={handleDeactivateUser}
+                disabled={isDeactivating}
+                variant={user.status === "deactivated" ? "default" : "destructive"}
+                size="lg"
+                className={`w-full min-h-[48px] font-semibold text-base shadow-lg transition-all duration-200 ${
+                  user.status === "deactivated" 
+                    ? "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white border-0 shadow-green-500/25" 
+                    : "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-red-500/25"
+                }`}
+              >
+                {isDeactivating ? (
+                  <>
+                    <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                    {user.status === "deactivated" ? "Reactivating User..." : "Deactivating User..."}
+                  </>
+                ) : (
+                  <>
+                    {user.status === "deactivated" ? (
+                      <>
+                        <User className="mr-3 h-5 w-5" />
+                        Reactivate User Account
+                      </>
+                    ) : (
+                      <>
+                        <UserX className="mr-3 h-5 w-5" />
+                        Deactivate User Account
+                      </>
+                    )}
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
           
           {user.status === "deactivated" && (
-            <div className="mt-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+            <div className="mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
               <p className="text-xs text-amber-400 text-center">
                 <AlertTriangle className="h-3 w-3 inline mr-1" />
                 Profile editing is disabled for deactivated users. Reactivate the user to make changes.

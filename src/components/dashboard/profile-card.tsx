@@ -145,7 +145,7 @@ export default function ProfileCard({ isOpen, onClose, profile }: ProfileCardPro
                   <Mail className="h-4 w-4 text-muted-foreground dark:text-turquoise/80 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground dark:text-gray-400 uppercase tracking-wide">Email</p>
-                    <p className="font-medium truncate dark:text-gray-200">{email}</p>
+                    <p className="font-medium break-all dark:text-gray-200">{email}</p>
                   </div>
                 </div>
                 <Button

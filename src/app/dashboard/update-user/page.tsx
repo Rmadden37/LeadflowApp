@@ -365,10 +365,10 @@ export default function UpdateUserPage() {
           
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Update User Profile
+              Edit User Profile
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Update information for {targetUser.displayName || targetUser.email}
+              Modify account details for {targetUser.displayName || targetUser.email}
             </p>
           </div>
         </div>
@@ -569,12 +569,12 @@ export default function UpdateUserPage() {
                   {saving ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
+                      Saving Profile...
                     </>
                   ) : (
                     <>
                       <Save className="mr-2 h-4 w-4" />
-                      Save Changes
+                      Save Profile Changes
                     </>
                   )}
                 </Button>

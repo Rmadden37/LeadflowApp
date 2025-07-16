@@ -8,8 +8,13 @@
   cursor: pointer;
   border-radius: 9999px;
   border: 2px solid transparent;
-  background-color: rgb(75, 85, 99); /* Gray background */
+  background-color: rgb(75, 85, 99); /* Gray background when OFF */
   transition: all 300ms ease-out;
+}
+
+/* iOS-style background when ON - full green track */
+.ios-toggle.checked {
+  background-color: #10b981; /* Green background when ON */
 }
 
 .ios-toggle:hover {
@@ -23,24 +28,6 @@
 .ios-toggle:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.ios-toggle-green-reveal {
-  position: absolute;
-  left: 4px;
-  top: 4px;
-  bottom: 4px;
-  border-radius: 9999px;
-  background-color: #10b981;
-  width: 0%;
-  opacity: 0;
-  transition: all 300ms ease-out;
-  transform-origin: left center;
-}
-
-.ios-toggle.checked .ios-toggle-green-reveal {
-  width: calc(60% - 4px);
-  opacity: 1;
 }
 
 .ios-toggle-thumb {

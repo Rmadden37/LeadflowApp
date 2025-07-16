@@ -207,7 +207,7 @@ export default function ManageClosersModal({isOpen, onClose}: ManageClosersModal
 
               {/* All closers in lineup order */}
               <ScrollArea className="max-h-[400px] scroll-area">
-                <div className="space-y-2 pb-2">
+                <div className="space-y-1.5 pb-2">
                   {closers.map((closer, index) => (
                     <div 
                       key={closer.uid} 
