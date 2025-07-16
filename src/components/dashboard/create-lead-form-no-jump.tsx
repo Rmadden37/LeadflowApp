@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { addDoc, collection, serverTimestamp, Timestamp } from "firebase/firestore";
+import { PhotoUploader } from "@/components/ui/photo-uploader";
 
 interface CreateLeadFormNoJumpProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
   const formRef = useRef<HTMLFormElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dispatchType, setDispatchType] = useState<'immediate' | 'scheduled'>('immediate');
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -62,7 +64,7 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
         assignedCloserId: assignToSelf ? user.uid : null,
         assignedCloserName: assignToSelf ? (user.displayName || user.email) : null,
         dispositionNotes: "",
-        photoUrls: [],
+        photoUrls: photoUrls,
       };
 
       // Handle scheduled appointment
@@ -76,6 +78,7 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
       // Reset form
       formRef.current?.reset();
       setDispatchType('immediate');
+      setPhotoUrls([]);
       
       // Call success callback which will handle toast and navigation
       if (onSuccess) onSuccess();
@@ -464,6 +467,16 @@ export default function CreateLeadFormNoJump({ isOpen, onClose, onSuccess, embed
                 required={dispatchType === 'scheduled'}
               />
             </div>
+          </div>
+
+          {/* Photo Upload Section */}
+          <div className="form-field">
+            <PhotoUploader
+              onPhotosChange={setPhotoUrls}
+              maxPhotos={5}
+              folder="leads"
+              label="Lead Photos"
+            />
           </div>
 
           {/* Submit Buttons - Swapped order: Create Lead left, Back right */}

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2, ShieldAlert, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-import TeamUserManagement from "@/components/dashboard/team-user-management";
+import TeamMembersDropdown from "@/components/dashboard/team-members-dropdown";
 
 /**
  * 🌟 AURELIAN'S PREMIUM iOS MANAGE TEAMS PAGE
@@ -129,7 +129,7 @@ export default function ManageTeamsPage() {
           
           {/* 📱 TEAM MANAGEMENT CONTENT */}
           <div className="p-6">
-            <TeamUserManagement />
+            <TeamMembersDropdown />
           </div>
         </div>
       </div>
