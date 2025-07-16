@@ -158,28 +158,73 @@
    MODAL DIALOG BACKGROUND FIXES
    =================================================================== */
 
-/* Ensure all modals have proper backgrounds */
+/* Ensure all modals have proper backgrounds - PREMIUM TRANSPARENT GLASS MORPHISM */
 .modal-background-fix {
-  background: rgba(30, 30, 30, 0.95) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(50px) saturate(180%) brightness(120%) !important;
+  -webkit-backdrop-filter: blur(50px) saturate(180%) brightness(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.6),
+    0 12px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Form inputs within modals */
 .modal-background-fix input,
 .modal-background-fix textarea,
 .modal-background-fix select {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .modal-background-fix input:focus,
 .modal-background-fix textarea:focus,
 .modal-background-fix select:focus {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
   border-color: #007AFF !important;
+}
+
+/* ===================================================================
+   PREMIUM TRANSPARENT GLASS MORPHISM - iOS 17+ MODAL SYSTEM
+   =================================================================== */
+
+/* Enhanced DialogContent component with premium transparent glass */
+[data-radix-dialog-content] {
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(50px) saturate(180%) brightness(120%) !important;
+  -webkit-backdrop-filter: blur(50px) saturate(180%) brightness(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.6),
+    0 12px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Update User Profile Modal - Specific enhancement */
+.update-user-profile-modal {
+  background: rgba(0, 0, 0, 0.68) !important;
+  backdrop-filter: blur(55px) saturate(200%) brightness(125%) !important;
+  -webkit-backdrop-filter: blur(55px) saturate(200%) brightness(125%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 
+    0 30px 100px rgba(0, 0, 0, 0.7),
+    0 15px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+/* All dark theme dialogs and modals */
+.dark [role="dialog"],
+.dark [data-radix-dialog-content],
+.dark .modal-background-fix {
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(50px) saturate(180%) brightness(120%) !important;
+  -webkit-backdrop-filter: blur(50px) saturate(180%) brightness(120%) !important;
 }
 
 /* ===================================================================

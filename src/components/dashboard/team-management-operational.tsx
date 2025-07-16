@@ -44,7 +44,7 @@ interface Team {
 
 interface CloserStatus {
   uid: string;
-  status: "On Duty" | "Off Duty";
+  status: "On Duty" | "Self-Gen Only";
 }
 
 interface TeamManagementOperationalProps {
@@ -146,7 +146,7 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
         const data = doc.data();
         statuses[doc.id] = {
           uid: doc.id,
-          status: data.status || "Off Duty"
+          status: data.status || "Self-Gen Only"
         };
       });
       setCloserStatuses(statuses);
@@ -173,8 +173,8 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
       return;
     }
 
-    const currentStatus = closerStatuses[user.uid]?.status || "Off Duty";
-    const newStatus = currentStatus === "On Duty" ? "Off Duty" : "On Duty";
+    const currentStatus = closerStatuses[user.uid]?.status || "Self-Gen Only";
+    const newStatus = currentStatus === "On Duty" ? "Self-Gen Only" : "On Duty";
     
     setTogglingUsers(prev => new Set(prev).add(user.uid));
 
@@ -259,7 +259,7 @@ export default function TeamManagementOperational({ selectedTeam = "all" }: Team
     const roleDetails = getRoleDetails(user.role);
     const RoleIcon = roleDetails.icon;
     const isCurrentUser = user.uid === managerUser?.uid;
-    const closerStatus = closerStatuses[user.uid]?.status || "Off Duty";
+    const closerStatus = closerStatuses[user.uid]?.status || "Self-Gen Only";
     const isToggling = togglingUsers.has(user.uid);
     
     return (

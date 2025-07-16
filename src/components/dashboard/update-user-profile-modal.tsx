@@ -383,7 +383,7 @@ const UpdateUserProfileModal = ({ isOpen, onClose, user }: UpdateUserProfileModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[95vh] overflow-y-auto modal-background-fix">
+      <DialogContent className="sm:max-w-3xl max-h-[95vh] overflow-y-auto modal-background-fix update-user-profile-modal">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-[var(--accent-primary)]/10">
