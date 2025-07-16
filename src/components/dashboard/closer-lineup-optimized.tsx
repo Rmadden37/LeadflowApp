@@ -6,9 +6,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot, doc, writeBatch } from "firebase/firestore";
-import { Users, Settings } from "lucide-react";
+import { Users, Settings, MessageCircle, UserX, Star } from "lucide-react";
 import ManageClosersModal from "./off-duty-closers-modal";
 import Image from 'next/image';
+
+// iOS Native Enhancements
+import { useIOSSwipeActions, type SwipeAction } from "@/hooks/use-ios-swipe-actions";
 
 // Import dnd-kit components for drag and drop
 import {
@@ -46,6 +49,112 @@ const SkeletonCloserLineup = memo(() => (
   </div>
 ));
 SkeletonCloserLineup.displayName = 'SkeletonCloserLineup';
+
+// Enhanced closer card with iOS swipe actions
+const SwipeableCloserCard = memo(({ 
+  closer, 
+  index, 
+  isCloser,
+  canManageClosers 
+}: { 
+  closer: Closer; 
+  index: number; 
+  isCloser: boolean;
+  canManageClosers: boolean;
+}) => {
+  const { toast } = useToast();
+
+  // Define swipe actions for managers
+  const swipeActions: SwipeAction[] = canManageClosers ? [
+    {
+      id: 'message',
+      label: 'Message',
+      icon: <MessageCircle size={16} />,
+      color: 'blue',
+      onAction: () => {
+        toast({
+          title: "Message Closer",
+          description: `Opening chat with ${closer.name}`,
+        });
+        // Navigate to chat or open message modal
+      },
+    },
+    {
+      id: 'priority',
+      label: 'Priority',
+      icon: <Star size={16} />,
+      color: 'orange',
+      onAction: () => {
+        toast({
+          title: "Set Priority",
+          description: `${closer.name} marked as priority closer`,
+        });
+        // Mark as priority closer logic
+      },
+    },
+    {
+      id: 'remove',
+      label: 'Remove',
+      icon: <UserX size={16} />,
+      color: 'red',
+      destructive: true,
+      onAction: () => {
+        toast({
+          title: "Remove from Lineup",
+          description: `${closer.name} removed from active lineup`,
+          variant: "destructive",
+        });
+        // Remove from lineup logic
+      },
+    },
+  ] : [];
+
+  const {
+    isSwipeActive,
+    swipeDistance,
+    direction,
+    activeActionIndex,
+    elementRef,
+    swipeContainerStyle,
+    getActionColor,
+    visibleActions,
+  } = useIOSSwipeActions({
+    actions: swipeActions,
+    enabled: canManageClosers,
+    threshold: 80,
+  });
+
+  return (
+    <div className="ios-swipe-container" ref={elementRef}>
+      {/* Swipe Actions Background */}
+      {isSwipeActive && visibleActions.length > 0 && (
+        <div className="ios-swipe-actions">
+          {visibleActions.map((action, actionIndex) => (
+            <div
+              key={action.id}
+              className={`ios-swipe-action ${getActionColor(action.color)}`}
+              style={{
+                opacity: actionIndex === activeActionIndex ? 1 : 0.7,
+                transform: actionIndex === activeActionIndex ? 'scale(1.05)' : 'scale(1)',
+              }}
+            >
+              <div className="flex flex-col items-center gap-1">
+                {action.icon}
+                <span className="text-xs">{action.label}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {/* Main Content */}
+      <div style={swipeContainerStyle}>
+        <CloserCard closer={closer} index={index} isCloser={isCloser} />
+      </div>
+    </div>
+  );
+});
+SwipeableCloserCard.displayName = 'SwipeableCloserCard';
 
 // Memoized closer card for performance - only re-renders if data changes
 const CloserCard = memo(({ 
@@ -222,9 +331,10 @@ interface SortableCloserCardProps {
   index: number;
   isCloser: boolean;
   isDragMode: boolean;
+  canManageClosers: boolean;
 }
 
-const SortableCloserCard = memo(({ closer, index, isCloser, isDragMode }: SortableCloserCardProps) => {
+const SortableCloserCard = memo(({ closer, index, isCloser, isDragMode, canManageClosers }: SortableCloserCardProps) => {
   const {
     attributes,
     listeners,
@@ -256,7 +366,12 @@ const SortableCloserCard = memo(({ closer, index, isCloser, isDragMode }: Sortab
         transition-all duration-200 ease-out
       `}
     >
-      <CloserCard closer={closer} index={index} isCloser={isCloser} />
+      <SwipeableCloserCard 
+        closer={closer} 
+        index={index} 
+        isCloser={isCloser} 
+        canManageClosers={canManageClosers && !isDragMode}
+      />
     </div>
   );
 }, (prev, next) => 
@@ -264,7 +379,8 @@ const SortableCloserCard = memo(({ closer, index, isCloser, isDragMode }: Sortab
   prev.closer.status === next.closer.status &&
   prev.index === next.index &&
   prev.isCloser === next.isCloser &&
-  prev.isDragMode === next.isDragMode
+  prev.isDragMode === next.isDragMode &&
+  prev.canManageClosers === next.canManageClosers
 );
 SortableCloserCard.displayName = 'SortableCloserCard';
 
@@ -658,6 +774,7 @@ export default function CloserLineupOptimized() {
                       index={index}
                       isCloser={isCloser}
                       isDragMode={isDragMode && canManageClosers}
+                      canManageClosers={canManageClosers}
                     />
                   ))}
                 </div>
