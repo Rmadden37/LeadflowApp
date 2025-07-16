@@ -1,0 +1,222 @@
+/* AURELIAN'S iOS-COMPLIANT VERIFICATION BUTTON STYLES */
+/* Resolves touch target interference in lead cards */
+
+/* Enhanced verification button prominence */
+.verification-button-enhanced {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(16px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.verification-button-enhanced:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px) translateZ(0);
+}
+
+.verification-button-enhanced:active {
+  transform: translateY(0) scale(0.96) translateZ(0);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.verification-button-verified {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.2));
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 
+    0 8px 32px rgba(16, 185, 129, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.verification-button-verified:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(16, 185, 129, 0.3));
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: 
+    0 12px 40px rgba(16, 185, 129, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Enhanced scheduled lead card layout */
+.aurelian-scheduled-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 120px;
+}
+
+.aurelian-scheduled-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Verification zone styling */
+.aurelian-verification-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 72px;
+  padding: 8px;
+}
+
+.aurelian-verification-status {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+}
+
+.aurelian-verification-status.verified {
+  color: #10b981;
+}
+
+.aurelian-verification-status.pending {
+  color: #f59e0b;
+}
+
+/* Appointment avatar styling */
+.aurelian-appointment-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.aurelian-appointment-avatar.verified {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.aurelian-appointment-avatar.unverified {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Customer name styling */
+.aurelian-customer-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Appointment time styling */
+.aurelian-appointment-time {
+  display: flex;
+  align-items: center;
+  color: #e5e5e5;
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+/* Time indicator badges */
+.aurelian-time-indicator {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.aurelian-time-indicator.urgent {
+  color: #f59e0b;
+}
+
+/* Lead meta information */
+.aurelian-lead-meta {
+  font-size: 12px;
+  color: #a1a1aa;
+  line-height: 1.4;
+}
+
+.aurelian-closer-assigned {
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+/* Priority badges */
+.aurelian-priority-badge {
+  font-size: 16px;
+  margin-left: 4px;
+}
+
+/* Urgency indicator bars */
+.aurelian-urgency-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 10;
+}
+
+.aurelian-urgency-bar.urgent {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.aurelian-urgency-bar.critical {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  animation: pulse 2s infinite;
+}
+
+.aurelian-urgency-bar.past {
+  background: linear-gradient(90deg, #ef4444, #7f1d1d);
+}
+
+/* Card state variations */
+.aurelian-scheduled-card.verified {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.aurelian-scheduled-card.urgent {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.aurelian-scheduled-card.critical {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.aurelian-scheduled-card.past-due {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(127, 29, 29, 0.1);
+}
+
+/* iOS-style checkmark icon */
+.checkmark-icon {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+}
+
+/* Enhanced touch targets for iOS compliance */
+@media (max-width: 768px) {
+  .aurelian-verification-zone {
+    min-width: 80px;
+    padding: 12px 8px;
+  }
+  
+  .aurelian-scheduled-card {
+    min-height: 132px; /* Increased for better mobile touch */
+  }
+}

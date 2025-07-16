@@ -27,7 +27,6 @@ import { PremiumProfileImage } from "@/components/premium/premium-images";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Loader2, 
-  User, 
   Mail, 
   ShieldCheck, 
   Edit3, 
@@ -41,8 +40,7 @@ import {
   LogOut, 
   UserCheck,
   ChevronRight,
-  Check,
-  X
+  Check
 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
@@ -114,7 +112,7 @@ async function canvasPreview(
   ctx.restore();
 }
 
-export default function EnhancedProfilePage() {
+export default function ProfilePage() {
   const { user, firebaseUser, loading: authLoading, logout } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
@@ -300,11 +298,17 @@ export default function EnhancedProfilePage() {
 
   // Navigation handlers
   const handleNotificationSettings = () => {
-    router.push('/dashboard/profile/notifications');
+    toast({
+      title: "Coming Soon", 
+      description: "Notification settings will open in a dedicated screen."
+    });
   };
 
   const handleThemeSettings = () => {
-    router.push('/dashboard/profile/preferences');
+    toast({
+      title: "Coming Soon", 
+      description: "Theme preferences will open in a dedicated screen."
+    });
   };
 
   const handleAdminTools = () => {
@@ -652,8 +656,8 @@ export default function EnhancedProfilePage() {
                   style={{
                     border: "1px solid black",
                     objectFit: "contain",
-                    inlineSize: completedCrop?.width ?? 0,
-                    blockSize: completedCrop?.height ?? 0,
+                    width: completedCrop?.width ?? 0,
+                    height: completedCrop?.height ?? 0,
                     borderRadius: "50%",
                   }}
                 />

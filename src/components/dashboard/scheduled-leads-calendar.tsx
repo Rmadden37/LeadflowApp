@@ -73,7 +73,13 @@ export default function ScheduledLeadsCalendar({ scheduledLeads, loading, isExpa
                   {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 calendar-popover-content" align="start">
+              <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 shadow-2xl" align="start" style={{
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                background: 'rgba(255, 255, 255, 0.98)',
+                borderColor: 'rgba(0, 0, 0, 0.15)',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15)',
+              }}>
                 <CalendarComponent
                   mode="single"
                   selected={selectedDate}

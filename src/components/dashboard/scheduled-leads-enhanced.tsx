@@ -184,6 +184,7 @@ const EnhancedLeadCard = ({
           <div className="flex items-center gap-2">
             <VerifiedCheckbox 
               leadId={lead.id}
+              variant="compact"
               className="scale-90"
             />
             <span className={cn(
@@ -218,9 +219,9 @@ const EnhancedLeadCard = ({
           variant="ghost"
           className={cn(
             "w-12 h-12 rounded-2xl p-0 transition-all duration-200",
-            "bg-green-500/20 hover:bg-green-500/40 border border-green-500/30",
-            "text-green-400 hover:text-green-300",
-            "active:scale-95"
+            "bg-green-500 hover:bg-green-600 border-0",
+            "text-white",
+            "active:scale-95 shadow-lg shadow-green-500/25"
           )}
           onClick={(e) => {
             e.stopPropagation();
@@ -231,15 +232,15 @@ const EnhancedLeadCard = ({
           <Phone className="w-5 h-5" />
         </Button>
         
-        {/* Reschedule action */}
+        {/* Update Lead action */}
         <Button
           size="sm"
           variant="ghost"
           className={cn(
             "w-12 h-12 rounded-2xl p-0 transition-all duration-200",
-            "bg-orange-500/20 hover:bg-orange-500/40 border border-orange-500/30",
-            "text-orange-400 hover:text-orange-300",
-            "active:scale-95"
+            "bg-blue-500 hover:bg-blue-600 border-0",
+            "text-white",
+            "active:scale-95 shadow-lg shadow-blue-500/25"
           )}
           onClick={(e) => {
             e.stopPropagation();
@@ -256,9 +257,9 @@ const EnhancedLeadCard = ({
           variant="ghost"
           className={cn(
             "w-12 h-12 rounded-2xl p-0 transition-all duration-200",
-            "bg-blue-500/20 hover:bg-blue-500/40 border border-blue-500/30",
-            "text-blue-400 hover:text-blue-300",
-            "active:scale-95"
+            "bg-purple-500 hover:bg-purple-600 border-0",
+            "text-white",
+            "active:scale-95 shadow-lg shadow-purple-500/25"
           )}
           onClick={(e) => {
             e.stopPropagation();
@@ -466,7 +467,13 @@ export default function ScheduledLeadsSection() {
                   <CalendarDays className="w-5 h-5 text-white/80" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="end">
+              <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 shadow-2xl" align="end" style={{
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                background: 'rgba(255, 255, 255, 0.98)',
+                borderColor: 'rgba(0, 0, 0, 0.15)',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15)',
+              }}>
                 <CalendarComponent
                   mode="single"
                   selected={selectedDate}
@@ -515,25 +522,6 @@ export default function ScheduledLeadsSection() {
           >
             Tomorrow
           </Button>
-        </div>
-        
-        {/* Verification stats with better visual hierarchy */}
-        <div className="flex items-center justify-center gap-6 pt-4 border-t border-white/10">
-          <div className="text-center">
-            <div className="text-lg font-semibold text-green-400">
-              {verifiedLeads.length}
-            </div>
-            <div className="text-xs text-white/60">Verified</div>
-          </div>
-          
-          <div className="w-px h-6 bg-white/10" />
-          
-          <div className="text-center">
-            <div className="text-lg font-semibold text-orange-400">
-              {unverifiedLeads.length}
-            </div>
-            <div className="text-xs text-white/60">Pending</div>
-          </div>
         </div>
       </div>
 
@@ -661,7 +649,7 @@ export default function ScheduledLeadsSection() {
                 <div className="col-span-2 space-y-1">
                   <p className="text-sm text-white/60">Verification Status</p>
                   <div className="flex items-center gap-2">
-                    <VerifiedCheckbox leadId={selectedLead.id} />
+                    <VerifiedCheckbox leadId={selectedLead.id} variant="standard" />
                     <p className="font-medium text-white">
                       {selectedLead.setterVerified ? "Verified" : "Not Verified"}
                     </p>
@@ -669,11 +657,11 @@ export default function ScheduledLeadsSection() {
                 </div>
               </div>
               
-              {/* iOS-native action buttons */}
+              {/* iOS-native action buttons with color fill */}
               <div className="flex gap-2 pt-4">
                 <Button
                   onClick={() => handleCall(selectedLead)}
-                  className="flex-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 active:scale-95 transition-all"
+                  className="flex-1 bg-green-500 hover:bg-green-600 text-white border-0 active:scale-95 transition-all shadow-lg shadow-green-500/25"
                 >
                   <Phone className="w-4 h-4 mr-2" />
                   Call
@@ -683,10 +671,10 @@ export default function ScheduledLeadsSection() {
                     setShowLeadDetails(false);
                     handleReschedule(selectedLead);
                   }}
-                  className="flex-1 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30 active:scale-95 transition-all"
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white border-0 active:scale-95 transition-all shadow-lg shadow-blue-500/25"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
-                  Reschedule
+                  Update Lead
                 </Button>
               </div>
             </div>

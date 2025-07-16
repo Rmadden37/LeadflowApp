@@ -1,0 +1,94 @@
+/* ===================================================================
+   NUCLEAR iPhone 15 Pro Max Bottom Navigation Fix
+   Absolute brute force override for stubborn navigation positioning
+   =================================================================== */
+
+/* NUCLEAR-LEVEL TARGETING - Override EVERYTHING */
+@supports (-webkit-touch-callout: none) {
+  /* Target EXACT Tailwind classes being used in BottomNav component */
+  .bottom-nav-container.fixed.left-0.right-0,
+  nav.bottom-nav-container.fixed.left-0.right-0,
+  .fixed.left-0.right-0.z-\\[1000\\],
+  nav.fixed.left-0.right-0.z-\\[1000\\],
+  .bottom-nav-container,
+  nav[class*="bottom-nav-container"],
+  [class*="bottom-nav-container"],
+  nav.fixed.bottom-\\[env\\(safe-area-inset-bottom\\)\\],
+  .fixed.bottom-\\[env\\(safe-area-inset-bottom\\)\\] {
+    /* OPTIMAL POSITIONING - Proper spacing above home indicator */
+    bottom: calc(env(safe-area-inset-bottom, 8px) + 16px) !important;
+    position: fixed !important;
+    z-index: 9999 !important;
+    
+    /* Force all height properties */
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    
+    /* Force visibility */
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+    
+    /* Enhanced glassmorphism */
+    background: rgba(0, 0, 0, 0.9) !important;
+    backdrop-filter: blur(30px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+    
+    /* Strong visual border */
+    border-top: 2px solid rgba(255, 255, 255, 0.3) !important;
+    
+    /* Enhanced shadow */
+    box-shadow: 
+      0 -15px 50px rgba(0, 0, 0, 0.6),
+      0 -5px 20px rgba(0, 0, 0, 0.4) !important;
+  }
+}
+
+/* NUCLEAR override for ANY inline styles */
+@supports (-webkit-touch-callout: none) {
+  .bottom-nav-container[style],
+  nav[class*="bottom-nav-container"][style] {
+    /* Override ANY inline bottom style with proper positioning */
+    bottom: calc(env(safe-area-inset-bottom, 8px) + 16px) !important;
+  }
+}
+
+/* NUCLEAR override for ANY Tailwind bottom classes */
+.bottom-\\[env\\(safe-area-inset-bottom\\)\\],
+.sm\\:bottom-0,
+.bottom-0 {
+  bottom: calc(env(safe-area-inset-bottom, 8px) + 16px) !important;
+}
+
+/* Content spacing for proper positioning */
+@supports (-webkit-touch-callout: none) {
+  .main-content-with-bottom-nav,
+  .dashboard-safe-content,
+  .native-scroll-container,
+  .dashboard-content-container,
+  main {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 8px)) !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+/* Debug confirmation - remove this in production */
+@supports (-webkit-touch-callout: none) {
+  .bottom-nav-container::before {
+    content: 'iOS Navigation Positioned';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: #0A84FF;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 10000;
+    /* Remove this debug helper once confirmed working */
+  }
+}

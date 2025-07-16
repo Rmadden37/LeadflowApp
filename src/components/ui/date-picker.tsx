@@ -101,7 +101,7 @@ export function DatePicker({
           {createPortal(
             <div 
               data-calendar-portal
-              className="fixed z-[99999] bg-background border shadow-xl rounded-md p-0 pointer-events-auto"
+              className="fixed z-[99999] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl rounded-xl p-3 pointer-events-auto"
               style={{
                 top: buttonRef.current 
                   ? buttonRef.current.getBoundingClientRect().bottom + window.scrollY + 4
@@ -109,6 +109,11 @@ export function DatePicker({
                 left: buttonRef.current 
                   ? buttonRef.current.getBoundingClientRect().left + window.scrollX
                   : 0,
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                background: 'rgba(255, 255, 255, 0.95)',
+                borderColor: 'rgba(0, 0, 0, 0.1)',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15)',
               }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -123,12 +128,15 @@ export function DatePicker({
                 }}
                 disabled={finalDisabled}
                 initialFocus
-                className="rounded-md pointer-events-auto"
+                className="rounded-lg pointer-events-auto bg-transparent"
                 classNames={{
-                  day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground pointer-events-auto",
-                  day_today: "bg-accent text-accent-foreground font-semibold pointer-events-auto",
-                  day: "pointer-events-auto cursor-pointer",
-                  button: "pointer-events-auto",
+                  day_selected: "bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white !bg-opacity-100 shadow-lg border-2 border-blue-400 pointer-events-auto",
+                  day_today: "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold pointer-events-auto",
+                  day: "pointer-events-auto cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800",
+                  button: "pointer-events-auto text-gray-900 dark:text-gray-100",
+                  caption: "text-gray-900 dark:text-gray-100 font-medium",
+                  nav_button: "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
+                  head_cell: "text-gray-600 dark:text-gray-400",
                 }}
               />
             </div>,

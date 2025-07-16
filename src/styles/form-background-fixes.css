@@ -132,6 +132,28 @@
     0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
 }
 
+/* Date picker portal calendar - Enhanced visibility */
+[data-calendar-portal] {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05) inset !important;
+}
+
+/* Dark mode date picker portal */
+.dark [data-calendar-portal] {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+}
+
 /* ===================================================================
    MODAL DIALOG BACKGROUND FIXES
    =================================================================== */
@@ -252,4 +274,51 @@
 .form-button-secondary:hover {
   background: rgba(255, 255, 255, 0.15) !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ===================================================================
+   ENHANCED DATE PICKER CALENDAR VISIBILITY
+   =================================================================== */
+
+/* Date picker portal calendar - Enhanced visibility for light backgrounds */
+[data-calendar-portal] {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.1) inset !important;
+}
+
+/* Dark mode date picker portal */
+.dark [data-calendar-portal] {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset !important;
+}
+
+/* Enhanced calendar day visibility */
+[data-calendar-portal] .day {
+  color: rgba(0, 0, 0, 0.9) !important;
+  font-weight: 500 !important;
+}
+
+.dark [data-calendar-portal] .day {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Calendar header and navigation visibility */
+[data-calendar-portal] .caption,
+[data-calendar-portal] .nav_button {
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.dark [data-calendar-portal] .caption,
+.dark [data-calendar-portal] .nav_button {
+  color: rgba(255, 255, 255, 0.8) !important;
 }

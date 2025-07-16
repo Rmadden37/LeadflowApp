@@ -194,7 +194,9 @@ const LeadDispositionModal: React.FC<LeadDispositionModalProps> = ({lead, isOpen
       }
       const [hours, minutes] = appointmentTime.split(':').map(Number);
       // Create date in local timezone to avoid UTC conversion issues
-      const combinedDateTime = new Date(appointmentDate + 'T' + appointmentTime + ':00');
+      // Convert appointmentDate to YYYY-MM-DD format for proper ISO string construction
+      const dateString = appointmentDate.toISOString().split('T')[0];
+      const combinedDateTime = new Date(dateString + 'T' + appointmentTime + ':00');
 
       if (combinedDateTime <= new Date()) {
         haptic.formError();
@@ -429,13 +431,13 @@ const LeadDispositionModal: React.FC<LeadDispositionModalProps> = ({lead, isOpen
           )}
 
           {selectedStatus === "rescheduled" && (
-            <div className="space-y-3 frosted-glass-card p-3">
+            <div className="space-y-3 frosted-glass-card p-4 bg-white/10 border-white/20">
               <Label className="text-sm font-medium text-[var(--text-primary)]">Set Appointment Time</Label>
               <DatePicker
                 date={appointmentDate}
                 onDateChange={setAppointmentDate}
                 placeholder="Pick a date"
-                className="w-full bg-transparent border-[var(--glass-border)] text-[var(--text-primary)]"
+                className="w-full bg-white/10 border-white/30 text-[var(--text-primary)] hover:bg-white/20"
               />
               <div className="w-full">
                 <TimePicker
@@ -443,6 +445,7 @@ const LeadDispositionModal: React.FC<LeadDispositionModalProps> = ({lead, isOpen
                   onTimeChange={(time) => setAppointmentTime(time ?? "17:00")}
                   placeholder="Select time"
                   timeSlots={timeSlots}
+                  className="bg-white/10 border-white/30 text-[var(--text-primary)]"
                 />
               </div>
             </div>

@@ -487,6 +487,7 @@ export default function LeadManagementPage() {
                         <VerifiedCheckbox 
                           leadId={lead.id} 
                           disabled={editingLead === lead.id}
+                          variant="standard"
                           className="flex justify-center"
                         />
                       </TableCell>

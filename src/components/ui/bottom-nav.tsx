@@ -82,32 +82,13 @@ const BottomNav = React.forwardRef<
     <nav
       ref={ref}
       className={cn(
-        // Clean, iOS-native positioning with iPhone-specific safe area
-        "fixed left-0 right-0 z-[1000]",
-        // iPhone-specific bottom positioning - optimized for newer models
-        "bottom-[env(safe-area-inset-bottom)] sm:bottom-0", 
-        // Enhanced iOS heights with safe area
-        "h-[66px] sm:h-16",
-        // Enhanced padding for iPhone safe area
-        "pb-[calc(env(safe-area-inset-bottom)+10px)] sm:pb-safe-bottom",
-        // Enhanced iOS glass morphism with modern blur
-        "bg-black/88 backdrop-blur-[24px] border-t border-white/15",
-        // Smooth entrance animation
-        "animate-in slide-in-from-bottom-2 duration-300",
+        // Add bottom-nav-container class for CSS targeting
+        "bottom-nav-container",
+        // Let CSS handle all positioning and styling
         className
       )}
       style={{
-        // Enhanced iOS 17+ blur effect with saturation and brightness
-        backdropFilter: "blur(24px) saturate(200%) brightness(110%)",
-        WebkitBackdropFilter: "blur(24px) saturate(200%) brightness(110%)",
-        // Enhanced shadow depth for modern iOS look
-        boxShadow: `
-          0 -1px 0 rgba(255, 255, 255, 0.1) inset,
-          0 -8px 32px rgba(0, 0, 0, 0.4),
-          0 -2px 8px rgba(0, 0, 0, 0.2)
-        `,
-        // iPhone-specific bottom positioning for home indicator
-        bottom: "calc(env(safe-area-inset-bottom, 34px) + 16px)",
+        // All styles now handled by CSS for better control
         ...({} as React.CSSProperties),
       }}
       {...props}

@@ -18,7 +18,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format, isSameDay } from "date-fns";
 import LeadDetailsDialog from "./lead-details-dialog";
 
-const FORTY_FIVE_MINUTES_MS = 45 * 60 * 1000;
 const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
 const MIN_LEAD_AGE_MS = 2 * 60 * 1000; // Don't process leads that are less than 2 minutes old
 
@@ -226,11 +225,10 @@ export default function LeadQueue() {
       setScheduledLeads(leadsData);
       setLoadingScheduled(false);
 
-      // Process scheduled leads for automatic transitions
+      // Process scheduled leads for automatic cleanup of expired leads only
+      // Note: 45-minute transitions are now handled by server-side Firebase Function
       const now = new Date();
-      const leadsToMoveBatch = writeBatch(db);
       const leadsToRemoveBatch = writeBatch(db);
-      let leadsMovedCount = 0;
       let leadsRemovedCount = 0;
 
       querySnapshot.docs.forEach((docSnapshot) => {
@@ -241,7 +239,6 @@ export default function LeadQueue() {
             (lead.status === "rescheduled" || lead.status === "scheduled") &&
             !processedScheduledLeadIds.has(lead.id)) {
           const appointmentTime = leadScheduledAppointmentTime.toDate();
-          const timeUntilAppointment = appointmentTime.getTime() - now.getTime();
           const timePastAppointment = now.getTime() - appointmentTime.getTime();
           
           // Check lead age to prevent processing newly created leads
@@ -278,17 +275,7 @@ export default function LeadQueue() {
               leadsRemovedCount++;
             }
           }
-          // Handle future appointments (negative timePastAppointment means appointment is in the future)
-          else if (timeUntilAppointment <= FORTY_FIVE_MINUTES_MS && timeUntilAppointment > 0 && lead.setterVerified === true) {
-            console.log('⏭️ Moving verified lead to waiting assignment (45 min window):', lead.customerName);
-            const leadRef = doc(db, "leads", lead.id);
-            leadsToMoveBatch.update(leadRef, {
-              status: "waiting_assignment",
-              updatedAt: serverTimestamp(),
-            });
-            setProcessedScheduledLeadIds((prev) => new Set(prev).add(lead.id));
-            leadsMovedCount++;
-          }
+          // 45-minute transition logic removed - now handled by server-side Firebase Function
         }
       });
 
@@ -306,23 +293,6 @@ export default function LeadQueue() {
           toast({
             title: "Processing Failed",
             description: "Could not process expired leads automatically.",
-            variant: "destructive",
-          });
-        }
-      }
-
-      if (leadsMovedCount > 0) {
-        try {
-          await leadsToMoveBatch.commit();
-          console.log(`✅ Successfully moved ${leadsMovedCount} verified leads to waiting assignment`);
-          toast({
-            title: "Verified Leads Ready",
-            description: `${leadsMovedCount} verified lead(s) moved to waiting list for assignment.`,
-          });
-        } catch {
-          toast({
-            title: "Update Failed",
-            description: "Could not move verified leads automatically.",
             variant: "destructive",
           });
         }
@@ -423,71 +393,83 @@ export default function LeadQueue() {
               const isPast = timeUntilAppointment && timeUntilAppointment < 0;
               
               return (
-                <div key={lead.id} className={`aurelian-scheduled-card ${isUrgent ? 'urgent' : ''} ${isCritical ? 'critical' : ''} ${isPast ? 'past-due' : ''} ${lead.setterVerified ? 'verified' : 'unverified'} cursor-pointer transition-all duration-300`} onClick={() => handleLeadClick(lead)}>
+                <div key={lead.id} className={`aurelian-scheduled-card ${isUrgent ? 'urgent' : ''} ${isCritical ? 'critical' : ''} ${isPast ? 'past-due' : ''} ${lead.setterVerified ? 'verified' : 'unverified'} transition-all duration-300`}>
                   {/* Urgency Indicator Bar */}
                   {(isUrgent || isCritical || isPast) && (
                     <div className={`aurelian-urgency-bar ${isCritical ? 'critical' : isPast ? 'past' : 'urgent'}`} />
                   )}
                   
-                  <div className="p-4">
-                    <div className="flex items-start gap-3">
-                      {/* Dynamic Status Avatar */}
-                      <div className={`aurelian-appointment-avatar ${lead.setterVerified ? 'verified' : 'unverified'}`}>
-                        {lead.setterVerified ? (
-                          <div className="checkmark-icon">✓</div>
-                        ) : (
-                          <CalendarClock className="w-5 h-5" />
-                        )}
-                      </div>
-                      
-                      {/* Main Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            {/* Customer Name with Priority Indicator */}
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="aurelian-customer-name">
-                                {lead.customerName}
-                              </h3>
-                              {isUrgent && (
-                                <span className="aurelian-priority-badge">
-                                  {isCritical ? '🔥' : '⚡'}
-                                </span>
-                              )}
-                            </div>
-                            
-                            {/* Appointment Time - Prominent Display */}
-                            <div className="aurelian-appointment-time">
-                              <CalendarClock className="w-4 h-4 mr-2" />
-                              <span className="font-semibold">
-                                {appointmentTime ? format(appointmentTime, "MMM d, h:mm a") : "No time set"}
+                  {/* Main clickable area - excludes verification zone */}
+                  <div 
+                    className="cursor-pointer hover:bg-white/5 transition-colors duration-200"
+                    onClick={() => handleLeadClick(lead)}
+                  >
+                    <div className="p-4 pr-0">
+                      <div className="flex items-start gap-3">
+                        {/* Dynamic Status Avatar */}
+                        <div className={`aurelian-appointment-avatar ${lead.setterVerified ? 'verified' : 'unverified'}`}>
+                          {lead.setterVerified ? (
+                            <div className="checkmark-icon">✓</div>
+                          ) : (
+                            <CalendarClock className="w-5 h-5" />
+                          )}
+                        </div>
+                        
+                        {/* Main Content - excludes verification area */}
+                        <div className="flex-1 min-w-0 pr-4">
+                          {/* Customer Name with Priority Indicator */}
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="aurelian-customer-name">
+                              {lead.customerName}
+                            </h3>
+                            {isUrgent && (
+                              <span className="aurelian-priority-badge">
+                                {isCritical ? '🔥' : '⚡'}
                               </span>
-                              {timeUntilAppointment && (
-                                <span className={`aurelian-time-indicator ${isUrgent ? 'urgent' : ''}`}>
-                                  {isPast ? ' (Overdue)' : ` (${Math.floor(timeUntilAppointment / (60 * 1000))}m)`}
-                                </span>
-                              )}
-                            </div>
-                            
-                            {/* Secondary Info */}
-                            <div className="aurelian-lead-meta">
-                              <span>Source: {lead.setterName || 'Web Inquiry'}</span>
-                              {lead.assignedCloserName && (
-                                <span className="aurelian-closer-assigned">
-                                  • Closer: {lead.assignedCloserName}
-                                </span>
-                              )}
-                            </div>
+                            )}
                           </div>
                           
-                          {/* Verification Status */}
-                          <div className="aurelian-verification-zone">
-                            {lead.id && <VerifiedCheckbox leadId={lead.id} />}
-                            <div className={`aurelian-verification-status ${lead.setterVerified ? 'verified' : 'pending'}`}>
-                              {lead.setterVerified ? 'Verified' : 'Pending'}
-                            </div>
+                          {/* Appointment Time - Prominent Display */}
+                          <div className="aurelian-appointment-time">
+                            <CalendarClock className="w-4 h-4 mr-2" />
+                            <span className="font-semibold">
+                              {appointmentTime ? format(appointmentTime, "MMM d, h:mm a") : "No time set"}
+                            </span>
+                            {timeUntilAppointment && (
+                              <span className={`aurelian-time-indicator ${isUrgent ? 'urgent' : ''}`}>
+                                {isPast ? ' (Overdue)' : ` (${Math.floor(timeUntilAppointment / (60 * 1000))}m)`}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Secondary Info */}
+                          <div className="aurelian-lead-meta">
+                            <span>Source: {lead.setterName || 'Web Inquiry'}</span>
+                            {lead.assignedCloserName && (
+                              <span className="aurelian-closer-assigned">
+                                • Closer: {lead.assignedCloserName}
+                              </span>
+                            )}
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Separate Verification Zone - iOS-compliant touch target */}
+                  <div className="absolute top-0 right-0 h-full flex flex-col items-center justify-center px-2 bg-gradient-to-l from-black/10 to-transparent">
+                    <div className="aurelian-verification-zone flex flex-col items-center gap-1">
+                      {lead.id && (
+                        <VerifiedCheckbox 
+                          leadId={lead.id} 
+                          variant="compact"
+                          className="mb-1"
+                        />
+                      )}
+                      <div className={`aurelian-verification-status text-center ${lead.setterVerified ? 'verified' : 'pending'}`}>
+                        <span className="text-xs font-medium">
+                          {lead.setterVerified ? 'Verified' : 'Pending'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -527,9 +509,70 @@ export default function LeadQueue() {
           <div className="flex items-center gap-2">
             <ListChecks className="w-4 h-4" />
             Waiting List 
-            <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-[#007AFF] rounded-full min-w-[1.5rem] h-6 shadow-lg shadow-[#007AFF]/25">
-              {waitingLeads.length}
-            </span>
+            {(() => {
+              const verifiedWaiting = waitingLeads.filter(lead => lead.setterVerified === true).length;
+              const unverifiedWaiting = waitingLeads.filter(lead => lead.setterVerified !== true).length;
+              
+              // Aurelian's enhanced urgency detection
+              const isHighUrgency = unverifiedWaiting > 3;
+              const isHighCapacity = verifiedWaiting > 5;
+              
+              return (
+                <div className="flex items-center gap-1.5">
+                  {/* Always show verified badge - even when 0 for consistency */}
+                  <div className="group relative">
+                    <span 
+                      className={`inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white rounded-full min-w-[1.5rem] h-6 shadow-lg transition-all duration-200 active:scale-95 ${
+                        verifiedWaiting === 0
+                          ? "bg-gray-500/50 backdrop-blur-sm text-white/60 shadow-gray-500/25"
+                          : isHighCapacity 
+                            ? "bg-green-600 shadow-green-600/40 animate-pulse" 
+                            : "bg-green-500/90 backdrop-blur-sm shadow-green-500/25"
+                      }`}
+                      onTouchStart={() => {
+                        if (navigator.vibrate) navigator.vibrate(verifiedWaiting > 0 ? 5 : 3);
+                      }}
+                      title={verifiedWaiting === 0 
+                        ? "No verified leads waiting"
+                        : `${verifiedWaiting} verified lead${verifiedWaiting !== 1 ? 's' : ''} ready to assign`}
+                    >
+                      ✓{verifiedWaiting}
+                    </span>
+                    {/* Aurelian's progressive disclosure tooltip */}
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      {verifiedWaiting === 0 ? "No verified leads" : "Ready to assign"}
+                    </div>
+                  </div>
+                  
+                  {/* Always show unverified badge - even when 0 for consistency */}
+                  <div className="group relative">
+                    <span 
+                      className={`inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white rounded-full min-w-[1.5rem] h-6 shadow-lg transition-all duration-200 active:scale-95 ${
+                        unverifiedWaiting === 0
+                          ? "bg-gray-500/50 backdrop-blur-sm text-white/60 shadow-gray-500/25"
+                          : isHighUrgency 
+                            ? "bg-red-500 shadow-red-500/40 animate-pulse" 
+                            : "bg-orange-500/90 backdrop-blur-sm shadow-orange-500/25"
+                      }`}
+                      onTouchStart={() => {
+                        if (navigator.vibrate) navigator.vibrate(unverifiedWaiting === 0 ? 3 : isHighUrgency ? 15 : 8);
+                      }}
+                      title={unverifiedWaiting === 0 
+                        ? "No leads need verification"
+                        : `${unverifiedWaiting} lead${unverifiedWaiting !== 1 ? 's' : ''} need${unverifiedWaiting === 1 ? 's' : ''} verification`}
+                    >
+                      !{unverifiedWaiting}
+                    </span>
+                    {/* Aurelian's progressive disclosure tooltip */}
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      {unverifiedWaiting === 0 
+                        ? "No verification needed" 
+                        : isHighUrgency ? "Urgent: Verify now!" : "Needs verification"}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </button>
         <button
@@ -545,12 +588,17 @@ export default function LeadQueue() {
             <CalendarClock className="w-4 h-4" />
             Scheduled 
             {(() => {
-              const scheduledCount = scheduledLeads.filter(lead => {
+              const now = new Date();
+              
+              const filteredScheduledLeads = scheduledLeads.filter(lead => {
                 if (!lead.scheduledAppointmentTime) return false;
                 
                 // Special case: if selectedDate is in far future (show all mode)
                 if (selectedDate.getFullYear() > 2029) {
-                  return true;
+                  // For "all dates" mode, exclude leads 15+ minutes past their scheduled time
+                  const appointmentTime = lead.scheduledAppointmentTime.toDate();
+                  const timePastAppointment = now.getTime() - appointmentTime.getTime();
+                  return timePastAppointment < FIFTEEN_MINUTES_MS;
                 }
                 
                 const appointmentDate = lead.scheduledAppointmentTime.toDate();
@@ -560,12 +608,22 @@ export default function LeadQueue() {
                 selectedDateEnd.setHours(23, 59, 59, 999);
                 
                 const appointmentTime = appointmentDate.getTime();
-                return appointmentTime >= selectedDateStart.getTime() && appointmentTime <= selectedDateEnd.getTime();
-              }).length;
+                const isInDateRange = appointmentTime >= selectedDateStart.getTime() && appointmentTime <= selectedDateEnd.getTime();
+                
+                // For specific date, also exclude leads 15+ minutes past their scheduled time
+                if (isInDateRange) {
+                  const timePastAppointment = now.getTime() - appointmentTime;
+                  return timePastAppointment < FIFTEEN_MINUTES_MS;
+                }
+                
+                return false;
+              });
+              
+              const totalCount = filteredScheduledLeads.length;
               
               return (
-                <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-[#007AFF] rounded-full min-w-[1.5rem] h-6 shadow-lg shadow-[#007AFF]/25">
-                  {scheduledCount}
+                <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-blue-500/90 backdrop-blur-sm rounded-full min-w-[1.5rem] h-6 shadow-lg shadow-blue-500/25 transition-all duration-200 active:scale-95">
+                  {totalCount}
                 </span>
               );
             })()}
@@ -586,7 +644,13 @@ export default function LeadQueue() {
                 {selectedDate.getFullYear() > 2029 ? "All Dates" : format(selectedDate, "MMM d, yyyy")}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="center">
+            <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 shadow-2xl" align="center" style={{
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              background: 'rgba(255, 255, 255, 0.98)',
+              borderColor: 'rgba(0, 0, 0, 0.15)',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15)',
+            }}>
               <div className="p-3 border-b border-border">
                 <div className="flex gap-2">
                   <Button

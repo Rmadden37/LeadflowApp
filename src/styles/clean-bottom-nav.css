@@ -1,0 +1,440 @@
+/* ===================================================================
+   ADAPTIVE iOS BOTTOM NAVIGATION - AURELIAN SALOMAN DESIGN
+   Intrinsic sizing that adapts to all iPhone models naturally
+   =================================================================== */
+
+/* Reset and base styles for all bottom navigation elements */
+.bottom-nav-container,
+nav[class*="bottom"],
+[data-testid="bottom-navigation"],
+.fixed.bottom-0,
+nav.fixed {
+  /* CRITICAL: Always at the bottom of the screen */
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  
+  /* CRITICAL: Highest z-index to appear above everything */
+  z-index: 9999 !important;
+  
+  /* CRITICAL: Always visible */
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  
+  /* ADAPTIVE SIZING: No fixed heights - let content define size naturally */
+  /* Apple HIG minimum touch target + adaptive safe area */
+  min-height: 44px !important;
+  
+  /* SMART PADDING: Responsive to device and content */
+  padding-top: 8px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  /* Dynamic bottom padding: min 12px + safe area for all devices */
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)) !important;
+  
+  /* PROFESSIONAL GLASSMORPHISM - iOS 17+ Premium Design */
+  background: 
+    linear-gradient(180deg, 
+      rgba(28, 28, 30, 0.85) 0%, 
+      rgba(20, 20, 22, 0.92) 50%,
+      rgba(16, 16, 18, 0.95) 100%) !important;
+  
+  /* Multi-layered backdrop blur for ultra-premium effect */
+  backdrop-filter: 
+    blur(32px) 
+    saturate(200%) 
+    brightness(110%) 
+    contrast(105%) !important;
+  -webkit-backdrop-filter: 
+    blur(32px) 
+    saturate(200%) 
+    brightness(110%) 
+    contrast(105%) !important;
+  
+  /* Professional border with glass edge effect */
+  border-top: 0.5px solid rgba(255, 255, 255, 0.2) !important;
+  border-image: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.3) 20%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    rgba(255, 255, 255, 0.3) 80%, 
+    transparent 100%) 1 !important;
+  
+  /* Sophisticated multi-layer shadows */
+  box-shadow: 
+    /* Primary depth shadow */
+    0 -8px 32px rgba(0, 0, 0, 0.4),
+    /* Glass reflection highlight */
+    0 -1px 0 rgba(255, 255, 255, 0.15) inset,
+    /* Subtle ambient glow */
+    0 -2px 8px rgba(255, 255, 255, 0.05) inset,
+    /* Edge definition */
+    0 -12px 24px rgba(0, 0, 0, 0.2),
+    /* Floating effect */
+    0 -4px 16px rgba(0, 0, 0, 0.15) !important;
+  
+  /* Hardware acceleration for smooth performance */
+  transform: translateZ(0) !important;
+  will-change: auto !important;
+  -webkit-transform: translateZ(0) !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+/* Navigation content layout - ADAPTIVE FLEX */
+.bottom-nav-container > div,
+nav[class*="bottom"] > div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  width: 100% !important;
+  height: 100% !important;
+  /* Remove fixed padding - let content breathe naturally */
+  padding: 0 !important;
+}
+
+/* Navigation buttons and links - INTRINSIC SIZING */
+.bottom-nav-container button,
+.bottom-nav-container a,
+nav[class*="bottom"] button,
+nav[class*="bottom"] a {
+  /* Clean button reset */
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  
+  /* APPLE HIG TOUCH TARGETS - Adaptive sizing */
+  min-height: 44px !important;
+  min-width: 44px !important;
+  
+  /* SMART PADDING: Responsive to content and screen size */
+  padding: 6px 8px 10px 8px !important;
+  
+  /* Flex layout for icons and labels */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  
+  /* iOS-style text */
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  
+  /* Smooth transitions */
+  transition: all 0.2s ease-out !important;
+  
+  /* Touch feedback */
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+}
+
+/* Active state styling - PREMIUM GLASSMORPHISM */
+.bottom-nav-container .active,
+.bottom-nav-container [aria-selected="true"],
+.bottom-nav-container button[data-state="active"],
+nav[class*="bottom"] .active {
+  color: #007AFF !important; /* iOS blue */
+  transform: scale(1.05) !important;
+  
+  /* Professional glass button effect */
+  background: 
+    linear-gradient(145deg, 
+      rgba(0, 122, 255, 0.15) 0%,
+      rgba(0, 122, 255, 0.08) 50%,
+      rgba(0, 122, 255, 0.12) 100%) !important;
+  
+  /* Active button glassmorphism */
+  backdrop-filter: blur(16px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
+  
+  /* Sophisticated active border */
+  border: 0.5px solid rgba(0, 122, 255, 0.3) !important;
+  border-radius: 12px !important;
+  
+  /* Premium active shadow */
+  box-shadow: 
+    0 4px 16px rgba(0, 122, 255, 0.2),
+    0 2px 8px rgba(0, 122, 255, 0.15),
+    0 1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 -1px 0 rgba(0, 122, 255, 0.1) inset !important;
+}
+
+/* Hover state for non-touch devices - PREMIUM GLASS */
+@media (hover: hover) {
+  .bottom-nav-container button:hover,
+  .bottom-nav-container a:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+    transform: translateY(-1px) scale(1.02) !important;
+    
+    /* Professional glass hover effect */
+    background: 
+      linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.04) 50%,
+        rgba(255, 255, 255, 0.06) 100%) !important;
+    
+    /* Hover glassmorphism */
+    backdrop-filter: blur(12px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
+    
+    /* Subtle glass border */
+    border: 0.5px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 10px !important;
+    
+    /* Elegant hover shadow */
+    box-shadow: 
+      0 2px 12px rgba(255, 255, 255, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.15) inset !important;
+  }
+}
+
+/* Touch feedback - PREMIUM GLASS RESPONSE */
+.bottom-nav-container button:active,
+.bottom-nav-container a:active {
+  transform: scale(0.95) !important;
+  opacity: 0.8 !important;
+  
+  /* Professional touch glass effect */
+  background: 
+    linear-gradient(145deg, 
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.08) 100%) !important;
+  
+  /* Touch glassmorphism */
+  backdrop-filter: blur(8px) saturate(110%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(110%) !important;
+  
+  /* Touch state border */
+  border: 0.5px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  
+  /* Touch shadow response */
+  box-shadow: 
+    0 1px 6px rgba(255, 255, 255, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
+}
+
+/* Icon styling - ADAPTIVE SIZING */
+.bottom-nav-container svg,
+nav[class*="bottom"] svg {
+  /* LARGER ICONS: Ensure they're never cut off */
+  width: 26px !important;
+  height: 26px !important;
+  stroke-width: 1.5px !important;
+  transition: transform 0.2s ease-out !important;
+  /* Prevent icon clipping */
+  flex-shrink: 0 !important;
+}
+
+.bottom-nav-container .active svg,
+.bottom-nav-container [aria-selected="true"] svg {
+  transform: scale(1.1) !important;
+}
+
+/* Label styling - ADAPTIVE TEXT */
+.bottom-nav-container span,
+nav[class*="bottom"] span {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  max-width: 70px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  /* Prevent text clipping */
+  flex-shrink: 0 !important;
+}
+
+/* Active label weight */
+.bottom-nav-container .active span,
+.bottom-nav-container [aria-selected="true"] span {
+  font-weight: 600 !important;
+}
+
+/* Badge styling - PREMIUM GLASSMORPHISM */
+.bottom-nav-container .badge,
+.bottom-nav-container [class*="badge"] {
+  position: absolute !important;
+  top: -2px !important;
+  right: -2px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  
+  /* Professional glass badge background */
+  background: 
+    linear-gradient(145deg, 
+      rgba(255, 59, 48, 0.95) 0%, 
+      rgba(255, 45, 35, 0.98) 50%,
+      rgba(255, 59, 48, 1) 100%) !important;
+  
+  /* Badge glassmorphism */
+  backdrop-filter: blur(8px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(150%) !important;
+  
+  color: white !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  border-radius: 9px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* Professional badge glass border */
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  
+  /* Premium badge shadow system */
+  box-shadow: 
+    0 3px 8px rgba(255, 59, 48, 0.4),
+    0 1px 4px rgba(255, 59, 48, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.3) inset,
+    0 -1px 0 rgba(255, 20, 10, 0.2) inset !important;
+}
+
+/* ADAPTIVE CONTENT SPACING - No fixed heights */
+.main-content-with-bottom-nav,
+.dashboard-safe-content,
+main:not([data-auth-page]) {
+  /* SMART SPACING: Accounts for navigation + safe area + breathing room */
+  padding-bottom: calc(44px + max(12px, env(safe-area-inset-bottom, 0px)) + 16px) !important;
+}
+
+/* Prevent content from going behind nav - ADAPTIVE */
+body:has(.bottom-nav-container) {
+  padding-bottom: calc(44px + max(12px, env(safe-area-inset-bottom, 0px))) !important;
+}
+
+/* Ensure nav stays above all modals and overlays */
+.bottom-nav-container {
+  z-index: 9999 !important;
+}
+
+/* Override any conflicting utility classes */
+.bottom-nav-container.fixed.bottom-0 {
+  bottom: 0 !important;
+}
+
+/* ADAPTIVE RESPONSIVE ADJUSTMENTS - No fixed heights */
+@media (max-width: 768px) {
+  /* Mobile-specific optimizations - let content define size */
+  .bottom-nav-container button,
+  .bottom-nav-container a {
+    /* Tighter padding on smaller screens */
+    padding: 4px 6px 8px 6px !important;
+  }
+  
+  .bottom-nav-container svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}
+
+@media (max-width: 375px) {
+  /* Small phone optimizations - minimal but sufficient */
+  .bottom-nav-container button,
+  .bottom-nav-container a {
+    /* Compact padding for small screens */
+    padding: 3px 4px 6px 4px !important;
+  }
+  
+  .bottom-nav-container svg {
+    width: 22px !important;
+    height: 22px !important;
+  }
+  
+  .bottom-nav-container span {
+    font-size: 10px !important;
+  }
+}
+
+/* Dark mode enhancements - PROFESSIONAL GLASSMORPHISM */
+@media (prefers-color-scheme: dark) {
+  .bottom-nav-container {
+    /* Enhanced dark mode glass background */
+    background: 
+      linear-gradient(180deg, 
+        rgba(18, 18, 20, 0.88) 0%, 
+        rgba(12, 12, 14, 0.94) 50%,
+        rgba(8, 8, 10, 0.96) 100%) !important;
+    
+    /* Premium dark mode border with glass effect */
+    border-top: 0.5px solid rgba(255, 255, 255, 0.25) !important;
+    border-image: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(255, 255, 255, 0.35) 20%, 
+      rgba(255, 255, 255, 0.45) 50%, 
+      rgba(255, 255, 255, 0.35) 80%, 
+      transparent 100%) 1 !important;
+    
+    /* Enhanced dark mode backdrop effects */
+    backdrop-filter: 
+      blur(40px) 
+      saturate(220%) 
+      brightness(115%) 
+      contrast(108%) !important;
+    -webkit-backdrop-filter: 
+      blur(40px) 
+      saturate(220%) 
+      brightness(115%) 
+      contrast(108%) !important;
+    
+    /* Professional dark mode shadow system */
+    box-shadow: 
+      /* Primary depth shadow */
+      0 -12px 40px rgba(0, 0, 0, 0.6),
+      /* Glass reflection highlight */
+      0 -1px 0 rgba(255, 255, 255, 0.2) inset,
+      /* Subtle ambient glow */
+      0 -2px 12px rgba(255, 255, 255, 0.08) inset,
+      /* Enhanced edge definition */
+      0 -16px 32px rgba(0, 0, 0, 0.4),
+      /* Elevated floating effect */
+      0 -6px 20px rgba(0, 0, 0, 0.25) !important;
+  }
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav-container *,
+  .bottom-nav-container *::before,
+  .bottom-nav-container *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Accessibility enhancements */
+@media (prefers-contrast: high) {
+  .bottom-nav-container {
+    background: rgba(0, 0, 0, 1) !important;
+    border-top: 2px solid rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .bottom-nav-container button,
+  .bottom-nav-container a {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+  
+  .bottom-nav-container .active {
+    color: #4DA6FF !important; /* Higher contrast blue */
+  }
+}
+
+/* Force visibility override for any hiding animations */
+.bottom-nav-container,
+nav[class*="bottom"] {
+  transform: translateY(0) !important;
+  animation: none !important;
+}
+
+/* Debug helper (remove in production) */
+/* 
+.bottom-nav-container {
+  outline: 2px solid lime !important;
+}
+*/

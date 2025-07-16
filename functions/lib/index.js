@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.manualAssignLead = exports.handleCloserStatusChange = exports.assignLeadOnUpdate = exports.updateChatChannelOnTeamUpdate = exports.initializeChatChannelsOnTeamCreate = exports.cleanupOldChatMessages = exports.updateUserRole = exports.inviteUser = exports.selfAssignLead = exports.processAppointmentReminders = exports.scheduleAppointmentReminder = exports.handleLeadDispositionUpdate = exports.getTeamStats = exports.acceptJob = exports.assignLeadOnCreate = void 0;
+exports.manualAssignLead = exports.handleCloserStatusChange = exports.assignLeadOnUpdate = exports.updateChatChannelOnTeamUpdate = exports.initializeChatChannelsOnTeamCreate = exports.cleanupOldChatMessages = exports.updateUserRole = exports.inviteUser = exports.selfAssignLead = exports.processScheduledLeadTransitions = exports.processAppointmentReminders = exports.scheduleAppointmentReminder = exports.handleLeadDispositionUpdate = exports.getTeamStats = exports.acceptJob = exports.assignLeadOnCreate = void 0;
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 // Initialize Firebase Admin
@@ -709,6 +709,77 @@ exports.processAppointmentReminders = functions.pubsub
     }
     catch (error) {
         functions.logger.error("Error processing appointment reminders:", error);
+    }
+    return null;
+});
+/**
+ * Scheduled function to process 45-minute lead transitions
+ * Runs every 2 minutes to check for verified scheduled leads that should move to waiting_assignment
+ * 45 minutes before their appointment time
+ */
+exports.processScheduledLeadTransitions = functions.pubsub
+    .schedule('every 2 minutes')
+    .onRun(async (context) => {
+    const now = admin.firestore.Timestamp.now();
+    const currentTime = now.toDate();
+    const fortyFiveMinutesFromNow = new Date(currentTime.getTime() + (45 * 60 * 1000));
+    try {
+        functions.logger.info(`🔄 Processing scheduled lead transitions at ${currentTime.toISOString()}`);
+        // Get all verified scheduled leads that have appointments within 45 minutes
+        const scheduledLeadsQuery = await db
+            .collection("leads")
+            .where("status", "in", ["scheduled", "rescheduled"])
+            .where("setterVerified", "==", true)
+            .where("scheduledAppointmentTime", "<=", admin.firestore.Timestamp.fromDate(fortyFiveMinutesFromNow))
+            .where("scheduledAppointmentTime", ">", now)
+            .limit(100) // Process in batches
+            .get();
+        if (scheduledLeadsQuery.empty) {
+            functions.logger.info("ℹ️ No scheduled leads ready for 45-minute transition");
+            return null;
+        }
+        const batch = db.batch();
+        let transitionCount = 0;
+        scheduledLeadsQuery.docs.forEach((leadDoc) => {
+            var _a;
+            const leadData = leadDoc.data();
+            const appointmentTime = (_a = leadData.scheduledAppointmentTime) === null || _a === void 0 ? void 0 : _a.toDate();
+            if (!appointmentTime) {
+                functions.logger.warn(`⚠️ Lead ${leadDoc.id} has no appointment time, skipping`);
+                return;
+            }
+            const timeUntilAppointment = appointmentTime.getTime() - currentTime.getTime();
+            const minutesUntilAppointment = Math.floor(timeUntilAppointment / (60 * 1000));
+            // Only transition if within 45 minutes and verified
+            if (timeUntilAppointment <= (45 * 60 * 1000) && timeUntilAppointment > 0 && leadData.setterVerified) {
+                functions.logger.info(`⏭️ Moving verified lead ${leadDoc.id} (${leadData.customerName}) to waiting assignment - ${minutesUntilAppointment} minutes until appointment`);
+                batch.update(leadDoc.ref, {
+                    status: "waiting_assignment",
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    transitionedToWaitingAt: admin.firestore.FieldValue.serverTimestamp(),
+                    transitionReason: "45_minute_rule"
+                });
+                transitionCount++;
+            }
+        });
+        if (transitionCount > 0) {
+            await batch.commit();
+            functions.logger.info(`✅ Successfully transitioned ${transitionCount} verified scheduled leads to waiting assignment`);
+            // Create activity log for monitoring
+            await db.collection("activities").add({
+                type: "scheduled_lead_transition",
+                count: transitionCount,
+                processedAt: admin.firestore.FieldValue.serverTimestamp(),
+                reason: "45_minute_rule",
+                description: `Automatically moved ${transitionCount} verified scheduled leads to waiting assignment`
+            });
+        }
+        else {
+            functions.logger.info("ℹ️ No leads needed transition at this time");
+        }
+    }
+    catch (error) {
+        functions.logger.error("❌ Error processing scheduled lead transitions:", error);
     }
     return null;
 });

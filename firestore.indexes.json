@@ -47,6 +47,24 @@
       ]
     },
     {
+      "collectionGroup": "leads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "setterVerified",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "scheduledAppointmentTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "closers",
       "queryScope": "COLLECTION",
       "fields": [

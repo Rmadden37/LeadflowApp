@@ -300,15 +300,15 @@ const OptimizedMobileLeadCard = React.memo(function OptimizedMobileLeadCard({
       >
         {/* Call action */}
         <button
-          className="w-12 h-12 rounded-full bg-green-500/20 hover:bg-green-500/40 text-green-400 p-0 border border-green-500/30 ultra-responsive haptic-button"
+          className="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 text-white p-0 border-0 ultra-responsive haptic-button shadow-lg shadow-green-500/25"
           onClick={handleCall}
         >
           <Phone className="w-5 h-5 mx-auto" />
         </button>
 
-        {/* Reschedule action */}
+        {/* Update Lead action */}
         <button
-          className="w-12 h-12 rounded-full bg-orange-500/20 hover:bg-orange-500/40 text-orange-400 p-0 border border-orange-500/30 ultra-responsive haptic-button"
+          className="w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 text-white p-0 border-0 ultra-responsive haptic-button shadow-lg shadow-blue-500/25"
           onClick={handleReschedule}
         >
           <RotateCcw className="w-5 h-5 mx-auto" />
@@ -316,7 +316,7 @@ const OptimizedMobileLeadCard = React.memo(function OptimizedMobileLeadCard({
 
         {/* Complete action */}
         <button
-          className="w-12 h-12 rounded-full bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 p-0 border border-blue-500/30 ultra-responsive haptic-button"
+          className="w-12 h-12 rounded-full bg-purple-500 hover:bg-purple-600 text-white p-0 border-0 ultra-responsive haptic-button shadow-lg shadow-purple-500/25"
           onClick={handleComplete}
         >
           <CheckCircle2 className="w-5 h-5 mx-auto" />

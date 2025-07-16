@@ -13,6 +13,8 @@ import LeadCard from "./lead-card";
 import ScheduledLeadsSection from "./scheduled-leads-enhanced";
 import LeadDetailsDialog from "./lead-details-dialog";
 
+const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
+
 type Tab = "waiting" | "scheduled";
 
 export default function LeadQueueClean() {
@@ -21,7 +23,9 @@ export default function LeadQueueClean() {
   
   // State
   const [waitingLeads, setWaitingLeads] = useState<Lead[]>([]);
+  const [scheduledLeads, setScheduledLeads] = useState<Lead[]>([]);
   const [loadingWaiting, setLoadingWaiting] = useState(true);
+  const [loadingScheduled, setLoadingScheduled] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("waiting");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
@@ -85,6 +89,69 @@ export default function LeadQueueClean() {
           variant: "destructive",
         });
         setLoadingWaiting(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user?.teamId, toast]);
+
+  // Fetch scheduled leads for count display
+  useEffect(() => {
+    if (!user?.teamId) {
+      setLoadingScheduled(false);
+      setScheduledLeads([]);
+      return;
+    }
+
+    setLoadingScheduled(true);
+
+    const scheduledQuery = query(
+      collection(db, "leads"),
+      where("teamId", "==", user.teamId),
+      where("status", "in", ["scheduled", "rescheduled", "needs_verification"]),
+      orderBy("scheduledAppointmentTime", "asc")
+    );
+
+    const unsubscribe = onSnapshot(
+      scheduledQuery,
+      (querySnapshot) => {
+        const leads = querySnapshot.docs.map((docSnapshot) => {
+          const data = docSnapshot.data();
+          
+          return {
+            id: docSnapshot.id,
+            customerName: data.customerName || "Unknown Customer",
+            customerPhone: data.customerPhone || "N/A",
+            address: data.address || "",
+            status: data.status,
+            teamId: data.teamId,
+            dispatchType: data.dispatchType || "immediate",
+            assignedCloserId: data.assignedCloserId || null,
+            assignedCloserName: data.assignedCloserName || null,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+            dispositionNotes: data.dispositionNotes || "",
+            scheduledAppointmentTime: data.scheduledAppointmentTime,
+            setterId: data.setterId || null,
+            setterName: data.setterName || null,
+            setterLocation: data.setterLocation || null,
+            photoUrls: data.photoUrls || [],
+            setterVerified: data.setterVerified || false,
+            verifiedAt: data.verifiedAt || null,
+            verifiedBy: data.verifiedBy || null,
+          } as Lead;
+        });
+
+        setScheduledLeads(leads);
+        setLoadingScheduled(false);
+      },
+      (error) => {
+        toast({
+          title: "Error",
+          description: "Failed to load scheduled leads. Please refresh the page.",
+          variant: "destructive",
+        });
+        setLoadingScheduled(false);
       }
     );
 
@@ -158,7 +225,46 @@ export default function LeadQueueClean() {
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             Waiting List 
-            <span className="text-xs font-normal opacity-75">({waitingLeads.length})</span>
+            {(() => {
+              const verifiedWaiting = waitingLeads.filter(lead => lead.setterVerified === true).length;
+              const unverifiedWaiting = waitingLeads.filter(lead => lead.setterVerified !== true).length;
+              
+              // Aurelian's compact but smart urgency detection
+              const isHighUrgency = unverifiedWaiting > 3;
+              
+              return (
+                <div className="flex items-center gap-1">
+                  {verifiedWaiting > 0 && (
+                    <span 
+                      className="inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-semibold text-white bg-green-500/90 backdrop-blur-sm rounded-full min-w-[1.25rem] h-5 shadow-lg shadow-green-500/25 transition-all duration-150 active:scale-95"
+                      title={`${verifiedWaiting} verified lead${verifiedWaiting !== 1 ? 's' : ''} ready`}
+                    >
+                      ✓{verifiedWaiting}
+                    </span>
+                  )}
+                  {unverifiedWaiting > 0 && (
+                    <span 
+                      className={`inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-semibold text-white rounded-full min-w-[1.25rem] h-5 shadow-lg transition-all duration-150 active:scale-95 ${
+                        isHighUrgency 
+                          ? "bg-red-500 shadow-red-500/40 animate-pulse" 
+                          : "bg-orange-500/90 backdrop-blur-sm shadow-orange-500/25"
+                      }`}
+                      title={`${unverifiedWaiting} lead${unverifiedWaiting !== 1 ? 's' : ''} need verification`}
+                    >
+                      !{unverifiedWaiting}
+                    </span>
+                  )}
+                  {waitingLeads.length === 0 && (
+                    <span 
+                      className="inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-semibold text-white/60 bg-gray-500/50 backdrop-blur-sm rounded-full min-w-[1.25rem] h-5 shadow-lg shadow-gray-500/25"
+                      title="No waiting leads"
+                    >
+                      ∅
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         </button>
         
@@ -174,6 +280,30 @@ export default function LeadQueueClean() {
           <div className="flex items-center gap-2">
             <CalendarClock className="w-4 h-4" />
             Scheduled
+            {(() => {
+              if (loadingScheduled) {
+                return null;
+              }
+
+              const now = new Date();
+              
+              // Filter out leads that are 15+ minutes past their scheduled time
+              const activeScheduledLeads = scheduledLeads.filter(lead => {
+                if (!lead.scheduledAppointmentTime) return false;
+                
+                const appointmentTime = lead.scheduledAppointmentTime.toDate();
+                const timePastAppointment = now.getTime() - appointmentTime.getTime();
+                return timePastAppointment < FIFTEEN_MINUTES_MS;
+              });
+
+              const totalCount = activeScheduledLeads.length;
+              
+              return (
+                <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-blue-500/90 backdrop-blur-sm rounded-full min-w-[1.5rem] h-6 shadow-lg shadow-blue-500/25 transition-all duration-200 active:scale-95">
+                  {totalCount}
+                </span>
+              );
+            })()}
           </div>
         </button>
       </div>
