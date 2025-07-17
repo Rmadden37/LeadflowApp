@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,11 +24,12 @@ import { format } from "date-fns";
 
 interface TeamChatInterfaceProps {
   channel: ChatChannel;
-  onBack?: () => void;
 }
 
-export default function TeamChatInterface({ channel, onBack }: TeamChatInterfaceProps) {
+export default function TeamChatInterface({ channel }: TeamChatInterfaceProps) {
   const { user } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -99,20 +101,18 @@ export default function TeamChatInterface({ channel, onBack }: TeamChatInterface
   };
 
   return (
-    <div className="container mx-auto py-6 h-[calc(100vh-8rem)]">
+    <div className="container mx-auto py-6 h-[calc(100vh-var(--header-height)-var(--bottom-nav-height)-1rem)]">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        {onBack && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onBack}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-        )}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.back()}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
         <div className="flex items-center gap-3 flex-1">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/20 dark:to-blue-800/30 flex items-center justify-center border-2 border-blue-200 dark:border-blue-700/50">
             {channel.type === "region" ? (
@@ -139,7 +139,7 @@ export default function TeamChatInterface({ channel, onBack }: TeamChatInterface
       </div>
 
       {/* Chat Interface */}
-      <Card className="h-[calc(100vh-16rem)] flex flex-col shadow-lg">
+      <Card className="h-[calc(100vh-var(--header-height)-var(--bottom-nav-height)-9rem)] flex flex-col shadow-lg">
         <CardHeader className="flex-shrink-0 pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <MessageCircle className="h-5 w-5 text-primary" />

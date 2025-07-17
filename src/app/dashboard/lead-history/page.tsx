@@ -376,7 +376,7 @@ export default function LeadManagementPage() {
               </p>
             </div>
           ) : (
-            <ScrollArea className="h-[calc(100vh-20rem)] w-full">
+            <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--bottom-nav-height)-2rem)] w-full">
               <Table>
                 <TableHeader>
                   <TableRow>

@@ -1,0 +1,338 @@
+/* ===================================================================
+   AURELIAN'S UNIFIED iOS BOTTOM NAVIGATION SYSTEM
+   One authoritative CSS file to rule them all - no more conflicts!
+   =================================================================== */
+
+/* ===================================================================
+   1. FOUNDATIONAL RESET & POSITIONING
+   =================================================================== */
+
+/* Single source of truth for bottom navigation positioning */
+.bottom-nav-container,
+nav[class*="bottom"],
+[data-testid="bottom-navigation"],
+.fixed.bottom-0:has(a),
+nav.fixed.bottom-0 {
+  /* CRITICAL: Fixed positioning at screen bottom */
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  
+  /* CRITICAL: Above all content */
+  z-index: 1000 !important;
+  
+  /* CRITICAL: Always visible */
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  
+  /* ADAPTIVE HEIGHT: Let content determine height naturally */
+  min-height: 56px !important;
+  
+  /* SMART SAFE AREA HANDLING */
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px) !important;
+  padding-top: 8px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  
+  /* HARDWARE ACCELERATION for smooth performance */
+  transform: translateZ(0) !important;
+  will-change: auto !important;
+  -webkit-transform: translateZ(0) !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+/* ===================================================================
+   2. iOS-NATIVE GLASSMORPHISM
+   =================================================================== */
+
+.bottom-nav-container {
+  /* PREMIUM iOS 17+ GLASS BACKGROUND */
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  
+  /* SUBTLE iOS BORDER */
+  border-top: 0.5px solid rgba(255, 255, 255, 0.1) !important;
+  
+  /* ELEGANT SHADOW SYSTEM */
+  box-shadow: 
+    0 -1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 -8px 32px rgba(0, 0, 0, 0.5),
+    0 -4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ===================================================================
+   3. NAVIGATION CONTENT LAYOUT
+   =================================================================== */
+
+.bottom-nav-container > div,
+.bottom-nav-container nav > div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+}
+
+/* ===================================================================
+   4. NAVIGATION BUTTONS & LINKS
+   =================================================================== */
+
+.bottom-nav-container button,
+.bottom-nav-container a {
+  /* CLEAN RESET */
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+  
+  /* APPLE HIG TOUCH TARGETS */
+  min-height: 44px !important;
+  min-width: 44px !important;
+  
+  /* FLEXIBLE LAYOUT */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  
+  /* ADAPTIVE PADDING */
+  padding: 6px 8px 10px 8px !important;
+  
+  /* iOS TEXT STYLING */
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  
+  /* SMOOTH TRANSITIONS */
+  transition: all 0.2s ease-out !important;
+  
+  /* TOUCH OPTIMIZATION */
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+}
+
+/* ===================================================================
+   5. ACTIVE STATE STYLING
+   =================================================================== */
+
+.bottom-nav-container .active,
+.bottom-nav-container [aria-selected="true"],
+.bottom-nav-container button[data-state="active"],
+.bottom-nav-container a[aria-current="page"] {
+  color: #007AFF !important; /* iOS system blue */
+  transform: scale(1.05) !important;
+}
+
+/* Active state icons */
+.bottom-nav-container .active svg,
+.bottom-nav-container [aria-selected="true"] svg {
+  transform: scale(1.1) !important;
+}
+
+/* Active state labels */
+.bottom-nav-container .active span,
+.bottom-nav-container [aria-selected="true"] span {
+  font-weight: 600 !important;
+}
+
+/* ===================================================================
+   6. ICON STYLING
+   =================================================================== */
+
+.bottom-nav-container svg {
+  width: 26px !important;
+  height: 26px !important;
+  stroke-width: 1.75px !important;
+  transition: transform 0.2s ease-out !important;
+  flex-shrink: 0 !important;
+}
+
+/* ===================================================================
+   7. LABEL STYLING
+   =================================================================== */
+
+.bottom-nav-container span {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  max-width: 70px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* ===================================================================
+   8. BADGE STYLING
+   =================================================================== */
+
+.bottom-nav-container .badge,
+.bottom-nav-container [class*="badge"] {
+  position: absolute !important;
+  top: -2px !important;
+  right: -2px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  background: #FF3B30 !important;
+  color: white !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  border-radius: 9px !important;
+  border: 2px solid rgba(0, 0, 0, 0.8) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ===================================================================
+   9. TOUCH FEEDBACK
+   =================================================================== */
+
+.bottom-nav-container button:active,
+.bottom-nav-container a:active {
+  transform: scale(0.95) !important;
+  opacity: 0.8 !important;
+}
+
+/* ===================================================================
+   10. HOVER STATES (Non-touch devices)
+   =================================================================== */
+
+@media (hover: hover) {
+  .bottom-nav-container button:hover:not(.active),
+  .bottom-nav-container a:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.85) !important;
+    transform: translateY(-1px) scale(1.02) !important;
+  }
+}
+
+/* ===================================================================
+   11. DEVICE-SPECIFIC OPTIMIZATIONS
+   =================================================================== */
+
+/* iPhone specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  .bottom-nav-container {
+    /* Enhanced safe area handling for iPhone */
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px) !important;
+  }
+}
+
+/* Small screens */
+@media (max-width: 375px) {
+  .bottom-nav-container button,
+  .bottom-nav-container a {
+    padding: 4px 6px 8px 6px !important;
+  }
+  
+  .bottom-nav-container svg {
+    width: 22px !important;
+    height: 22px !important;
+  }
+  
+  .bottom-nav-container span {
+    font-size: 10px !important;
+  }
+}
+
+/* Large screens */
+@media (min-width: 431px) {
+  .bottom-nav-container {
+    min-height: 60px !important;
+  }
+  
+  .bottom-nav-container svg {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+/* ===================================================================
+   12. CONTENT SPACING ADJUSTMENTS
+   =================================================================== */
+
+/* Ensure content doesn't overlap with navigation */
+.dashboard-safe-content,
+.native-scroll-container,
+.main-content-with-bottom-nav,
+main:not([data-auth-page]) {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* ScrollArea height calculations */
+.native-scroll-container {
+  height: calc(100dvh - var(--header-height, 80px) - var(--bottom-nav-height, 72px) - 2rem) !important;
+  max-height: calc(100dvh - var(--header-height, 80px) - var(--bottom-nav-height, 72px) - 2rem) !important;
+}
+
+/* ===================================================================
+   13. PERFORMANCE OPTIMIZATIONS
+   =================================================================== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav-container *,
+  .bottom-nav-container *::before,
+  .bottom-nav-container *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .bottom-nav-container {
+    background: rgba(0, 0, 0, 1) !important;
+    border-top: 2px solid rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .bottom-nav-container button,
+  .bottom-nav-container a {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+  
+  .bottom-nav-container .active {
+    color: #4DA6FF !important;
+  }
+}
+
+/* ===================================================================
+   14. CSS CUSTOM PROPERTIES
+   =================================================================== */
+
+:root {
+  --header-height: 80px;
+  --bottom-nav-height: calc(56px + env(safe-area-inset-bottom, 16px));
+  --content-padding: 1rem;
+}
+
+/* ===================================================================
+   15. FORCE VISIBILITY (Override any hiding animations)
+   =================================================================== */
+
+.bottom-nav-container,
+nav[class*="bottom"] {
+  transform: translateY(0) !important;
+  animation: none !important;
+}
+
+/* ===================================================================
+   16. DARK MODE ENHANCEMENTS
+   =================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  .bottom-nav-container {
+    background: rgba(0, 0, 0, 0.92) !important;
+    border-top-color: rgba(255, 255, 255, 0.15) !important;
+  }
+}

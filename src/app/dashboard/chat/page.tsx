@@ -149,7 +149,6 @@ export default function ChatPage() {
     return (
       <TeamChatInterface 
         channel={selectedChannel}
-        onBack={() => setSelectedChannel(null)}
       />
     );
   }

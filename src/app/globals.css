@@ -102,9 +102,9 @@ body:has([data-route*="create-lead"]) form {
 /* Import iOS Native Design System - CRITICAL UI/UX FIXES */
 @import '../styles/ios-native-design-system.css';
 
-/* Import Clean iOS Bottom Navigation - BY AURELIAN SALOMON */
-/* Import Clean Bottom Navigation - Simple & Reliable */
-@import '../styles/clean-bottom-nav.css';
+/* Import Unified Bottom Navigation - BY AURELIAN SALOMON */
+/* Single authoritative CSS file - no more conflicts! */
+@import '../styles/unified-bottom-nav.css';
 
 /* Removed legacy CSS imports during performance cleanup:
    - dashboard-depth-enhancements.css (deleted)

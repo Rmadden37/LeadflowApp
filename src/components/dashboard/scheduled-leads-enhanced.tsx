@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
 import { db } from "@/lib/firebase";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import { Lead } from "@/types";
@@ -104,20 +105,20 @@ const EnhancedLeadCard = ({
       {/* Main card with iOS-native styling */}
       <div 
         className={cn(
-          // Base glassmorphism styling
-          "bg-white/8 backdrop-blur-xl border border-white/10 rounded-2xl p-4",
+          // Clean iOS-native styling - minimal background
+          "bg-white/5 dark:bg-gray-800/20 border border-gray-200/20 dark:border-gray-700/30 rounded-2xl p-4",
           "transition-all duration-300 cursor-pointer",
           // iOS-native hover and active states
-          "hover:bg-white/12 hover:border-white/20 hover:shadow-lg hover:shadow-black/25",
-          "active:scale-[0.98] active:bg-white/6 active:transition-all active:duration-150",
+          "hover:bg-white/10 dark:hover:bg-gray-800/30 hover:border-gray-200/30 dark:hover:border-gray-700/40 hover:shadow-sm",
+          "active:scale-[0.98] active:bg-white/5 dark:active:bg-gray-800/15 active:transition-all active:duration-150",
           // Enhanced touch targets for mobile (minimum 44px)
           "min-h-[88px]",
-          // Verification status styling
-          lead.setterVerified && "border-green-400/30 bg-green-500/5",
-          // Time-based styling without aggressive badges
-          isUrgent && "border-orange-400/20",
-          isCritical && "border-red-400/20",
-          isOverdue && "border-red-500/20 bg-red-500/5",
+          // Verification status styling - subtle
+          lead.setterVerified && "border-green-400/40 bg-green-500/5",
+          // Time-based styling - clean and minimal
+          isUrgent && "border-orange-400/30",
+          isCritical && "border-red-400/30",
+          isOverdue && "border-red-500/30 bg-red-500/5",
           // Swipe animation
           isSwipeOpen && "transform -translate-x-24 md:-translate-x-20"
         )}
@@ -142,18 +143,18 @@ const EnhancedLeadCard = ({
         {/* Customer information */}
         <div className="flex items-center gap-3 mb-3">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400/20 to-purple-400/20 flex items-center justify-center flex-shrink-0">
-            <User className="w-6 h-6 text-white/80" />
+            <User className="w-6 h-6 text-blue-500 dark:text-blue-400" />
           </div>
           
           <div className="flex-1 min-w-0">
-            <h3 className="text-white font-semibold text-lg leading-tight truncate">
+            <h3 className="text-gray-900 dark:text-white font-semibold text-lg leading-tight truncate">
               {lead.customerName}
             </h3>
-            <p className="text-white/60 text-sm truncate">
+            <p className="text-gray-600 dark:text-gray-300 text-sm truncate">
               {lead.customerPhone}
             </p>
             {lead.address && (
-              <p className="text-white/50 text-xs truncate mt-0.5 flex items-center gap-1">
+              <p className="text-gray-500 dark:text-gray-400 text-xs truncate mt-0.5 flex items-center gap-1">
                 <MapPin className="w-3 h-3 flex-shrink-0" />
                 {lead.address}
               </p>
@@ -198,9 +199,9 @@ const EnhancedLeadCard = ({
         
         {/* Setter information */}
         {lead.setterName && (
-          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
-            <User className="w-3 h-3 text-white/40" />
-            <span className="text-xs text-white/60">
+          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200/30 dark:border-gray-700/30">
+            <User className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               Set by: {lead.setterName}
             </span>
           </div>
@@ -277,6 +278,7 @@ const EnhancedLeadCard = ({
 export default function ScheduledLeadsSection() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const haptic = useHapticFeedback();
   
   // State
   const [allScheduledLeads, setAllScheduledLeads] = useState<Lead[]>([]);
@@ -416,179 +418,122 @@ export default function ScheduledLeadsSection() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header with iOS-native styling */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-            <CalendarClock className="w-6 h-6 text-blue-400" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white">Scheduled Leads</h2>
-            <p className="text-sm text-white/60">
-              {filteredLeads.length} appointment{filteredLeads.length !== 1 ? 's' : ''} for {getDateLabel(selectedDate)}
+    <div className="space-y-0">
+      {/* iOS-Native Horizontal Date Picker - Edge-to-edge */}
+      <div className="bg-gray-50/80 dark:bg-gray-900/50 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/30">
+        {/* Header */}
+        <div className="px-4 pt-4 pb-2">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Scheduled Leads
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {filteredLeads.length} appointment{filteredLeads.length !== 1 ? 's' : ''} for {format(selectedDate, 'EEEE, MMM d')}
+          </p>
+        </div>
+
+        {/* Horizontal Scrolling Date Strip */}
+        <div className="flex gap-3 px-4 pb-4 overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {Array.from({ length: 14 }, (_, i) => {
+            const date = new Date();
+            date.setDate(date.getDate() + (i - 7));
+            const isSelected = isSameDay(date, selectedDate);
+            const isToday = isSameDay(date, new Date());
+            
+            return (
+              <button
+                key={i}
+                onClick={() => {
+                  setSelectedDate(date);
+                  haptic.light(); // iOS-native haptic feedback
+                }}
+                className={`
+                  flex-shrink-0 w-16 h-20 rounded-2xl flex flex-col items-center justify-center
+                  snap-center transition-all duration-200 transform
+                  ${isSelected 
+                    ? 'bg-blue-500 text-white shadow-lg scale-105' 
+                    : 'bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700/80'
+                  }
+                  ${isToday && !isSelected ? 'ring-2 ring-blue-200 dark:ring-blue-800' : ''}
+                  active:scale-95
+                `}
+              >
+                <span className={`text-xs font-medium ${isSelected ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                  {format(date, 'EEE')}
+                </span>
+                <span className={`text-lg font-bold ${isSelected ? 'text-white' : isToday ? 'text-blue-500' : 'text-gray-900 dark:text-white'}`}>
+                  {format(date, 'd')}
+                </span>
+                {isToday && (
+                  <div className={`w-1 h-1 rounded-full mt-1 ${isSelected ? 'bg-white' : 'bg-blue-500'}`} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Appointments List */}
+      <div className="px-4 py-6">
+        {filteredLeads.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
+              <Calendar className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500 dark:text-gray-400 text-lg font-medium">No appointments</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">
+              for {format(selectedDate, 'EEEE, MMMM d')}
             </p>
           </div>
-        </div>
-      </div>
+        ) : (
+          <div className="space-y-3">
+            {/* Unverified Leads Section - Higher priority */}
+            {unverifiedLeads.length > 0 && (
+              <>
+                <div className="flex items-center gap-2 px-1">
+                  <div className="w-2 h-2 rounded-full bg-orange-400" />
+                  <h3 className="text-sm font-medium text-orange-400 uppercase tracking-wide">
+                    Needs Verification ({unverifiedLeads.length})
+                  </h3>
+                </div>
+                {unverifiedLeads.map((lead) => (
+                  <EnhancedLeadCard
+                    key={lead.id}
+                    lead={lead}
+                    onLeadClick={handleLeadClick}
+                    onCall={handleCall}
+                    onReschedule={handleReschedule}
+                    onComplete={handleComplete}
+                  />
+                ))}
+              </>
+            )}
 
-      {/* Mobile-first Date Navigation */}
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10">
-        <div className="flex items-center justify-between mb-4">
-          {/* Previous day */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigateDate('prev')}
-            className="w-10 h-10 rounded-full p-0 hover:bg-white/10 active:scale-95 transition-all"
-          >
-            <ChevronLeft className="w-5 h-5 text-white/80" />
-          </Button>
-          
-          {/* Current date display */}
-          <div className="flex items-center gap-3">
-            <div className="text-center">
-              <div className="text-lg font-semibold text-white">
-                {getDateLabel(selectedDate)}
-              </div>
-              <div className="text-xs text-white/60">
-                {format(selectedDate, "EEEE, MMM d")}
-              </div>
-            </div>
-            
-            {/* Calendar picker */}
-            <Popover open={showCalendar} onOpenChange={setShowCalendar}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-10 h-10 rounded-full p-0 hover:bg-white/10 active:scale-95 transition-all"
-                >
-                  <CalendarDays className="w-5 h-5 text-white/80" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 shadow-2xl" align="end" style={{
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                background: 'rgba(255, 255, 255, 0.98)',
-                borderColor: 'rgba(0, 0, 0, 0.15)',
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15)',
-              }}>
-                <CalendarComponent
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={(date) => {
-                    if (date) {
-                      setSelectedDate(date);
-                      setShowCalendar(false);
-                    }
-                  }}
-                  className="scheduled-leads-calendar"
-                  classNames={{
-                    day_selected: "bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white !bg-opacity-100 shadow-lg border-2 border-blue-400"
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-          
-          {/* Next day */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigateDate('next')}
-            className="w-10 h-10 rounded-full p-0 hover:bg-white/10 active:scale-95 transition-all"
-          >
-            <ChevronRight className="w-5 h-5 text-white/80" />
-          </Button>
-        </div>
-        
-        {/* Quick date navigation */}
-        <div className="flex gap-2 mb-4">
-          <Button
-            variant={isToday(selectedDate) ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setSelectedDate(new Date())}
-            className="rounded-full text-xs px-4 h-8 active:scale-95 transition-all"
-          >
-            Today
-          </Button>
-          <Button
-            variant={isTomorrow(selectedDate) ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setSelectedDate(addDays(new Date(), 1))}
-            className="rounded-full text-xs px-4 h-8 active:scale-95 transition-all"
-          >
-            Tomorrow
-          </Button>
-        </div>
-      </div>
-
-      {/* Enhanced Leads List */}
-      <ScrollArea className="h-[500px]">
-        <div className="space-y-4">
-          {filteredLeads.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
-                <Calendar className="w-8 h-8 text-white/40" />
-              </div>
-              <p className="text-white/60 text-lg font-medium">No appointments</p>
-              <p className="text-white/40 text-sm">
-                No leads scheduled for {getDateLabel(selectedDate)}
-              </p>
-            </div>
-          ) : (
-            <>
-              {/* Unverified Leads Section - Higher priority */}
-              {unverifiedLeads.length > 0 && (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 px-1">
-                    <div className="w-2 h-2 rounded-full bg-orange-400" />
-                    <h3 className="text-sm font-medium text-orange-400 uppercase tracking-wide">
-                      Needs Verification ({unverifiedLeads.length})
+            {/* Verified Leads Section */}
+            {verifiedLeads.length > 0 && (
+              <>
+                {unverifiedLeads.length > 0 && (
+                  <div className="flex items-center gap-2 px-1 mt-8">
+                    <div className="w-2 h-2 rounded-full bg-green-400" />
+                    <h3 className="text-sm font-medium text-green-400 uppercase tracking-wide">
+                      Verified ({verifiedLeads.length})
                     </h3>
                   </div>
-                  {unverifiedLeads.map((lead) => (
-                    <EnhancedLeadCard
-                      key={lead.id}
-                      lead={lead}
-                      onLeadClick={handleLeadClick}
-                      onCall={handleCall}
-                      onReschedule={handleReschedule}
-                      onComplete={handleComplete}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* Verified Leads Section */}
-              {verifiedLeads.length > 0 && (
-                <div className="space-y-3">
-                  {unverifiedLeads.length > 0 && (
-                    <div className="flex items-center gap-2 px-1 mt-8">
-                      <div className="w-2 h-2 rounded-full bg-green-400" />
-                      <h3 className="text-sm font-medium text-green-400 uppercase tracking-wide">
-                        Verified ({verifiedLeads.length})
-                      </h3>
-                    </div>
-                  )}
-                  {verifiedLeads.map((lead) => (
-                    <EnhancedLeadCard
-                      key={lead.id}
-                      lead={lead}
-                      onLeadClick={handleLeadClick}
-                      onCall={handleCall}
-                      onReschedule={handleReschedule}
-                      onComplete={handleComplete}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </ScrollArea>
+                )}
+                {verifiedLeads.map((lead) => (
+                  <EnhancedLeadCard
+                    key={lead.id}
+                    lead={lead}
+                    onLeadClick={handleLeadClick}
+                    onCall={handleCall}
+                    onReschedule={handleReschedule}
+                    onComplete={handleComplete}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Enhanced Lead Details Dialog */}
       {selectedLead && showLeadDetails && (

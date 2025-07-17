@@ -93,7 +93,7 @@ export default function AllLeadsPage() {
             </div>
           ) : (
             <>
-              <ScrollArea className="h-[calc(100vh-20rem)] sm:h-[calc(100vh-18rem)] md:h-[calc(100vh-16rem)] lg:h-[calc(100vh-14rem)] pr-3 sm:pr-4"> {/* Responsive height adjustment */}
+              <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--bottom-nav-height)-2rem)] pr-3 sm:pr-4">
                 <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {leads.map((lead) => (
                     <LeadCard key={lead.id} lead={lead} context="all-leads"/>
