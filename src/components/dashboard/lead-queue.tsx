@@ -593,30 +593,24 @@ export default function LeadQueue() {
               const filteredScheduledLeads = scheduledLeads.filter(lead => {
                 if (!lead.scheduledAppointmentTime) return false;
                 
-                // Special case: if selectedDate is in far future (show all mode)
-                if (selectedDate.getFullYear() > 2029) {
-                  // For "all dates" mode, exclude leads 15+ minutes past their scheduled time
-                  const appointmentTime = lead.scheduledAppointmentTime.toDate();
-                  const timePastAppointment = now.getTime() - appointmentTime.getTime();
-                  return timePastAppointment < FIFTEEN_MINUTES_MS;
-                }
+                // Check if appointment time is more than 15 minutes in the past
+                const appointmentTime = lead.scheduledAppointmentTime.toDate();
+                const timePastAppointment = now.getTime() - appointmentTime.getTime();
+                const isExpired = timePastAppointment >= FIFTEEN_MINUTES_MS;
                 
-                const appointmentDate = lead.scheduledAppointmentTime.toDate();
+                // Only count non-expired leads
+                if (isExpired) return false;
+                
+                // For today's date, show the lead
                 const selectedDateStart = new Date(selectedDate);
                 selectedDateStart.setHours(0, 0, 0, 0);
                 const selectedDateEnd = new Date(selectedDate);
                 selectedDateEnd.setHours(23, 59, 59, 999);
                 
-                const appointmentTime = appointmentDate.getTime();
-                const isInDateRange = appointmentTime >= selectedDateStart.getTime() && appointmentTime <= selectedDateEnd.getTime();
+                const appointmentDateTime = appointmentTime.getTime();
+                const isInDateRange = appointmentDateTime >= selectedDateStart.getTime() && appointmentDateTime <= selectedDateEnd.getTime();
                 
-                // For specific date, also exclude leads 15+ minutes past their scheduled time
-                if (isInDateRange) {
-                  const timePastAppointment = now.getTime() - appointmentTime;
-                  return timePastAppointment < FIFTEEN_MINUTES_MS;
-                }
-                
-                return false;
+                return isInDateRange;
               });
               
               const totalCount = filteredScheduledLeads.length;

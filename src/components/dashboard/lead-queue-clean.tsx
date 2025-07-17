@@ -286,14 +286,26 @@ export default function LeadQueueClean() {
               }
 
               const now = new Date();
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const endOfToday = new Date();
+              endOfToday.setHours(23, 59, 59, 999);
               
-              // Filter out leads that are 15+ minutes past their scheduled time
+              // Filter for today's active scheduled leads only
               const activeScheduledLeads = scheduledLeads.filter(lead => {
                 if (!lead.scheduledAppointmentTime) return false;
                 
                 const appointmentTime = lead.scheduledAppointmentTime.toDate();
                 const timePastAppointment = now.getTime() - appointmentTime.getTime();
-                return timePastAppointment < FIFTEEN_MINUTES_MS;
+                const isExpired = timePastAppointment >= FIFTEEN_MINUTES_MS;
+                
+                // Only count non-expired leads that are scheduled for today
+                if (isExpired) return false;
+                
+                const appointmentDateTime = appointmentTime.getTime();
+                const isToday = appointmentDateTime >= today.getTime() && appointmentDateTime <= endOfToday.getTime();
+                
+                return isToday;
               });
 
               const totalCount = activeScheduledLeads.length;

@@ -419,7 +419,7 @@ export default function ScheduledLeadsSection() {
 
   return (
     <div className="space-y-0">
-      {/* iOS-Native Horizontal Date Picker - Edge-to-edge */}
+      {/* Simplified iOS-Native Date Navigation */}
       <div className="bg-gray-50/80 dark:bg-gray-900/50 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/30">
         {/* Header */}
         <div className="px-4 pt-4 pb-2">
@@ -431,44 +431,83 @@ export default function ScheduledLeadsSection() {
           </p>
         </div>
 
-        {/* Horizontal Scrolling Date Strip */}
-        <div className="flex gap-3 px-4 pb-4 overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {Array.from({ length: 14 }, (_, i) => {
-            const date = new Date();
-            date.setDate(date.getDate() + (i - 7));
-            const isSelected = isSameDay(date, selectedDate);
-            const isToday = isSameDay(date, new Date());
-            
-            return (
-              <button
-                key={i}
-                onClick={() => {
-                  setSelectedDate(date);
-                  haptic.light(); // iOS-native haptic feedback
-                }}
-                className={`
-                  flex-shrink-0 w-16 h-20 rounded-2xl flex flex-col items-center justify-center
-                  snap-center transition-all duration-200 transform
-                  ${isSelected 
-                    ? 'bg-blue-500 text-white shadow-lg scale-105' 
-                    : 'bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700/80'
-                  }
-                  ${isToday && !isSelected ? 'ring-2 ring-blue-200 dark:ring-blue-800' : ''}
-                  active:scale-95
-                `}
-              >
-                <span className={`text-xs font-medium ${isSelected ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
-                  {format(date, 'EEE')}
-                </span>
-                <span className={`text-lg font-bold ${isSelected ? 'text-white' : isToday ? 'text-blue-500' : 'text-gray-900 dark:text-white'}`}>
-                  {format(date, 'd')}
-                </span>
-                {isToday && (
-                  <div className={`w-1 h-1 rounded-full mt-1 ${isSelected ? 'bg-white' : 'bg-blue-500'}`} />
-                )}
-              </button>
-            );
-          })}
+        {/* Simplified Date Navigation */}
+        <div className="flex items-center justify-between px-4 pb-4">
+          {/* Previous Day Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              navigateDate('prev');
+              haptic.light();
+            }}
+            className="w-10 h-10 rounded-full p-0 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 active:scale-95 transition-all"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          </Button>
+
+          {/* Current Date Display */}
+          <div className="flex-1 text-center">
+            <div className="text-lg font-semibold text-gray-900 dark:text-white">
+              {isToday(selectedDate) ? (
+                <span className="text-blue-500">Today</span>
+              ) : isTomorrow(selectedDate) ? (
+                <span className="text-blue-500">Tomorrow</span>
+              ) : (
+                format(selectedDate, 'MMM d, yyyy')
+              )}
+            </div>
+            {!isToday(selectedDate) && (
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {format(selectedDate, 'EEEE')}
+              </div>
+            )}
+          </div>
+
+          {/* Date Picker and Next Day Button */}
+          <div className="flex items-center gap-2">
+            {/* Calendar Icon for Date Picker */}
+            <Popover open={showCalendar} onOpenChange={setShowCalendar}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-10 h-10 rounded-full p-0 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 active:scale-95 transition-all"
+                  onClick={() => haptic.light()}
+                >
+                  <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <CalendarComponent
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSelectedDate(date);
+                      setShowCalendar(false);
+                      haptic.medium();
+                    }
+                  }}
+                  initialFocus
+                  className="rounded-lg border border-gray-200 dark:border-gray-700"
+                />
+              </PopoverContent>
+            </Popover>
+
+            {/* Next Day Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                navigateDate('next');
+                haptic.light();
+              }}
+              className="w-10 h-10 rounded-full p-0 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 active:scale-95 transition-all"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            </Button>
+          </div>
         </div>
       </div>
 

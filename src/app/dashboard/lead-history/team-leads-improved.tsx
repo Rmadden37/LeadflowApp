@@ -60,7 +60,7 @@ import {useRouter} from "next/navigation";
 import {format} from "date-fns";
 import VerifiedCheckbox from "@/components/dashboard/verified-checkbox";
 
-export default function LeadManagementPage() {
+export default function ImprovedTeamLeadsPage() {
   const {user, loading: authLoading} = useAuth();
   const {toast} = useToast();
   const router = useRouter();
@@ -411,25 +411,55 @@ export default function LeadManagementPage() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-8">
       <Card className="shadow-xl">
         <CardHeader className="px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <CardTitle className="text-2xl sm:text-3xl font-bold font-headline flex items-center">
               <Filter className="mr-2 sm:mr-3 h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              Team Leads
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-sm">
-                {filteredLeads.length} leads
+                {isMultiSelectMode && selectedLeadIds.size > 0 
+                  ? `${selectedLeadIds.size} selected` 
+                  : `${filteredLeads.length} leads`}
               </Badge>
-              <Button onClick={exportToCSV} variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export CSV
+              {!isMultiSelectMode && (
+                <Button onClick={exportToCSV} variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export CSV
+                </Button>
+              )}
+              <Button 
+                onClick={toggleMultiSelectMode} 
+                variant={isMultiSelectMode ? "default" : "outline"} 
+                size="sm"
+              >
+                {isMultiSelectMode ? "Cancel" : "Select"}
               </Button>
             </div>
           </div>
           
-          {/* Filters */}
+          {/* iOS-style Quick Filter Chips */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            {getQuickFilterPresets().map(preset => (
+              <Button
+                key={preset.value}
+                variant={statusFilter === preset.value ? "default" : "outline"}
+                size="sm"
+                className="h-8 px-3 text-xs font-medium rounded-full transition-all active:scale-95"
+                onClick={() => setStatusFilter(statusFilter === preset.value ? "all" : preset.value)}
+              >
+                {preset.label}
+                <Badge variant="secondary" className="ml-1.5 h-5 w-auto min-w-[20px] text-xs px-1.5">
+                  {preset.count}
+                </Badge>
+              </Button>
+            ))}
+          </div>
+          
+          {/* Search and Traditional Filters */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -447,13 +477,14 @@ export default function LeadManagementPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="recovery">🎯 Recovery Targets</SelectItem>
+                <SelectItem value="canceled">Canceled</SelectItem>
+                <SelectItem value="no_sale">No Sale</SelectItem>
                 <SelectItem value="waiting_assignment">Waiting Assignment</SelectItem>
                 <SelectItem value="accepted">Accepted</SelectItem>
                 <SelectItem value="in_process">In Process</SelectItem>
                 <SelectItem value="scheduled">Scheduled</SelectItem>
                 <SelectItem value="sold">Sold</SelectItem>
-                <SelectItem value="no_sale">No Sale</SelectItem>
-                <SelectItem value="canceled">Canceled</SelectItem>
                 <SelectItem value="rescheduled">Rescheduled</SelectItem>
               </SelectContent>
             </Select>
@@ -481,6 +512,53 @@ export default function LeadManagementPage() {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Multi-select Actions Bar */}
+          {isMultiSelectMode && (
+            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg mt-4 border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={selectAllFiltered}
+                  disabled={selectedLeadIds.size === filteredLeads.length}
+                >
+                  Select All ({filteredLeads.length})
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearSelection}
+                  disabled={selectedLeadIds.size === 0}
+                >
+                  Clear
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {selectedLeadIds.size > 0 && (
+                  <>
+                    <Button
+                      onClick={() => setShowReassignModal(true)}
+                      size="sm"
+                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      <Users className="h-4 w-4 mr-2" />
+                      Reassign ({selectedLeadIds.size})
+                    </Button>
+                    <Button
+                      onClick={exportToCSV}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Selected
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         </CardHeader>
         
         <CardContent className="px-4 sm:px-6">
@@ -497,6 +575,16 @@ export default function LeadManagementPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    {isMultiSelectMode && (
+                      <TableHead className="w-12">
+                        <input
+                          type="checkbox"
+                          checked={selectedLeadIds.size === filteredLeads.length && filteredLeads.length > 0}
+                          onChange={() => selectedLeadIds.size === filteredLeads.length ? clearSelection() : selectAllFiltered()}
+                          className="rounded"
+                        />
+                      </TableHead>
+                    )}
                     <TableHead className="w-48">Customer</TableHead>
                     <TableHead className="w-32">Phone</TableHead>
                     <TableHead className="w-64">Address</TableHead>
@@ -513,6 +601,16 @@ export default function LeadManagementPage() {
                 <TableBody>
                   {filteredLeads.map((lead) => (
                     <TableRow key={lead.id} className="hover:bg-muted/50">
+                      {isMultiSelectMode && (
+                        <TableCell>
+                          <input
+                            type="checkbox"
+                            checked={selectedLeadIds.has(lead.id)}
+                            onChange={() => toggleLeadSelection(lead.id)}
+                            className="rounded"
+                          />
+                        </TableCell>
+                      )}
                       {/* Customer Name */}
                       <TableCell>
                         <div className="flex items-center space-x-2">
@@ -532,19 +630,22 @@ export default function LeadManagementPage() {
 
                       {/* Phone */}
                       <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Phone className="h-4 w-4 text-muted-foreground" />
-                          {editingLead === lead.id ? (
+                        {editingLead === lead.id ? (
+                          <div className="flex items-center space-x-2">
+                            <Phone className="h-4 w-4 text-muted-foreground" />
                             <Input
                               value={editValues.customerPhone || ""}
                               onChange={(e) => updateEditValue("customerPhone", e.target.value)}
-                              className="h-8 text-sm font-mono"
+                              className="h-8 text-sm"
                               placeholder="Phone number"
                             />
-                          ) : (
-                            <span className="font-mono text-sm">{lead.customerPhone}</span>
-                          )}
-                        </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <Phone className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{lead.customerPhone}</span>
+                          </div>
+                        )}
                       </TableCell>
 
                       {/* Address */}
@@ -634,38 +735,41 @@ export default function LeadManagementPage() {
                       {/* Assigned Closer (Read-only) */}
                       <TableCell>
                         {lead.assignedCloserName ? (
-                          <span className="text-sm">{lead.assignedCloserName}</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                              <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                                {lead.assignedCloserName.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <span className="text-sm font-medium">{lead.assignedCloserName}</span>
+                          </div>
                         ) : (
-                          <span className="text-muted-foreground text-sm">Unassigned</span>
+                          <span className="text-muted-foreground text-sm italic">Unassigned</span>
                         )}
                       </TableCell>
 
-                      {/* Setter (Read-only) */}
+                      {/* Setter */}
                       <TableCell>
-                        {lead.setterName ? (
-                          <span className="text-sm">{lead.setterName}</span>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">Unknown</span>
-                        )}
+                        <span className="text-sm">{lead.setterName || "Unknown"}</span>
                       </TableCell>
 
-                      {/* Created (Read-only) */}
+                      {/* Created Date */}
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <Clock className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm">
-                            {format(lead.createdAt.toDate(), "MMM dd, HH:mm")}
+                            {format(lead.createdAt.toDate(), "MMM d, yyyy")}
                           </span>
                         </div>
                       </TableCell>
 
-                      {/* Scheduled (Read-only) */}
+                      {/* Scheduled Time */}
                       <TableCell>
                         {lead.scheduledAppointmentTime ? (
                           <div className="flex items-center space-x-2">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <Calendar className="h-4 w-4 text-blue-500" />
                             <span className="text-sm">
-                              {format(lead.scheduledAppointmentTime.toDate(), "MMM dd, HH:mm")}
+                              {format(lead.scheduledAppointmentTime.toDate(), "MMM d, h:mm a")}
                             </span>
                           </div>
                         ) : (
@@ -676,22 +780,18 @@ export default function LeadManagementPage() {
                       {/* Actions */}
                       <TableCell>
                         {editingLead === lead.id ? (
-                          <div className="flex items-center space-x-1">
+                          <div className="flex items-center space-x-2">
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
                               onClick={() => saveEdit(lead.id)}
                               disabled={saving}
                               className="h-8 w-8 p-0"
                             >
-                              {saving ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Check className="h-4 w-4 text-green-600" />
-                              )}
+                              <Check className="h-4 w-4 text-green-600" />
                             </Button>
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
                               onClick={cancelEdit}
                               disabled={saving}
@@ -729,6 +829,40 @@ export default function LeadManagementPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Reassignment Modal */}
+      {showReassignModal && (
+        <Dialog open={showReassignModal} onOpenChange={setShowReassignModal}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Reassign Selected Leads</DialogTitle>
+              <DialogDescription>
+                Choose a closer to reassign {selectedLeadIds.size} selected leads to.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {teamClosers.map((closer) => (
+                <Button
+                  key={closer.id}
+                  variant="outline"
+                  className="h-auto p-4 justify-start"
+                  onClick={() => bulkReassignLeads(closer.uid || closer.id, closer.name || closer.displayName)}
+                >
+                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                      {(closer.name || closer.displayName || "").charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium">{closer.name || closer.displayName}</div>
+                    <div className="text-sm text-muted-foreground">{closer.email}</div>
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -121,13 +121,15 @@ export default function TeamMembersDropdown() {
 
   if (!managerUser || (managerUser.role !== "manager" && managerUser.role !== "admin")) {
     return (
-      <div className="frosted-glass-card p-6">
-        <div className="text-center">
-          <Users className="h-12 w-12 text-[var(--text-secondary)] mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="text-center py-12 px-8">
+          <div className="w-12 h-12 bg-gray-400 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <Users className="h-6 w-6 text-white" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Access Restricted
           </h3>
-          <p className="text-[var(--text-secondary)]">
+          <p className="text-gray-600">
             Only managers and admins can access team member management.
           </p>
         </div>
@@ -137,11 +139,13 @@ export default function TeamMembersDropdown() {
 
   if (loading) {
     return (
-      <div className="frosted-glass-card p-6">
-        <div className="flex items-center justify-center py-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="flex items-center justify-center py-12">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-[var(--accent-light)]" />
-            <p className="text-sm text-[var(--text-secondary)]">Loading team members...</p>
+            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+              <Loader2 className="h-5 w-5 animate-spin text-white" />
+            </div>
+            <p className="text-sm text-gray-600">Loading team members...</p>
           </div>
         </div>
       </div>
@@ -150,58 +154,71 @@ export default function TeamMembersDropdown() {
 
   return (
     <>
-      <div className="frosted-glass-card p-6">
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-[var(--accent-primary)]/10">
-              <Users className="h-6 w-6 text-[var(--accent-light)]" />
+      <div className="space-y-6">
+        {/* iOS Settings Style Header */}
+        <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+            <Users className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex-1">
+            <div className="text-gray-900 text-lg font-semibold">
+              Team Members
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-[var(--text-primary)]">
-                Team Members
-              </h3>
-              <p className="text-sm text-[var(--text-secondary)]">
-                {currentTeam ? `${currentTeam.name} Team` : "Select a team member to update their profile"}
-              </p>
+            <div className="text-gray-500 text-sm">
+              {currentTeam ? `${currentTeam.name} Team • ${teamMembers.length} members` : "Select a team member to update their profile"}
             </div>
           </div>
+        </div>
 
-          {/* Team Member Selection */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[var(--text-primary)]">
-                Select Team Member
-              </label>
+        {/* iOS Settings Style Team Member Selection */}
+        <div>
+          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">
+            Member Selection
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="flex items-center p-4 border-b border-gray-100">
+              <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                <UserCog className="h-4 w-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="text-gray-900 font-medium">Choose Team Member</div>
+                <div className="text-gray-500 text-sm">
+                  Select a member to update their profile
+                </div>
+              </div>
+            </div>
+            
+            {/* Enhanced Member Selector */}
+            <div className="p-4 bg-gray-50">
               <Select value={selectedUserId} onValueChange={handleSelectUser}>
-                <SelectTrigger className="w-full bg-white/10 border border-[var(--glass-border)] backdrop-blur-md text-[var(--text-primary)] hover:bg-white/20 focus:bg-white/20 focus:border-[var(--accent-primary)] transition-all duration-200">
+                <SelectTrigger className="w-full bg-white border border-gray-300 hover:border-blue-500 focus:border-blue-500 transition-all duration-200 h-12 rounded-xl text-gray-900">
                   <SelectValue placeholder="Choose a team member...">
                     {selectedUser && (
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-6 w-6">
+                        <Avatar className="h-7 w-7 ring-2 ring-gray-200">
                           <AvatarImage src={selectedUser.avatarUrl || undefined} />
-                          <AvatarFallback className="text-xs">
+                          <AvatarFallback className="text-xs bg-blue-100 text-blue-700 font-semibold">
                             {selectedUser.displayName 
                               ? selectedUser.displayName.substring(0, 2).toUpperCase() 
                               : selectedUser.email?.substring(0, 2).toUpperCase() || "??"
                             }
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex flex-col items-start">
-                          <span className="font-medium">
+                        <div className="text-left">
+                          <div className="font-medium text-gray-900">
                             {selectedUser.displayName || selectedUser.email}
-                          </span>
-                          <span className="text-xs text-[var(--text-secondary)] capitalize">
+                          </div>
+                          <div className="text-xs text-gray-500 capitalize">
                             {selectedUser.role}
-                          </span>
+                          </div>
                         </div>
                       </div>
                     )}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="bg-[var(--background)]/95 backdrop-blur-lg border border-[var(--glass-border)] shadow-2xl">
+                <SelectContent className="bg-white backdrop-blur-xl border border-gray-200 shadow-xl rounded-xl">
                   {teamMembers.length === 0 ? (
-                    <div className="p-3 text-center text-[var(--text-secondary)]">
+                    <div className="p-4 text-center text-gray-500">
                       No team members found
                     </div>
                   ) : (
@@ -209,12 +226,12 @@ export default function TeamMembersDropdown() {
                       <SelectItem 
                         key={member.uid} 
                         value={member.uid}
-                        className="text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/10 focus:bg-[var(--accent-primary)]/10 cursor-pointer"
+                        className="text-gray-900 hover:bg-blue-50 focus:bg-blue-50 cursor-pointer rounded-lg m-1 p-3"
                       >
                         <div className="flex items-center gap-3 py-1">
-                          <Avatar className="h-8 w-8">
+                          <Avatar className="h-8 w-8 ring-2 ring-gray-200">
                             <AvatarImage src={member.avatarUrl || undefined} />
-                            <AvatarFallback className="text-xs">
+                            <AvatarFallback className="text-xs bg-blue-100 text-blue-700 font-semibold">
                               {member.displayName 
                                 ? member.displayName.substring(0, 2).toUpperCase() 
                                 : member.email?.substring(0, 2).toUpperCase() || "??"
@@ -222,15 +239,15 @@ export default function TeamMembersDropdown() {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col items-start">
-                            <span className="font-medium">
+                            <span className="font-medium text-gray-900">
                               {member.displayName || member.email}
                             </span>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-[var(--text-secondary)] capitalize">
+                              <span className="text-xs text-gray-500 capitalize">
                                 {member.role}
                               </span>
                               {member.email && (
-                                <span className="text-xs text-[var(--text-secondary)]">
+                                <span className="text-xs text-gray-400">
                                   • {member.email}
                                 </span>
                               )}
@@ -243,70 +260,93 @@ export default function TeamMembersDropdown() {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+        </div>
 
-            {/* Selected User Preview */}
-            {selectedUser && (
-              <div className="p-4 rounded-lg bg-white/5 border border-[var(--glass-border)]">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-12 w-12 ring-2 ring-[var(--glass-border)]">
-                      <AvatarImage src={selectedUser.avatarUrl || undefined} />
-                      <AvatarFallback>
-                        {selectedUser.displayName 
-                          ? selectedUser.displayName.substring(0, 2).toUpperCase() 
-                          : selectedUser.email?.substring(0, 2).toUpperCase() || "??"
-                        }
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-semibold text-[var(--text-primary)]">
-                        {selectedUser.displayName || selectedUser.email}
-                      </h4>
-                      <p className="text-sm text-[var(--text-secondary)]">
-                        {selectedUser.email}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30 capitalize">
-                          {selectedUser.role}
-                        </span>
-                      </div>
-                    </div>
+        {/* Selected User Preview Card */}
+        {selectedUser && (
+          <div>
+            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">
+              Selected Member
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="flex items-center p-4">
+                <Avatar className="h-12 w-12 ring-2 ring-blue-200 mr-4">
+                  <AvatarImage src={selectedUser.avatarUrl || undefined} />
+                  <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
+                    {selectedUser.displayName 
+                      ? selectedUser.displayName.substring(0, 2).toUpperCase() 
+                      : selectedUser.email?.substring(0, 2).toUpperCase() || "??"
+                    }
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <div className="text-gray-900 font-semibold">
+                    {selectedUser.displayName || selectedUser.email}
                   </div>
-                  <ChevronRight className="h-5 w-5 text-[var(--text-secondary)]" />
+                  <div className="text-gray-500 text-sm">
+                    {selectedUser.email}
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200 capitalize">
+                      {selectedUser.role}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-gray-400">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </div>
               </div>
-            )}
-
-            {/* Update Profile Button */}
-            <Button
-              onClick={handleUpdateProfile}
-              disabled={!selectedUserId}
-              className="w-full bg-gradient-to-r from-[var(--accent-primary)] to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-            >
-              <UserCog className="mr-2 h-4 w-4" />
-              Edit User Profile
-            </Button>
+            </div>
           </div>
+        )}
 
-          {/* Team Info */}
-          {currentTeam && (
-            <div className="text-xs text-[var(--text-secondary)] p-3 bg-white/5 rounded-lg border border-[var(--glass-border)]">
-              <div className="flex items-center justify-between">
-                <span>
-                  <strong className="text-[var(--text-primary)]">Team:</strong> {currentTeam.name}
-                </span>
-                <span>
-                  <strong className="text-[var(--text-primary)]">Members:</strong> {teamMembers.length}
-                </span>
+        {/* iOS Settings Style Action Button */}
+        <div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-4">
+              <Button
+                onClick={handleUpdateProfile}
+                disabled={!selectedUserId}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-0"
+              >
+                <UserCog className="mr-3 h-5 w-5" />
+                Edit User Profile
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Team Information Card */}
+        {currentTeam && (
+          <div>
+            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">
+              Team Information
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="flex items-center p-4">
+                <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                  <Users className="h-4 w-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-gray-900 font-medium">{currentTeam.name}</div>
+                  <div className="text-gray-500 text-sm">
+                    {teamMembers.length} active members
+                  </div>
+                </div>
               </div>
               {currentTeam.description && (
-                <p className="mt-1 text-[var(--text-tertiary)]">
-                  {currentTeam.description}
-                </p>
+                <div className="px-4 pb-4 border-t border-gray-100 bg-gray-50">
+                  <p className="text-sm text-gray-600 mt-3 leading-relaxed">
+                    {currentTeam.description}
+                  </p>
+                </div>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Update User Profile Modal */}

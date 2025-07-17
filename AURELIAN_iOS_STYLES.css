@@ -397,3 +397,181 @@
     );
   }
 }
+
+/* iOS Notification Badge */
+.ios-notification-badge {
+  background: rgba(255, 149, 0, 0.2);
+  border: 1px solid rgba(255, 149, 0, 0.4);
+  color: #FF9500;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.ios-notification-badge:hover {
+  background: rgba(255, 149, 0, 0.3);
+  color: #FFB143;
+  transform: scale(1.02);
+}
+
+/* Team Context Indicator */
+.ios-team-context-indicator {
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  backdrop-filter: blur(20px);
+  margin-top: 16px;
+}
+
+/* iOS Team Selector Expanded */
+.ios-team-selector-expanded {
+  border-top: 1px solid var(--ios-border-light);
+  background: var(--ios-bg-tertiary);
+}
+
+.ios-team-option {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ios-border-light);
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  min-height: 52px;
+}
+
+.ios-team-option:last-child {
+  border-bottom: none;
+}
+
+.ios-team-option:active {
+  background: var(--ios-bg-quaternary);
+  transform: scale(0.995);
+}
+
+.ios-team-option-selected {
+  background: rgba(var(--ios-blue-rgb), 0.08);
+}
+
+.ios-team-option-indicator {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ios-checkmark {
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+/* Enhanced Dropdown Menus */
+.ios-dropdown-enhanced {
+  background: rgba(var(--ios-bg-secondary-rgb), 0.95);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--ios-border-light);
+  border-radius: 12px;
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.25),
+    0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  min-width: 200px;
+  animation: ios-dropdown-appear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes ios-dropdown-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ios-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: transparent;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  min-height: 40px;
+  font-size: var(--ios-typography-body);
+  color: var(--ios-text-primary);
+}
+
+.ios-dropdown-item:hover {
+  background: rgba(var(--ios-blue-rgb), 0.1);
+  color: var(--ios-blue);
+}
+
+.ios-dropdown-item:active {
+  background: rgba(var(--ios-blue-rgb), 0.15);
+  transform: scale(0.98);
+}
+
+.ios-dropdown-item-icon {
+  margin-right: 10px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ios-text-secondary);
+  transition: color 0.15s ease;
+}
+
+.ios-dropdown-item:hover .ios-dropdown-item-icon {
+  color: var(--ios-blue);
+}
+
+/* iOS List Separators */
+.ios-list-separator {
+  height: 1px;
+  background: var(--ios-border-light);
+  margin: 4px 12px;
+}
+
+/* Enhanced Safe Area Support */
+.ios-safe-area-top {
+  padding-top: calc(env(safe-area-inset-top, 20px) + 20px);
+}
+
+.ios-safe-area-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
+}
+
+/* iOS Color Variables Enhancement */
+:root {
+  --ios-blue-rgb: 0, 122, 255;
+  --ios-green-rgb: 52, 199, 89;
+  --ios-orange-rgb: 255, 149, 0;
+  --ios-red-rgb: 255, 59, 48;
+  --ios-purple-rgb: 175, 82, 222;
+  --ios-pink-rgb: 255, 45, 85;
+  --ios-yellow-rgb: 255, 204, 0;
+  
+  --ios-bg-secondary-rgb: 28, 28, 30;
+  --ios-bg-tertiary-rgb: 44, 44, 46;
+  --ios-bg-quaternary-rgb: 58, 58, 60;
+}
+
+/* Dark mode specific enhancements */
+@media (prefers-color-scheme: dark) {
+  .ios-team-context-indicator {
+    background: rgba(0, 122, 255, 0.15);
+    border-color: rgba(0, 122, 255, 0.3);
+  }
+  
+  .ios-notification-badge {
+    background: rgba(255, 149, 0, 0.25);
+    border-color: rgba(255, 149, 0, 0.5);
+  }
+}
